@@ -1,0 +1,25 @@
+package a
+
+import "errors"
+
+var (
+	// ErrNilUser is returned when the input is nil.
+	ErrNilUser = errors.New("input cannot be nil")
+	// ErrRequiredName is returned when the name is required but not provided.
+	ErrRequiredName = errors.New("name is required")
+	// ErrMinAge is returned when the age is below the minimum allowed value.
+	ErrMinAge = errors.New("age must be at least 0")
+)
+
+func ValidateUser(input *User) error {
+	if input == nil {
+		return ErrNilUser
+	}
+	if input.Name == "" {
+		return ErrRequiredName
+	}
+	if input.Age < 0 {
+		return ErrMinAge
+	}
+	return nil
+}
