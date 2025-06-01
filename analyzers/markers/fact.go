@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package markers
 
 import (
@@ -20,17 +21,21 @@ import (
 	"strings"
 )
 
+// MarkerFact is a struct that represents a marker fact.
 type MarkerFact struct {
 	Identifier  string
 	Expressions map[string]string
 }
 
+// AFact is a method that satisfies the Fact interface.
 func (mf *MarkerFact) AFact() {}
 
+// String returns a string representation of the MarkerFact.
 func (mf *MarkerFact) String() string {
 	if mf == nil {
 		return "<nil>"
 	}
+
 	var expressionsString string
 	if len(mf.Expressions) == 0 {
 		expressionsString = "no expressions"
@@ -39,8 +44,11 @@ func (mf *MarkerFact) String() string {
 		for key, value := range mf.Expressions {
 			elms = append(elms, fmt.Sprintf("%s: %s", key, value))
 		}
+
 		expressionsString = strings.Join(elms, ", ")
 	}
+
 	quotedIdentifier := fmt.Sprintf("%q", mf.Identifier)
+
 	return fmt.Sprintf("Identifier: %s, Expressions: {%s}", quotedIdentifier, expressionsString)
 }

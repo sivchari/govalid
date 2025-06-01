@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package markers
 
 import (
@@ -27,18 +28,32 @@ import (
 	govaliderrors "github.com/sivchari/govalid/internal/errors"
 )
 
-var Analyzer = &analysis.Analyzer{
-	Name:       "markers",
-	Doc:        "markers is a helper for generating govalid validation",
-	Run:        run,
-	Requires:   []*analysis.Analyzer{inspect.Analyzer},
-	ResultType: reflect.TypeOf(newMarkers()),
-	FactTypes: []analysis.Fact{
-		(*MarkerFact)(nil),
-	},
+const (
+	name = "markers"
+	doc  = "markers is a helper for generating govalid validation"
+)
+
+// analyzer implements the analysis.Analyzer interface for the markers analyzer.
+type analyzer struct{}
+
+// newAnalyzer creates a new instance of the markers analyzer.
+func newAnalyzer() *analysis.Analyzer {
+	a := &analyzer{}
+
+	return &analysis.Analyzer{
+		Name:       name,
+		Doc:        doc,
+		Run:        a.run,
+		Requires:   []*analysis.Analyzer{inspect.Analyzer},
+		ResultType: reflect.TypeOf(newMarkers()),
+		FactTypes: []analysis.Fact{
+			(*MarkerFact)(nil),
+		},
+	}
 }
 
-func run(pass *analysis.Pass) (any, error) {
+// run is the main function that runs the markers analyzer.
+func (a *analyzer) run(pass *analysis.Pass) (any, error) {
 	inspect, ok := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 	if !ok {
 		return nil, govaliderrors.ErrCouldNotGetInspector
@@ -64,6 +79,7 @@ func run(pass *analysis.Pass) (any, error) {
 	return results, nil
 }
 
+// collectTypeSpecMarkers collects markers from a TypeSpec node and adds them to the results.
 func collectTypeSpecMarkers(pass *analysis.Pass, ts *ast.TypeSpec, result *markers) {
 	if ts == nil {
 		return
@@ -79,6 +95,7 @@ func collectTypeSpecMarkers(pass *analysis.Pass, ts *ast.TypeSpec, result *marke
 	}
 }
 
+// fieldMarkers extracts markers from a struct field and adds them to the results.
 func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 	for _, doc := range field.Doc.List {
 		if !strings.HasPrefix(doc.Text, "// +") {
@@ -104,6 +121,9 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 	}
 }
 
+// extractMarker extracts the identifier and expressions from a marker content string.
+// It returns the identifier and a map of expressions if applicable.
+// If the content does not contain an identifier or expressions, it returns an empty string and nil.
 func extractMarker(content string) (string, map[string]string) {
 	if strings.Count(content, "=") == 0 {
 		return content, nil

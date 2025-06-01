@@ -13,13 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+// Package markers defines all markers used in the govalid package.
 package markers
 
 var (
+	// GoValidMarkerRequired is the marker for required fields in govalid.
 	GoValidMarkerRequired = "govalid:required"
-	GoValidMarkerMin      = "govalid:min"
+
+	// GoValidMarkerMin is the marker for minimum value validation in govalid.
+	GoValidMarkerMin = "govalid:min"
 )
 
+// GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerRequired: {},
 	GoValidMarkerMin:      {},
