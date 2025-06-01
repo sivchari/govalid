@@ -16,11 +16,33 @@ limitations under the License.
 package main
 
 import (
-	"golang.org/x/tools/go/analysis/unitchecker"
+	"fmt"
 
 	"github.com/sivchari/govalid/analyzers/govalid"
+	"github.com/sivchari/govalid/analyzers/markers"
+	"github.com/sivchari/govalid/internal/registry"
+	"golang.org/x/tools/go/analysis/unitchecker"
 )
 
 func main() {
-	unitchecker.Main(govalid.Analyzer)
+	if err := run(); err != nil {
+		panic(err)
+	}
+}
+
+// run initializes the analyzers and starts the unit checker.
+func run() error {
+	analyzerRegistry := registry.NewRegistry(
+		markers.Initializer(),
+		govalid.Initializer(),
+	)
+
+	analyzers, err := analyzerRegistry.Init(nil)
+	if err != nil {
+		return fmt.Errorf("failed to initialize analyzers: %w", err)
+	}
+
+	unitchecker.Main(analyzers...)
+
+	return nil
 }

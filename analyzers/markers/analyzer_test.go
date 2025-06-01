@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package markers_test
 
 import (
@@ -22,7 +23,15 @@ import (
 	"golang.org/x/tools/go/analysis/analysistest"
 )
 
-func TestMarkers(t *testing.T) {
-	testData := analysistest.TestData()
-	analysistest.Run(t, testData, markers.Analyzer, "a")
+func Test(t *testing.T) {
+	testdata := analysistest.TestData()
+
+	initializer := markers.Initializer()
+
+	a, err := initializer.Init(nil)
+	if err != nil {
+		t.Fatalf("failed to initialize analyzer: %v", err)
+	}
+
+	analysistest.Run(t, testdata, a, "a")
 }

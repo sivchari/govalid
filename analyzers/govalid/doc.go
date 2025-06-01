@@ -14,15 +14,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package errors defines all errors used in the govalid package.
-package errors
-
-import "errors"
-
-var (
-	// ErrCouldNotGetInspector is returned when the inspector could not be retrieved.
-	ErrCouldNotGetInspector = errors.New("could not get inspector")
-
-	// ErrCouldNotCreateMarkers is returned when the markers could not be created.
-	ErrCouldNotCreateMarkers = errors.New("could not create markers")
-)
+// Package govalid implements type-safe validation code generation for structs based on markers.
+package govalid
