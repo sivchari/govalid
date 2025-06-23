@@ -21,7 +21,7 @@ import (
 	"github.com/sivchari/govalid/analyzers/govalid"
 	"github.com/sivchari/govalid/analyzers/markers"
 	"github.com/sivchari/govalid/internal/registry"
-	"golang.org/x/tools/go/analysis/unitchecker"
+	"golang.org/x/tools/go/analysis/multichecker"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func run() error {
 		return fmt.Errorf("failed to initialize analyzers: %w", err)
 	}
 
-	unitchecker.Main(analyzers...)
+	multichecker.Main(analyzers...)
 
 	return nil
 }

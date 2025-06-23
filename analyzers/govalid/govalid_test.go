@@ -17,8 +17,12 @@ limitations under the License.
 package govalid_test
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/sivchari/govalid/analyzers/govalid"
 	"golang.org/x/tools/go/analysis/analysistest"
 )
@@ -33,5 +37,16 @@ func Test(t *testing.T) {
 		t.Fatalf("failed to initialize analyzer: %v", err)
 	}
 
-	analysistest.Run(t, testdata, a, "a")
+	results := analysistest.Run(t, testdata, a, "a")
+	for _, result := range results {
+		fileName := fmt.Sprintf("%s.golden", result.Action.Package.Name)
+		file, err := os.ReadFile(filepath.Join(testdata, fileName))
+		if err != nil {
+			t.Fatalf("failed to read golden file %s: %v", fileName, err)
+		}
+		if diff := cmp.Diff(string(file), result.Action); diff != "" {
+			t.Errorf("output mismatch for package %s:\n%s", result.Action.Package.Name, diff)
+		}
+		fmt.Println(result.Action.Result)
+	}
 }
