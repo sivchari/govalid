@@ -29,11 +29,11 @@ import (
 )
 
 const (
-	name = "markers"
-	doc  = "markers is a helper for generating govalid validation"
+	Name = "markers"
+	Doc  = "markers is a helper for generating govalid validation"
 )
 
-var Analyzer = newAnalyzer()
+var Analyzer *analysis.Analyzer
 
 // analyzer implements the analysis.Analyzer interface for the markers analyzer.
 type analyzer struct{}
@@ -41,10 +41,9 @@ type analyzer struct{}
 // newAnalyzer creates a new instance of the markers analyzer.
 func newAnalyzer() *analysis.Analyzer {
 	a := &analyzer{}
-
-	return &analysis.Analyzer{
-		Name:       name,
-		Doc:        doc,
+	analyzer := &analysis.Analyzer{
+		Name:       Name,
+		Doc:        Doc,
 		Run:        a.run,
 		Requires:   []*analysis.Analyzer{inspect.Analyzer},
 		ResultType: reflect.TypeOf(newMarkers()),
@@ -52,6 +51,7 @@ func newAnalyzer() *analysis.Analyzer {
 			(*MarkerFact)(nil),
 		},
 	}
+	return analyzer
 }
 
 // run is the main function that runs the markers analyzer.

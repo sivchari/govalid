@@ -15,12 +15,36 @@ limitations under the License.
 */
 package a
 
-// +govalid
+//go:generate govalid ./a.go
+
 type User struct {
-	// Name is the name of the user.
 	// +govalid:required
-	Name string
-	// Age is the age of the user.
-	// +govalid:min=10
-	Age int
+	String string
+
+	// +govalid:required
+	Int int
+
+	// +govalid:required
+	Array [1]string
+
+	// +govalid:required
+	Slice []string
+
+	// +govalid:required
+	Map map[string]string
+
+	// +govalid:required
+	Interface any
+
+	// +govalid:required
+	Pointer *string
+
+	// +govalid:required
+	Struct struct{}
+
+	// +govalid:required
+	Channel chan string
+
+	// +govalid:required
+	Func func(string) string
 }

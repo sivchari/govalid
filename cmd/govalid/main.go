@@ -18,10 +18,10 @@ package main
 import (
 	"fmt"
 
+	"github.com/gostaticanalysis/codegen/singlegenerator"
 	"github.com/sivchari/govalid/analyzers/govalid"
 	"github.com/sivchari/govalid/analyzers/markers"
 	"github.com/sivchari/govalid/internal/registry"
-	"golang.org/x/tools/go/analysis/multichecker"
 )
 
 func main() {
@@ -32,17 +32,21 @@ func main() {
 
 // run initializes the analyzers and starts the unit checker.
 func run() error {
-	analyzerRegistry := registry.NewRegistry(
-		markers.Initializer(),
-		govalid.Initializer(),
+	registry := registry.NewRegistry(
+		registry.AddAnalyzers(markers.Initializer()),
+		registry.AddGenerators(govalid.Initializer()),
 	)
 
-	analyzers, err := analyzerRegistry.Init(nil)
-	if err != nil {
+	if err := registry.Init(nil); err != nil {
 		return fmt.Errorf("failed to initialize analyzers: %w", err)
 	}
 
-	multichecker.Main(analyzers...)
+	govalid, err := registry.Generator(govalid.Name)
+	if err != nil {
+		return fmt.Errorf("failed to get govalid generator: %w", err)
+	}
+
+	singlegenerator.Main(govalid)
 
 	return nil
 }
