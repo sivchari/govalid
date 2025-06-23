@@ -20,6 +20,7 @@ package registry
 import (
 	"fmt"
 
+	"github.com/gostaticanalysis/codegen"
 	"github.com/sivchari/govalid/internal/config"
 	"golang.org/x/tools/go/analysis"
 )
@@ -33,24 +34,67 @@ type AnalyzerInitializer interface {
 	Init(*config.GovalidConfig) (*analysis.Analyzer, error)
 }
 
-// Registry is an interface for managing a collection of analyzers.
+// GeneratorInitializer is an interface for initializing generators.
+type GeneratorInitializer interface {
+	// Name returns the name of the initialized generator.
+	Name() string
+
+	// Init initializes the generator.
+	Init(*config.GovalidConfig) (*codegen.Generator, error)
+}
+
+// Registry is an interface for managing a collection of analyzers and generators.
 type Registry interface {
 	// Analyzers returns a slice of initialized analyzers.
 	Analyzers() []string
 
-	// Init initializes all analyzers in the registry.
-	Init(*config.GovalidConfig) ([]*analysis.Analyzer, error)
+	// Analyzer returns an analysis.Analyzer by name.
+	Analyzer(name string) (*analysis.Analyzer, error)
+
+	// Generators returns a slice of initialized generators.
+	Generators() []string
+
+	// Generator returns a codegen.Generator by name.
+	Generator(name string) (*codegen.Generator, error)
+
+	// Init initializes all analyzers and generators.
+	Init(*config.GovalidConfig) error
 }
 
 // registry is an implementation of the Registry interface.
 type registry struct {
-	analyzerInitializers []AnalyzerInitializer
+	analyzerInitializers  []AnalyzerInitializer
+	generatorInitializers []GeneratorInitializer
+
+	initializedAnalyzers  []*analysis.Analyzer
+	initializedGenerators []*codegen.Generator
 }
 
 // NewRegistry creates a new Registry with the provided analyzer initializers.
-func NewRegistry(initializers ...AnalyzerInitializer) Registry {
-	return &registry{
-		analyzerInitializers: initializers,
+func NewRegistry(builders ...Builder) Registry {
+	r := &registry{}
+	for _, builder := range builders {
+		builder(r)
+	}
+	return r
+}
+
+// Builders is a function that takes a Registry and registers analyzers and generators.
+type Builder func(registry Registry)
+
+// AddAnalyzers adds a slice of AnalyzerInitializers to the registry.
+func AddAnalyzers(analyzers ...AnalyzerInitializer) Builder {
+	return func(r Registry) {
+		reg := r.(*registry)
+		reg.analyzerInitializers = append(reg.analyzerInitializers, analyzers...)
+	}
+}
+
+// AddGenerators adds a slice of GeneratorInitializer to the registry.
+func AddGenerators(generators ...GeneratorInitializer) Builder {
+	return func(r Registry) {
+		reg := r.(*registry)
+		reg.generatorInitializers = append(reg.generatorInitializers, generators...)
 	}
 }
 
@@ -64,28 +108,52 @@ func (r *registry) Analyzers() []string {
 	return analyzers
 }
 
-func (r *registry) Analyzer(name string) (AnalyzerInitializer, error) {
-	for _, initializer := range r.analyzerInitializers {
-		if initializer.Name() == name {
-			return initializer, nil
+// Generators returns a slice of names of all generators in the registry.
+func (r *registry) Generators() []string {
+	generators := make([]string, len(r.generatorInitializers))
+	for i, initializer := range r.generatorInitializers {
+		generators[i] = initializer.Name()
+	}
+	return generators
+}
+
+func (r *registry) Analyzer(name string) (*analysis.Analyzer, error) {
+	for _, analyzer := range r.initializedAnalyzers {
+		if analyzer.Name == name {
+			return analyzer, nil
 		}
 	}
 
 	return nil, fmt.Errorf("analyzer %s not found in registry", name)
 }
 
-// Init initializes all analyzers in the registry and returns a slice of pointers to analysis.Analyzer.
-func (r *registry) Init(config *config.GovalidConfig) ([]*analysis.Analyzer, error) {
-	analyzers := make([]*analysis.Analyzer, 0, len(r.analyzerInitializers))
+func (r *registry) Generator(name string) (*codegen.Generator, error) {
+	for _, generator := range r.initializedGenerators {
+		if generator.Name == name {
+			return generator, nil
+		}
+	}
 
+	return nil, fmt.Errorf("generator %s not found in registry", name)
+}
+
+// Init initializes all analyzers in the registry and returns a slice of pointers to analysis.Analyzer.
+func (r *registry) Init(config *config.GovalidConfig) error {
 	for _, initializer := range r.analyzerInitializers {
 		analyzer, err := initializer.Init(config)
 		if err != nil {
-			return nil, fmt.Errorf("failed to initialize analyzer %s: %w", initializer.Name(), err)
+			return fmt.Errorf("failed to initialize analyzer %s: %w", initializer.Name(), err)
 		}
-
-		analyzers = append(analyzers, analyzer)
+		r.initializedAnalyzers = append(r.initializedAnalyzers, analyzer)
 	}
 
-	return analyzers, nil
+	for _, initializer := range r.generatorInitializers {
+		generator, err := initializer.Init(config)
+		if err != nil {
+			return fmt.Errorf("failed to initialize generator %s: %w", initializer.Name(), err)
+		}
+		r.initializedGenerators = append(r.initializedGenerators, generator)
+	}
+
+	return nil
 }
