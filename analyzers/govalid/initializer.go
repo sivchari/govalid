@@ -17,13 +17,13 @@ limitations under the License.
 package govalid
 
 import (
+	"github.com/gostaticanalysis/codegen"
 	"github.com/sivchari/govalid/internal/config"
 	"github.com/sivchari/govalid/internal/registry"
-	"golang.org/x/tools/go/analysis"
 )
 
 // Initializer returns a new instance of the initializer for the govalid analyzer.
-func Initializer() registry.AnalyzerInitializer {
+func Initializer() registry.GeneratorInitializer {
 	return &initializer{}
 }
 
@@ -31,11 +31,11 @@ func Initializer() registry.AnalyzerInitializer {
 type initializer struct{}
 
 // Init initializes the govalid analyzer with the provided configuration.
-func (i *initializer) Init(_ *config.GovalidConfig) (*analysis.Analyzer, error) {
-	return newAnalyzer()
+func (i *initializer) Init(_ *config.GovalidConfig) (*codegen.Generator, error) {
+	return newGenerator()
 }
 
 // Name returns the name of the govalid analyzer.
 func (i *initializer) Name() string {
-	return name
+	return Name
 }

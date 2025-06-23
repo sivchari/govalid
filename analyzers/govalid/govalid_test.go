@@ -17,36 +17,36 @@ limitations under the License.
 package govalid_test
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
+	"flag"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/gostaticanalysis/codegen/codegentest"
 	"github.com/sivchari/govalid/analyzers/govalid"
-	"golang.org/x/tools/go/analysis/analysistest"
+	"github.com/sivchari/govalid/analyzers/markers"
+	"github.com/sivchari/govalid/internal/registry"
 )
 
+var update bool
+
+func init() {
+	flag.BoolVar(&update, "update", false, "update golden files")
+}
+
 func Test(t *testing.T) {
-	testdata := analysistest.TestData()
+	registry := registry.NewRegistry(
+		registry.AddAnalyzers(markers.Initializer()),
+		registry.AddGenerators(govalid.Initializer()),
+	)
 
-	initializer := govalid.Initializer()
+	if err := registry.Init(nil); err != nil {
+		t.Fatalf("failed to initialize analyzers: %v", err)
+	}
 
-	a, err := initializer.Init(nil)
+	govalid, err := registry.Generator(govalid.Name)
 	if err != nil {
-		t.Fatalf("failed to initialize analyzer: %v", err)
+		t.Fatalf("failed to get govalid generator: %v", err)
 	}
 
-	results := analysistest.Run(t, testdata, a, "a")
-	for _, result := range results {
-		fileName := fmt.Sprintf("%s.golden", result.Action.Package.Name)
-		file, err := os.ReadFile(filepath.Join(testdata, fileName))
-		if err != nil {
-			t.Fatalf("failed to read golden file %s: %v", fileName, err)
-		}
-		if diff := cmp.Diff(string(file), result.Action); diff != "" {
-			t.Errorf("output mismatch for package %s:\n%s", result.Action.Package.Name, diff)
-		}
-		fmt.Println(result.Action.Result)
-	}
+	results := codegentest.Run(t, codegentest.TestData(), govalid, "a")
+	codegentest.Golden(t, results, update)
 }
