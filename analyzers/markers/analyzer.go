@@ -33,6 +33,8 @@ const (
 	doc  = "markers is a helper for generating govalid validation"
 )
 
+var Analyzer = newAnalyzer()
+
 // analyzer implements the analysis.Analyzer interface for the markers analyzer.
 type analyzer struct{}
 
@@ -97,6 +99,9 @@ func collectTypeSpecMarkers(pass *analysis.Pass, ts *ast.TypeSpec, result *marke
 
 // fieldMarkers extracts markers from a struct field and adds them to the results.
 func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
+	if field == nil || field.Doc == nil || len(field.Doc.List) == 0 {
+		return
+	}
 	for _, doc := range field.Doc.List {
 		if !strings.HasPrefix(doc.Text, "// +") {
 			continue

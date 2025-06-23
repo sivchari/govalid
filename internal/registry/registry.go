@@ -64,6 +64,16 @@ func (r *registry) Analyzers() []string {
 	return analyzers
 }
 
+func (r *registry) Analyzer(name string) (AnalyzerInitializer, error) {
+	for _, initializer := range r.analyzerInitializers {
+		if initializer.Name() == name {
+			return initializer, nil
+		}
+	}
+
+	return nil, fmt.Errorf("analyzer %s not found in registry", name)
+}
+
 // Init initializes all analyzers in the registry and returns a slice of pointers to analysis.Analyzer.
 func (r *registry) Init(config *config.GovalidConfig) ([]*analysis.Analyzer, error) {
 	analyzers := make([]*analysis.Analyzer, 0, len(r.analyzerInitializers))

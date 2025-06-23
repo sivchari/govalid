@@ -32,7 +32,7 @@ type initializer struct{}
 
 // Init initializes the markers analyzer with the provided configuration.
 func (i *initializer) Init(_ *config.GovalidConfig) (*analysis.Analyzer, error) {
-	return newAnalyzer(), nil
+	return Analyzer, nil
 }
 
 // Name returns the name of the markers analyzer.

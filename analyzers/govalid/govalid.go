@@ -18,11 +18,12 @@ package govalid
 
 import (
 	"fmt"
-
-	"golang.org/x/tools/go/analysis"
-	"golang.org/x/tools/go/analysis/passes/inspect"
+	"go/ast"
 
 	"github.com/sivchari/govalid/analyzers/markers"
+	"golang.org/x/tools/go/analysis"
+	"golang.org/x/tools/go/analysis/passes/inspect"
+	"golang.org/x/tools/go/ast/inspector"
 )
 
 const (
@@ -37,22 +38,41 @@ type analyzer struct{}
 func newAnalyzer() (*analysis.Analyzer, error) {
 	a := &analyzer{}
 
-	markersInitializer := markers.Initializer()
-
-	markersAnalyzer, err := markersInitializer.Init(nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize markers analyzer: %w", err)
-	}
-
 	return &analysis.Analyzer{
 		Name:     name,
 		Doc:      doc,
 		Run:      a.run,
-		Requires: []*analysis.Analyzer{inspect.Analyzer, markersAnalyzer},
+		Requires: []*analysis.Analyzer{inspect.Analyzer, markers.Analyzer},
 	}, nil
 }
 
 // run is the main function that runs the govalid analyzer.
-func (a *analyzer) run(_ *analysis.Pass) (any, error) {
+func (a *analyzer) run(pass *analysis.Pass) (any, error) {
+	inspect, ok := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
+	if !ok {
+		return nil, fmt.Errorf("could not get inspector from pass result")
+	}
+
+	markersInspect, ok := pass.ResultOf[markers.Analyzer].(markers.Markers)
+	if !ok {
+		return nil, fmt.Errorf("could not get markers from pass result")
+	}
+
+	nodeFilter := []ast.Node{
+		(*ast.Field)(nil),
+	}
+
+	inspect.Preorder(nodeFilter, func(n ast.Node) {
+		field, ok := n.(*ast.Field)
+		if !ok {
+			return
+		}
+
+		markers := markersInspect.FieldMarkers(field)
+		for _, marker := range markers {
+			fmt.Println(marker)
+		}
+	})
+
 	return nil, nil //nolint:nilnil
 }
