@@ -34,17 +34,51 @@ type User struct {
 	Map map[string]string
 
 	// +govalid:required
-	Interface any
+	Interface interface{}
+
+	// +govalid:required
+	Any any
 
 	// +govalid:required
 	Pointer *string
 
 	// +govalid:required
-	Struct struct{}
+	EmptyStruct struct{}
+
+	// +govalid:required
+	EntireRequiredStruct struct {
+		EntireRequiredStructName string
+	}
+
+	PartialStruct struct {
+		// +govalid:required
+		PartialStructString string
+
+		Int int
+	}
+
+	NestedStruct struct {
+		// +govalid:required
+		Nested2 struct {
+			Nested2String string
+		}
+	}
+
+	OtherNestedStruct struct {
+		// +govalid:required
+		Nested2 struct {
+			Nested2String string
+		}
+	}
 
 	// +govalid:required
 	Channel chan string
 
 	// +govalid:required
 	Func func(string) string
+
+	// +govalid:required
+	Named Named
 }
+
+type Named string
