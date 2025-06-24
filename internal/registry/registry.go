@@ -76,16 +76,21 @@ func NewRegistry(builders ...Builder) Registry {
 	for _, builder := range builders {
 		builder(r)
 	}
+
 	return r
 }
 
-// Builders is a function that takes a Registry and registers analyzers and generators.
+// Builder is a function that takes a Registry and registers analyzers and generators.
 type Builder func(registry Registry)
 
 // AddAnalyzers adds a slice of AnalyzerInitializers to the registry.
 func AddAnalyzers(analyzers ...AnalyzerInitializer) Builder {
 	return func(r Registry) {
-		reg := r.(*registry)
+		reg, ok := r.(*registry)
+		if !ok {
+			panic("AddAnalyzers: registry is not of type *registry")
+		}
+
 		reg.analyzerInitializers = append(reg.analyzerInitializers, analyzers...)
 	}
 }
@@ -93,7 +98,11 @@ func AddAnalyzers(analyzers ...AnalyzerInitializer) Builder {
 // AddGenerators adds a slice of GeneratorInitializer to the registry.
 func AddGenerators(generators ...GeneratorInitializer) Builder {
 	return func(r Registry) {
-		reg := r.(*registry)
+		reg, ok := r.(*registry)
+		if !ok {
+			panic("AddGenerators: registry is not of type *registry")
+		}
+
 		reg.generatorInitializers = append(reg.generatorInitializers, generators...)
 	}
 }
@@ -114,6 +123,7 @@ func (r *registry) Generators() []string {
 	for i, initializer := range r.generatorInitializers {
 		generators[i] = initializer.Name()
 	}
+
 	return generators
 }
 
@@ -144,6 +154,7 @@ func (r *registry) Init(config *config.GovalidConfig) error {
 		if err != nil {
 			return fmt.Errorf("failed to initialize analyzer %s: %w", initializer.Name(), err)
 		}
+
 		r.initializedAnalyzers = append(r.initializedAnalyzers, analyzer)
 	}
 
@@ -152,6 +163,7 @@ func (r *registry) Init(config *config.GovalidConfig) error {
 		if err != nil {
 			return fmt.Errorf("failed to initialize generator %s: %w", initializer.Name(), err)
 		}
+
 		r.initializedGenerators = append(r.initializedGenerators, generator)
 	}
 

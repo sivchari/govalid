@@ -45,6 +45,9 @@ var (
 	// Err Channel is returned when the Channel is required but not provided.
 	ErrChannel = errors.New("field Channel is required")
 
+	// Err Func is returned when the Func is required but not provided.
+	ErrFunc = errors.New("field Func is required")
+
 	// Err Named is returned when the Named is required but not provided.
 	ErrNamed = errors.New("field Named is required")
 )
@@ -124,6 +127,10 @@ func ValidateUser(t *User) error {
 
 	if len(t.Channel) == 0 {
 		return ErrChannel
+	}
+
+	if t.Func == nil {
+		return ErrFunc
 	}
 
 	if t.Named == "" {

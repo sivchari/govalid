@@ -29,10 +29,14 @@ import (
 )
 
 const (
+	// Name is the name of the markers analyzer.
 	Name = "markers"
-	Doc  = "markers is a helper for generating govalid validation"
+	// Doc is the documentation for the markers analyzer.
+	Doc = "markers is a helper for generating govalid validation"
 )
 
+// Analyzer is the main entry point for the markers analyzer.
+// This variable must be initialized by registry package.
 var Analyzer *analysis.Analyzer
 
 // analyzer implements the analysis.Analyzer interface for the markers analyzer.
@@ -51,6 +55,7 @@ func newAnalyzer() *analysis.Analyzer {
 			(*MarkerFact)(nil),
 		},
 	}
+
 	return analyzer
 }
 
@@ -76,10 +81,12 @@ func (a *analyzer) run(pass *analysis.Pass) (any, error) {
 			if n == nil {
 				return
 			}
+
 			st, ok := n.Type.(*ast.StructType)
 			if !ok {
 				return
 			}
+
 			collectStructMarkers(pass, st, results)
 		default:
 		}
@@ -93,12 +100,15 @@ func collectStructMarkers(pass *analysis.Pass, s *ast.StructType, results *marke
 	if s == nil || s.Fields == nil || len(s.Fields.List) == 0 {
 		return
 	}
+
 	for _, field := range s.Fields.List {
 		fieldMarkers(pass, field, results)
+
 		structType, ok := field.Type.(*ast.StructType)
 		if !ok {
 			continue
 		}
+
 		collectStructMarkers(pass, structType, results)
 	}
 }
@@ -108,6 +118,7 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 	if field == nil || field.Doc == nil || len(field.Doc.List) == 0 {
 		return
 	}
+
 	for _, doc := range field.Doc.List {
 		if !strings.HasPrefix(doc.Text, "// +") {
 			continue

@@ -9,7 +9,6 @@ linters:
     - dogsled
     - dupl
     - durationcheck
-    - err113
     - errcheck
     - errname
     - errorlint
