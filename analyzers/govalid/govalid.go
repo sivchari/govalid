@@ -30,6 +30,7 @@ import (
 	"github.com/gostaticanalysis/codegen"
 	"github.com/sivchari/govalid/analyzers/govalid/validator"
 	"github.com/sivchari/govalid/analyzers/markers"
+	govaliderrors "github.com/sivchari/govalid/internal/errors"
 	govalidmarkers "github.com/sivchari/govalid/internal/markers"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
@@ -37,8 +38,10 @@ import (
 )
 
 const (
+	// Name is the name of the govalid generator.
 	Name = "govalid"
-	Doc  = "govalid generates type-safe validation code for structs based on markers."
+	// Doc is the documentation for the govalid generator.
+	Doc = "govalid generates type-safe validation code for structs based on markers."
 )
 
 var (
@@ -63,6 +66,7 @@ func newGenerator() (*codegen.Generator, error) {
 	return generator, nil
 }
 
+// TemplateData holds the data for the template used to generate validation code.
 type TemplateData struct {
 	PackageName string
 	TypeName    string
@@ -73,12 +77,12 @@ type TemplateData struct {
 func (g *generator) run(pass *codegen.Pass) error {
 	inspect, ok := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 	if !ok {
-		return fmt.Errorf("could not get inspector from pass result")
+		return govaliderrors.ErrCouldNotGetInspector
 	}
 
 	markersInspect, ok := pass.ResultOf[markers.Analyzer].(markers.Markers)
 	if !ok {
-		return fmt.Errorf("could not get markers from pass result")
+		return govaliderrors.ErrCouldNotGetInspector
 	}
 
 	nodeFilter := []ast.Node{
@@ -112,9 +116,10 @@ func (g *generator) run(pass *codegen.Pass) error {
 		}
 	})
 
-	return nil //nolint:nilnil
+	return nil
 }
 
+// AnalyzedMetadata holds the metadata for a field in a struct, including its validators and parent variable name.
 type AnalyzedMetadata struct {
 	Validators     []validator.Validator
 	ParentVariable string
@@ -122,6 +127,7 @@ type AnalyzedMetadata struct {
 
 func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structType *ast.StructType, parent string) []*AnalyzedMetadata {
 	analyzed := make([]*AnalyzedMetadata, 0)
+
 	for _, field := range structType.Fields.List {
 		validators := make([]validator.Validator, 0)
 
@@ -135,9 +141,11 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 			if len(validators) == 0 {
 				continue
 			}
+
 			analyzed = append(analyzed, &AnalyzedMetadata{
 				Validators: validators,
 			})
+
 			continue
 		}
 
@@ -154,12 +162,13 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 		}
 
 		// Add the parent variable name to the analyzed metadata
-		parentVariable := ""
+		var parentVariable string
 		if parent != "" {
 			parentVariable = fmt.Sprintf("%s.%s", parent, field.Names[0].Name)
 		} else {
 			parentVariable = field.Names[0].Name
 		}
+
 		analyzed = append(analyzed, &AnalyzedMetadata{
 			Validators:     validators,
 			ParentVariable: parentVariable,
@@ -168,21 +177,26 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 		// Recursively analyze nested structs
 		analyzed = append(analyzed, analyzeMarker(pass, markersInspect, structType, parentVariable)...)
 	}
+
 	return analyzed
 }
 
 func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Field) []validator.Validator {
 	validators := make([]validator.Validator, 0)
+
 	for _, marker := range markers {
 		var v validator.Validator
+
 		switch marker.Identifier {
 		case govalidmarkers.GoValidMarkerRequired:
 			v = validator.ValidateRequired(pass, field)
 		default:
 			continue
 		}
+
 		validators = append(validators, v)
 	}
+
 	return validators
 }
 
@@ -207,7 +221,10 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 	}
 
 	if testing.Testing() || dryRun {
-		pass.Print(string(src))
+		if _, err := pass.Print(string(src)); err != nil {
+			return fmt.Errorf("failed to print source code: %w", err)
+		}
+
 		return nil
 	}
 
@@ -215,13 +232,13 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 	fileName := strings.TrimSuffix(filepath.Base(originalFilePath), filepath.Ext(originalFilePath))
 	fileName = fmt.Sprintf("%s_validator.go", fileName)
 
-	file, err := os.Create(fileName)
+	file, err := os.Create(fileName) //nolint:gosec
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
-	defer file.Close()
+	defer file.Close() //nolint:errcheck
 
-	fmt.Fprint(file, string(src))
+	fmt.Fprint(file, string(src)) //nolint:errcheck
 
 	return nil
 }

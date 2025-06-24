@@ -37,9 +37,11 @@ var once sync.Once
 // Init initializes the markers analyzer with the provided configuration.
 func (i *initializer) Init(_ *config.GovalidConfig) (*analysis.Analyzer, error) {
 	analyzer := newAnalyzer()
+
 	once.Do(func() {
 		Analyzer = analyzer
 	})
+
 	return Analyzer, nil
 }
 
