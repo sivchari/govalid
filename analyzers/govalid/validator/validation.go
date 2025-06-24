@@ -22,6 +22,7 @@ type Validator interface {
 	Validate() string
 	FieldName() string
 	Err() string
+	ErrVariable() string
 }
 
 var generatorMemory = map[string]bool{}

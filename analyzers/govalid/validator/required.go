@@ -51,7 +51,11 @@ func (r *requiredValidator) Err() string {
 
 	return strings.ReplaceAll(`
 	// Err @ is returned when the @ is required but not provided.
-	Err@ = errors.New("field @ is required")`, "@", r.FieldName())
+	Err@Required = errors.New("field @ is required")`, "@", r.FieldName())
+}
+
+func (r *requiredValidator) ErrVariable() string {
+	return strings.ReplaceAll("Err@Required", "@", r.FieldName())
 }
 
 // ValidateRequired creates a new required validator for the given field.
