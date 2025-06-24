@@ -24,8 +24,13 @@ func Zero(typ types.Type) string {
 		default:
 			return ""
 		}
-	case *types.Pointer, *types.Struct, *types.Interface:
+	case *types.Pointer, *types.Interface:
 		return "nil"
+	case *types.Alias, *types.Named:
+		if underlying := types.Unalias(t).Underlying(); underlying != nil {
+			return Zero(underlying)
+		}
+		return ""
 	default:
 		return ""
 	}
