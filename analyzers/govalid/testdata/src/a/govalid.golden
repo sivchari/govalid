@@ -9,46 +9,46 @@ var (
 	// ErrNilUser is returned when the User is nil.
 	ErrNilUser = errors.New("input User is nil")
 
-	// ErrStringRequired is returned when the String is required but not provided.
+	// Err String is returned when the String is required but not provided.
 	ErrStringRequired = errors.New("field String is required")
 
-	// ErrIntRequired is returned when the Int is required but not provided.
+	// Err Int is returned when the Int is required but not provided.
 	ErrIntRequired = errors.New("field Int is required")
 
-	// ErrArrayRequired is returned when the Array is required but not provided.
+	// Err Array is returned when the Array is required but not provided.
 	ErrArrayRequired = errors.New("field Array is required")
 
-	// ErrSliceRequired is returned when the Slice is required but not provided.
+	// Err Slice is returned when the Slice is required but not provided.
 	ErrSliceRequired = errors.New("field Slice is required")
 
-	// ErrMapRequired is returned when the Map is required but not provided.
+	// Err Map is returned when the Map is required but not provided.
 	ErrMapRequired = errors.New("field Map is required")
 
-	// ErrInterfaceRequired is returned when the Interface is required but not provided.
+	// Err Interface is returned when the Interface is required but not provided.
 	ErrInterfaceRequired = errors.New("field Interface is required")
 
-	// ErrAnyRequired is returned when the Any is required but not provided.
+	// Err Any is returned when the Any is required but not provided.
 	ErrAnyRequired = errors.New("field Any is required")
 
-	// ErrPointerRequired is returned when the Pointer is required but not provided.
+	// Err Pointer is returned when the Pointer is required but not provided.
 	ErrPointerRequired = errors.New("field Pointer is required")
 
-	// ErrEntireRequiredStructNameRequired is returned when the EntireRequiredStructName is required but not provided.
+	// Err EntireRequiredStructName is returned when the EntireRequiredStructName is required but not provided.
 	ErrEntireRequiredStructNameRequired = errors.New("field EntireRequiredStructName is required")
 
-	// ErrPartialStructStringRequired is returned when the PartialStructString is required but not provided.
+	// Err PartialStructString is returned when the PartialStructString is required but not provided.
 	ErrPartialStructStringRequired = errors.New("field PartialStructString is required")
 
-	// ErrNested2StringRequired is returned when the Nested2String is required but not provided.
+	// Err Nested2String is returned when the Nested2String is required but not provided.
 	ErrNested2StringRequired = errors.New("field Nested2String is required")
 
-	// ErrChannelRequired is returned when the Channel is required but not provided.
+	// Err Channel is returned when the Channel is required but not provided.
 	ErrChannelRequired = errors.New("field Channel is required")
 
-	// ErrFuncRequired is returned when the Func is required but not provided.
+	// Err Func is returned when the Func is required but not provided.
 	ErrFuncRequired = errors.New("field Func is required")
 
-	// ErrNamedRequired is returned when the Named is required but not provided.
+	// Err Named is returned when the Named is required but not provided.
 	ErrNamedRequired = errors.New("field Named is required")
 )
 
@@ -58,42 +58,42 @@ func ValidateUser(t *User) error {
 	}
 
 	if t.String == "" {
-		return
+		return ErrStringRequired
 	}
 
 	if t.Int == 0 {
-		return
+		return ErrIntRequired
 	}
 
 	if len(t.Array) == 0 {
-		return
+		return ErrArrayRequired
 	}
 
 	if len(t.Slice) == 0 {
-		return
+		return ErrSliceRequired
 	}
 
 	if len(t.Map) == 0 {
-		return
+		return ErrMapRequired
 	}
 
 	if t.Interface == nil {
-		return
+		return ErrInterfaceRequired
 	}
 
 	if t.Any == nil {
-		return
+		return ErrAnyRequired
 	}
 
 	if t.Pointer == nil {
-		return
+		return ErrPointerRequired
 	}
 
 	{
 		t := t.EntireRequiredStruct
 
 		if t.EntireRequiredStructName == "" {
-			return
+			return ErrEntireRequiredStructNameRequired
 		}
 
 	}
@@ -102,7 +102,7 @@ func ValidateUser(t *User) error {
 		t := t.PartialStruct
 
 		if t.PartialStructString == "" {
-			return
+			return ErrPartialStructStringRequired
 		}
 
 	}
@@ -111,7 +111,7 @@ func ValidateUser(t *User) error {
 		t := t.NestedStruct.Nested2
 
 		if t.Nested2String == "" {
-			return
+			return ErrNested2StringRequired
 		}
 
 	}
@@ -120,21 +120,21 @@ func ValidateUser(t *User) error {
 		t := t.OtherNestedStruct.Nested2
 
 		if t.Nested2String == "" {
-			return
+			return ErrNested2StringRequired
 		}
 
 	}
 
 	if len(t.Channel) == 0 {
-		return
+		return ErrChannelRequired
 	}
 
 	if t.Func == nil {
-		return
+		return ErrFuncRequired
 	}
 
 	if t.Named == "" {
-		return
+		return ErrNamedRequired
 	}
 
 	return nil
