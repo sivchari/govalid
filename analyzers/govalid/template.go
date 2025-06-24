@@ -54,7 +54,7 @@ func Validate{{.TypeName}}(t *{{.TypeName}}) error {
 		{{ range .Validators }}
 			{{ if ne .Validate "" }}
 				if {{.Validate}} {
-			    	return Err{{.FieldName}}
+			    	return {{ .ErrVariable }}
 				}
 			{{ end }}
 		{{ end }}
