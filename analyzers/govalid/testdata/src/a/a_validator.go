@@ -3,7 +3,6 @@ package a
 
 import (
 	"errors"
-	"fmt"
 )
 
 var (
@@ -25,14 +24,29 @@ var (
 	// Err Map is returned when the Map is required but not provided.
 	ErrMap = errors.New("field Map is required")
 
+	// Err Interface is returned when the Interface is required but not provided.
+	ErrInterface = errors.New("field Interface is required")
+
+	// Err Any is returned when the Any is required but not provided.
+	ErrAny = errors.New("field Any is required")
+
 	// Err Pointer is returned when the Pointer is required but not provided.
 	ErrPointer = errors.New("field Pointer is required")
 
-	// Err Struct is returned when the Struct is required but not provided.
-	ErrStruct = errors.New("field Struct is required")
+	// Err EntireRequiredStructName is returned when the EntireRequiredStructName is required but not provided.
+	ErrEntireRequiredStructName = errors.New("field EntireRequiredStructName is required")
+
+	// Err PartialStructString is returned when the PartialStructString is required but not provided.
+	ErrPartialStructString = errors.New("field PartialStructString is required")
+
+	// Err Nested2String is returned when the Nested2String is required but not provided.
+	ErrNested2String = errors.New("field Nested2String is required")
 
 	// Err Channel is returned when the Channel is required but not provided.
 	ErrChannel = errors.New("field Channel is required")
+
+	// Err Named is returned when the Named is required but not provided.
+	ErrNamed = errors.New("field Named is required")
 )
 
 func ValidateUser(t *User) error {
@@ -60,16 +74,60 @@ func ValidateUser(t *User) error {
 		return ErrMap
 	}
 
+	if t.Interface == nil {
+		return ErrInterface
+	}
+
+	if t.Any == nil {
+		return ErrAny
+	}
+
 	if t.Pointer == nil {
 		return ErrPointer
 	}
 
-	if t.Struct == nil {
-		return ErrStruct
+	{
+		t := t.EntireRequiredStruct
+
+		if t.EntireRequiredStructName == "" {
+			return ErrEntireRequiredStructName
+		}
+
+	}
+
+	{
+		t := t.PartialStruct
+
+		if t.PartialStructString == "" {
+			return ErrPartialStructString
+		}
+
+	}
+
+	{
+		t := t.NestedStruct.Nested2
+
+		if t.Nested2String == "" {
+			return ErrNested2String
+		}
+
+	}
+
+	{
+		t := t.OtherNestedStruct.Nested2
+
+		if t.Nested2String == "" {
+			return ErrNested2String
+		}
+
 	}
 
 	if len(t.Channel) == 0 {
 		return ErrChannel
+	}
+
+	if t.Named == "" {
+		return ErrNamed
 	}
 
 	return nil

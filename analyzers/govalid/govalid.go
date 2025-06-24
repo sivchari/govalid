@@ -66,7 +66,7 @@ func newGenerator() (*codegen.Generator, error) {
 type TemplateData struct {
 	PackageName string
 	TypeName    string
-	Validators  []validator.Validator
+	Metadata    []*AnalyzedMetadata
 }
 
 // run is the main function that runs the govalid analyzer.
@@ -96,64 +96,132 @@ func (g *generator) run(pass *codegen.Pass) error {
 			return
 		}
 
-		validators := make([]validator.Validator, 0)
-		for _, field := range structType.Fields.List {
-			markers := markersInspect.FieldMarkers(field)
-			for _, marker := range markers {
-				var v validator.Validator
-				switch marker.Identifier {
-				case govalidmarkers.GoValidMarkerRequired:
-					v = validator.ValidateRequired(pass, field)
-				default:
-					continue
-				}
-				validators = append(validators, v)
-			}
-		}
-
-		if len(validators) == 0 {
+		metadata := analyzeMarker(pass, markersInspect, structType, "")
+		if len(metadata) == 0 {
 			return
 		}
 
 		tmplData := TemplateData{
 			PackageName: pass.Pkg.Name(),
 			TypeName:    ts.Name.Name,
-			Validators:  validators,
+			Metadata:    metadata,
 		}
 
-		t, err := template.New("validator").Parse(tmpl)
-		if err != nil {
-			panic(fmt.Errorf("failed to parse template: %w", err))
+		if err := writeFile(pass, ts, tmplData); err != nil {
+			panic(fmt.Sprintf("failed to write file for %s: %v", ts.Name.Name, err))
 		}
-
-		var buf bytes.Buffer
-		if err := t.Execute(&buf, tmplData); err != nil {
-			panic(fmt.Errorf("failed to execute template: %w", err))
-		}
-
-		src, err := format.Source(buf.Bytes())
-		if err != nil {
-			panic(fmt.Errorf("failed to format source code: %w", err))
-		}
-
-		if testing.Testing() {
-			pass.Print(string(src))
-			return
-		}
-
-		originalFilePath := pass.Fset.Position(ts.Pos()).Filename
-		fileName := strings.TrimSuffix(filepath.Base(originalFilePath), filepath.Ext(originalFilePath))
-		fileName = fmt.Sprintf("%s_validator.go", fileName)
-
-		file, err := os.Create(fileName)
-		if err != nil {
-			panic(fmt.Errorf("failed to create file: %w", err))
-		}
-		defer file.Close()
-
-		fmt.Fprint(file, string(src))
-
 	})
 
 	return nil //nolint:nilnil
+}
+
+type AnalyzedMetadata struct {
+	Validators     []validator.Validator
+	ParentVariable string
+}
+
+func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structType *ast.StructType, parent string) []*AnalyzedMetadata {
+	analyzed := make([]*AnalyzedMetadata, 0)
+	for _, field := range structType.Fields.List {
+		validators := make([]validator.Validator, 0)
+
+		// Apply markers to the field
+		markers := markersInspect.FieldMarkers(field)
+
+		// Traverse nested structs
+		structType, ok := field.Type.(*ast.StructType)
+		if !ok {
+			validators = makeValidator(pass, markers, field)
+			if len(validators) == 0 {
+				continue
+			}
+			analyzed = append(analyzed, &AnalyzedMetadata{
+				Validators: validators,
+			})
+			continue
+		}
+
+		for _, field := range structType.Fields.List {
+			/*
+				Propagate parent markers to nested fields
+
+				// +govalid:required
+				type Nested struct {
+					Name string `json:"name"`
+				}
+			*/
+			validators = append(validators, makeValidator(pass, markers, field)...)
+		}
+
+		// Add the parent variable name to the analyzed metadata
+		parentVariable := ""
+		if parent != "" {
+			parentVariable = fmt.Sprintf("%s.%s", parent, field.Names[0].Name)
+		} else {
+			parentVariable = field.Names[0].Name
+		}
+		analyzed = append(analyzed, &AnalyzedMetadata{
+			Validators:     validators,
+			ParentVariable: parentVariable,
+		})
+
+		// Recursively analyze nested structs
+		analyzed = append(analyzed, analyzeMarker(pass, markersInspect, structType, parentVariable)...)
+	}
+	return analyzed
+}
+
+func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Field) []validator.Validator {
+	validators := make([]validator.Validator, 0)
+	for _, marker := range markers {
+		var v validator.Validator
+		switch marker.Identifier {
+		case govalidmarkers.GoValidMarkerRequired:
+			v = validator.ValidateRequired(pass, field)
+		default:
+			continue
+		}
+		validators = append(validators, v)
+	}
+	return validators
+}
+
+func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) error {
+	t, err := template.New("validator").Funcs(template.FuncMap{
+		"trimDots": func(s string) string {
+			return strings.ReplaceAll(s, ".", "")
+		},
+	}).Parse(tmpl)
+	if err != nil {
+		return fmt.Errorf("failed to parse template: %w", err)
+	}
+
+	var buf bytes.Buffer
+	if err := t.Execute(&buf, tmplData); err != nil {
+		return fmt.Errorf("failed to execute template: %w", err)
+	}
+
+	src, err := format.Source(buf.Bytes())
+	if err != nil {
+		return fmt.Errorf("failed to format source code: %w", err)
+	}
+
+	if testing.Testing() || dryRun {
+		pass.Print(string(src))
+		return nil
+	}
+
+	originalFilePath := pass.Fset.Position(ts.Pos()).Filename
+	fileName := strings.TrimSuffix(filepath.Base(originalFilePath), filepath.Ext(originalFilePath))
+	fileName = fmt.Sprintf("%s_validator.go", fileName)
+
+	file, err := os.Create(fileName)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %w", err)
+	}
+	defer file.Close()
+
+	fmt.Fprint(file, string(src))
+
+	return nil
 }
