@@ -73,7 +73,14 @@ func (a *analyzer) run(pass *analysis.Pass) (any, error) {
 	inspect.Preorder(nodeFilter, func(n ast.Node) {
 		switch n := n.(type) {
 		case *ast.TypeSpec:
-			collectTypeSpecMarkers(pass, n, results)
+			if n == nil {
+				return
+			}
+			st, ok := n.Type.(*ast.StructType)
+			if !ok {
+				return
+			}
+			collectStructMarkers(pass, st, results)
 		default:
 		}
 	})
@@ -82,18 +89,17 @@ func (a *analyzer) run(pass *analysis.Pass) (any, error) {
 }
 
 // collectTypeSpecMarkers collects markers from a TypeSpec node and adds them to the results.
-func collectTypeSpecMarkers(pass *analysis.Pass, ts *ast.TypeSpec, result *markers) {
-	if ts == nil {
+func collectStructMarkers(pass *analysis.Pass, s *ast.StructType, results *markers) {
+	if s == nil || s.Fields == nil || len(s.Fields.List) == 0 {
 		return
 	}
-
-	st, ok := ts.Type.(*ast.StructType)
-	if !ok {
-		return
-	}
-
-	for _, field := range st.Fields.List {
-		fieldMarkers(pass, field, result)
+	for _, field := range s.Fields.List {
+		fieldMarkers(pass, field, results)
+		structType, ok := field.Type.(*ast.StructType)
+		if !ok {
+			continue
+		}
+		collectStructMarkers(pass, structType, results)
 	}
 }
 
