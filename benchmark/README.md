@@ -1,59 +1,73 @@
 # Benchmark Results: govalid vs go-playground/validator
 
-This document provides a detailed comparison of the benchmark results for `govalid` and `go-playground/validator` focusing on the `required` validation marker. The tests were run with `-benchmem` and `-count 10` options to ensure comprehensive performance data, including memory allocations.
+This document provides a structured comparison of the benchmark results for `govalid` and `go-playground/validator`. The benchmarks focus on the `required` and `min` validation markers, with metrics derived from tests conducted using `-benchmem` and `-count 10`.
 
-## Hardware Specification
+## Specifications
 
 - **Processor:** Apple M3 Max
 - **Architecture:** arm64
 
-## Benchmark Results
+---
 
-### govalid
+## Benchmark Summary
 
-**Benchmark Function:** `BenchmarkGovalidValidatorRequired`
+### `govalid`
 
-| Trial | Operations | Time/op | Allocations/op | Bytes/op |
-|-------|------------|---------|----------------|----------|
-| 1     | 666,628,705 | 1.751 ns | 0              | 0        |
-| 2     | 690,410,060 | 1.758 ns | 0              | 0        |
-| 3     | 677,892,536 | 1.753 ns | 0              | 0        |
-| 4     | 681,072,290 | 1.796 ns | 0              | 0        |
-| 5     | 675,411,998 | 1.762 ns | 0              | 0        |
-| 6     | 683,944,821 | 1.783 ns | 0              | 0        |
-| 7     | 676,838,354 | 1.754 ns | 0              | 0        |
-| 8     | 692,204,857 | 1.754 ns | 0              | 0        |
-| 9     | 691,844,354 | 1.746 ns | 0              | 0        |
-| 10    | 691,850,835 | 1.742 ns | 0              | 0        |
+#### Required Validation
+- **Average Time/op:** ~1.75 ns
+- **Memory Allocations/op:** 0
+- **Bytes Allocated/op:** 0
 
-### go-playground/validator
+#### Min Validation
+- **Average Time/op:** ~1.75 ns
+- **Memory Allocations/op:** 0
+- **Bytes Allocated/op:** 0
 
-**Benchmark Function:** `BenchmarkPlaygroundValidatorRequired`
+### `go-playground/validator`
 
-| Trial | Operations | Time/op   | Allocations/op | Bytes/op |
-|-------|------------|-----------|----------------|----------|
-| 1     | 5,107,802   | 233.7 ns  | 8              | 432      |
-| 2     | 5,050,735   | 235.0 ns  | 8              | 432      |
-| 3     | 5,110,531   | 240.2 ns  | 8              | 432      |
-| 4     | 5,090,628   | 235.0 ns  | 8              | 432      |
-| 5     | 4,965,501   | 240.2 ns  | 8              | 432      |
-| 6     | 5,113,801   | 236.3 ns  | 8              | 432      |
-| 7     | 5,105,175   | 236.4 ns  | 8              | 432      |
-| 8     | 5,100,423   | 237.6 ns  | 8              | 432      |
-| 9     | 5,054,350   | 236.0 ns  | 8              | 432      |
-| 10    | 5,136,982   | 235.1 ns  | 8              | 432      |
+#### Required Validation
+- **Average Time/op:** ~245 ns
+- **Memory Allocations/op:** 8
+- **Bytes Allocated/op:** 440
+
+#### Min Validation
+- **Average Time/op:** ~135 ns
+- **Memory Allocations/op:** 4
+- **Bytes Allocated/op:** 192
+
+---
 
 ## Observations
 
-- **govalid**:
-  - Extremely fast, with an average execution time of ~1.75 ns per operation.
-  - Consumes zero bytes and performs zero allocations per operation.
+### Performance Comparison
 
-- **go-playground/validator**:
-  - Slower, with an average execution time of ~235 ns per operation.
-  - Allocates 8 blocks per operation, consuming 432 bytes.
+#### Required Validation
+- `govalid` is **140x faster** than `go-playground/validator`.
+- `govalid` performs no memory allocations, while `go-playground/validator` allocates 440 bytes across 8 blocks.
+
+#### Min Validation
+- `govalid` is **77x faster** than `go-playground/validator`.
+- `govalid` performs no memory allocations, while `go-playground/validator` allocates 192 bytes across 4 blocks.
+
+---
+
+## Structured Benchmarks
+
+### `Required` Validation
+| Library                 | Avg Time/op (ns) | Allocations/op | Bytes/op |
+|-------------------------|------------------|----------------|----------|
+| govalid                | ~1.75            | 0              | 0        |
+| go-playground/validator | ~245             | 8              | 440      |
+
+### `Min` Validation
+| Library                 | Avg Time/op (ns) | Allocations/op | Bytes/op |
+|-------------------------|------------------|----------------|----------|
+| govalid                | ~1.75            | 0              | 0        |
+| go-playground/validator | ~135             | 4              | 192      |
+
+---
 
 ## Conclusion
 
-The `govalid` package demonstrates superior performance compared to `go-playground/validator`, particularly for the `required` validation marker. It achieves faster execution times and zero memory allocation, making it ideal for high-performance applications.
+The `govalid` package demonstrates superior performance for validation tasks compared to `go-playground/validator`. Its zero memory allocation and extremely low execution time make it ideal for performance-critical applications. The structured presentation ensures easy updates for future marker additions.
 
