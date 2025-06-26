@@ -16,23 +16,37 @@ limitations under the License.
 
 package benchmark
 
-type Required struct {
-	// +govalid:required
-	Name string `validate:"required" json:"name"`
+import (
+	"testing"
 
-	// +govalid:required
-	Age int `validate:"required" json:"age"`
+	"github.com/go-playground/validator/v10"
+)
 
-	// +govalid:required
-	Items []string `validate:"required" json:"items"`
+func BenchmarkGovalidValidatorMax(b *testing.B) {
+	max := Max{
+		Age: 101,
+	}
+	b.ResetTimer()
+	for b.Loop() {
+		err := ValidateMax(&max)
+		if err == nil {
+			b.Fatal("expected validation error, got nil")
+		}
+	}
+	b.StopTimer()
 }
 
-type Min struct {
-	// +govalid:min=10
-	Age int `validate:"min=10" json:"age"`
-}
-
-type Max struct {
-	// +govalid:max=100
-	Age int `validate:"max=100" json:"age"`
+func BenchmarkPlaygroundValidatorMax(b *testing.B) {
+	max := Max{
+		Age: 101,
+	}
+	validate := validator.New()
+	b.ResetTimer()
+	for b.Loop() {
+		err := validate.Struct(max)
+		if err == nil {
+			b.Fatal("expected validation error, got nil")
+		}
+	}
+	b.StopTimer()
 }

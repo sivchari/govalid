@@ -9,8 +9,8 @@ var (
 	// ErrNilMin is returned when the Min is nil.
 	ErrNilMin = errors.New("input Min is nil")
 
-	// ErrAgeMin is the error returned when the value of the field is less than the minimum value.
-	ErrAgeMin = errors.New("field Age must be greater than or equal to the minimum value")
+	// ErrAgeMinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrAgeMinValidation = errors.New("field Age must be greater than 10")
 )
 
 func ValidateMin(t *Min) error {
@@ -19,7 +19,7 @@ func ValidateMin(t *Min) error {
 	}
 
 	if t.Age < 10 {
-		return ErrAgeMin
+		return ErrAgeMinValidation
 	}
 
 	return nil
