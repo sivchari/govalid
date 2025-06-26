@@ -44,11 +44,11 @@ func ValidatePerson(t *Person) error {
     }
 
     if t.Name == "" {
-        return ErrNameRequired
+        return ErrNameRequiredValidation
     }
 
     if t.Email == "" {
-        return ErrEmailRequired
+        return ErrEmailRequiredValidation
     }
 
     return nil
@@ -76,7 +76,7 @@ govalid supports the following markers:
       }
 
       if t.Username == "" {
-          return ErrUsernameRequired
+          return ErrUsernameRequiredValidation
       }
 
       return nil
@@ -100,7 +100,31 @@ govalid supports the following markers:
       }
 
       if t.Age < 18 {
-          return ErrAgeTooLow
+          return ErrAgeTooMinValidation
+      }
+
+      return nil
+  }
+  ```
+
+### `govalid:max`
+- **Description**: Ensures that a numeric field has a maximum value.
+- **Example**:
+  ```go
+  // +govalid:max=100
+  type Profile struct {
+      Age int `json:"age"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateProfile(t *Profile) error {
+      if t == nil {
+          return ErrNilProfile
+      }
+
+      if t.Age > 100 {
+          return ErrAgeTooMaxValidation
       }
 
       return nil
