@@ -7,7 +7,6 @@ linters:
     - bodyclose
     - cyclop
     - dogsled
-    - dupl
     - durationcheck
     - errcheck
     - errname
