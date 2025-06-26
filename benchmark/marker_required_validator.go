@@ -9,14 +9,14 @@ var (
 	// ErrNilRequired is returned when the Required is nil.
 	ErrNilRequired = errors.New("input Required is nil")
 
-	// ErrNameRequired is returned when the Name is required but not provided.
-	ErrNameRequired = errors.New("field Name is required")
+	// ErrNameRequiredValidation is returned when the Name is required but not provided.
+	ErrNameRequiredValidation = errors.New("field Name is required")
 
-	// ErrAgeRequired is returned when the Age is required but not provided.
-	ErrAgeRequired = errors.New("field Age is required")
+	// ErrAgeRequiredValidation is returned when the Age is required but not provided.
+	ErrAgeRequiredValidation = errors.New("field Age is required")
 
-	// ErrItemsRequired is returned when the Items is required but not provided.
-	ErrItemsRequired = errors.New("field Items is required")
+	// ErrItemsRequiredValidation is returned when the Items is required but not provided.
+	ErrItemsRequiredValidation = errors.New("field Items is required")
 )
 
 func ValidateRequired(t *Required) error {
@@ -25,15 +25,15 @@ func ValidateRequired(t *Required) error {
 	}
 
 	if t.Name == "" {
-		return ErrNameRequired
+		return ErrNameRequiredValidation
 	}
 
 	if t.Age == 0 {
-		return ErrAgeRequired
+		return ErrAgeRequiredValidation
 	}
 
 	if len(t.Items) == 0 {
-		return ErrItemsRequired
+		return ErrItemsRequiredValidation
 	}
 
 	return nil
