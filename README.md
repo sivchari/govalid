@@ -83,6 +83,30 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:min`
+- **Description**: Ensures that a numeric field has a minimum value.
+- **Example**:
+  ```go
+  // +govalid:min=18
+  type Profile struct {
+      Age int `json:"age"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateProfile(t *Profile) error {
+      if t == nil {
+          return ErrNilProfile
+      }
+
+      if t.Age < 18 {
+          return ErrAgeTooLow
+      }
+
+      return nil
+  }
+  ```
+
 
 ## License
 
