@@ -61,13 +61,19 @@ func (m *minValidator) ErrVariable() string {
 	return strings.ReplaceAll("Err@Min", "@", m.FieldName())
 }
 
+// ValidateMin creates a new minValidator if the field type is numeric and the min marker is present.
 func ValidateMin(pass *codegen.Pass, field *ast.Field, expressions map[string]string) Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
+
 	if !ok || (basic.Info()&types.IsNumeric) == 0 {
 		return nil
 	}
+
 	minValue, ok := expressions[markers.GoValidMarkerMin]
+	if !ok {
+		return nil
+	}
 
 	return &minValidator{
 		pass:     pass,
