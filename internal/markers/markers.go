@@ -21,7 +21,8 @@ var (
 	// GoValidMarkerRequired is the marker for required fields in govalid.
 	GoValidMarkerRequired = "govalid:required"
 
-	// GoValidMarkerMin is the marker for minimum value validation in govalid.
+	// GoValidMarkerMin is the marker for minimum value in govalid.
+	// This marker is only available for numeric types.
 	GoValidMarkerMin = "govalid:min"
 )
 

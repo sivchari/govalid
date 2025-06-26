@@ -47,6 +47,15 @@ func Test(t *testing.T) {
 		t.Fatalf("failed to get govalid generator: %v", err)
 	}
 
-	results := codegentest.Run(t, codegentest.TestData(), govalid, "a")
-	codegentest.Golden(t, results, update)
+	markers := []string{
+		"required",
+		"min",
+	}
+
+	for _, tc := range markers {
+		t.Run(tc, func(t *testing.T) {
+			results := codegentest.Run(t, codegentest.TestData(), govalid, tc)
+			codegentest.Golden(t, results, update)
+		})
+	}
 }

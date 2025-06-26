@@ -18,12 +18,11 @@ limitations under the License.
 package validator
 
 import (
-	"fmt"
 	"go/types"
 )
 
-// Zero returns the zero value for the given type.
-func Zero(typ types.Type) string {
+// zero returns the zero value for the given type.
+func zero(typ types.Type) string {
 	switch t := typ.(type) {
 	case *types.Basic:
 		return zeroOfBasic(t)
@@ -31,9 +30,8 @@ func Zero(typ types.Type) string {
 		return "nil"
 	case *types.Alias, *types.Named:
 		if underlying := types.Unalias(t).Underlying(); underlying != nil {
-			return Zero(underlying)
+			return zero(underlying)
 		}
-
 		return ""
 	default:
 		return ""
@@ -59,19 +57,4 @@ func zeroOfBasic(typ *types.Basic) string {
 	default:
 		return ""
 	}
-}
-
-// ZeroExpr returns a string expression that checks if the field with the given name is zero-valued.
-func ZeroExpr(name string, typ types.Type) string {
-	zero := Zero(typ)
-	if zero == "" {
-		switch typ.(type) {
-		case *types.Slice, *types.Array, *types.Map, *types.Chan:
-			return fmt.Sprintf("len(t.%s) == 0", name)
-		default:
-			return ""
-		}
-	}
-
-	return fmt.Sprintf("t.%s == %s", name, zero)
 }
