@@ -13,11 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package a
+package required
 
-//go:generate govalid ./a.go
+//go:generate govalid ./required.go
 
-type User struct {
+type Required struct {
 	// +govalid:required
 	String string
 

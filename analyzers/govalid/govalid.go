@@ -28,10 +28,10 @@ import (
 	"text/template"
 
 	"github.com/gostaticanalysis/codegen"
-	"github.com/sivchari/govalid/analyzers/govalid/validator"
 	"github.com/sivchari/govalid/analyzers/markers"
 	govaliderrors "github.com/sivchari/govalid/internal/errors"
 	govalidmarkers "github.com/sivchari/govalid/internal/markers"
+	"github.com/sivchari/govalid/internal/validator"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
@@ -89,6 +89,8 @@ func (g *generator) run(pass *codegen.Pass) error {
 		(*ast.TypeSpec)(nil),
 	}
 
+	tmplList := map[string]TemplateData{}
+
 	inspect.Preorder(nodeFilter, func(n ast.Node) {
 		ts, ok := n.(*ast.TypeSpec)
 		if !ok {
@@ -109,6 +111,11 @@ func (g *generator) run(pass *codegen.Pass) error {
 			PackageName: pass.Pkg.Name(),
 			TypeName:    ts.Name.Name,
 			Metadata:    metadata,
+		}
+
+		data, ok := tmplList[ts.Name.Name]
+		if ok {
+			data.Metadata = append(data.Metadata, tmplData.Metadata...)
 		}
 
 		if err := writeFile(pass, ts, tmplData); err != nil {
@@ -190,7 +197,13 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 		switch marker.Identifier {
 		case govalidmarkers.GoValidMarkerRequired:
 			v = validator.ValidateRequired(pass, field)
+		case govalidmarkers.GoValidMarkerMin:
+			v = validator.ValidateMin(pass, field, marker.Expressions)
 		default:
+			continue
+		}
+
+		if v == nil {
 			continue
 		}
 
@@ -230,7 +243,8 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 
 	originalFilePath := pass.Fset.Position(ts.Pos()).Filename
 	fileName := strings.TrimSuffix(filepath.Base(originalFilePath), filepath.Ext(originalFilePath))
-	fileName = fmt.Sprintf("%s_validator.go", fileName)
+	typeName := ts.Name.Name
+	fileName = fmt.Sprintf("%s_%s_validator.go", fileName, strings.ToLower(typeName))
 
 	file, err := os.Create(fileName) //nolint:gosec
 	if err != nil {

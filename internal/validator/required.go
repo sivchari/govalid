@@ -18,11 +18,12 @@ limitations under the License.
 package validator
 
 import (
+	"fmt"
 	"go/ast"
+	"go/types"
 	"strings"
 
 	"github.com/gostaticanalysis/codegen"
-	"github.com/sivchari/govalid/internal/validator"
 )
 
 type requiredValidator struct {
@@ -32,10 +33,26 @@ type requiredValidator struct {
 
 var _ Validator = (*requiredValidator)(nil)
 
+const requiredKey = "%s-required"
+
 func (r *requiredValidator) Validate() string {
 	typ := r.pass.TypesInfo.TypeOf(r.field.Type)
 
-	return validator.ZeroExpr(r.FieldName(), typ)
+	return required(r.FieldName(), typ)
+}
+
+func required(name string, typ types.Type) string {
+	zero := zero(typ)
+	if zero == "" {
+		switch typ.(type) {
+		case *types.Slice, *types.Array, *types.Map, *types.Chan:
+			return fmt.Sprintf("len(t.%s) == 0", name)
+		default:
+			return ""
+		}
+	}
+
+	return fmt.Sprintf("t.%s == %s", name, zero)
 }
 
 func (r *requiredValidator) FieldName() string {
@@ -43,14 +60,14 @@ func (r *requiredValidator) FieldName() string {
 }
 
 func (r *requiredValidator) Err() string {
-	if generatorMemory[r.FieldName()] {
+	if generatorMemory[fmt.Sprintf(requiredKey, r.FieldName())] {
 		return ""
 	}
 
-	generatorMemory[r.FieldName()] = true
+	generatorMemory[fmt.Sprintf(requiredKey, r.FieldName())] = true
 
 	return strings.ReplaceAll(`
-	// Err @ is returned when the @ is required but not provided.
+	// Err@Required is returned when the @ is required but not provided.
 	Err@Required = errors.New("field @ is required")`, "@", r.FieldName())
 }
 
@@ -60,7 +77,7 @@ func (r *requiredValidator) ErrVariable() string {
 
 // ValidateRequired creates a new required validator for the given field.
 func ValidateRequired(pass *codegen.Pass, field *ast.Field) Validator {
-	generatorMemory[field.Names[0].Name] = false
+	generatorMemory[fmt.Sprintf(requiredKey, field.Names[0].Name)] = false
 
 	return &requiredValidator{
 		pass:  pass,
