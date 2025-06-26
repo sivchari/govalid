@@ -1,6 +1,6 @@
 package benchmark
 
-type User struct {
+type Required struct {
 	// +govalid:required
 	Name string `validate:"required" json:"name"`
 
@@ -9,4 +9,9 @@ type User struct {
 
 	// +govalid:required
 	Items []string `validate:"required" json:"items"`
+}
+
+type Min struct {
+	// +govalid:min=10
+	Age int `validate:"min=10" json:"age"`
 }

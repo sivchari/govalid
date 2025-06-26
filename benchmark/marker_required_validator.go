@@ -6,22 +6,22 @@ import (
 )
 
 var (
-	// ErrNilUser is returned when the User is nil.
-	ErrNilUser = errors.New("input User is nil")
+	// ErrNilRequired is returned when the Required is nil.
+	ErrNilRequired = errors.New("input Required is nil")
 
-	// Err Name is returned when the Name is required but not provided.
+	// ErrNameRequired is returned when the Name is required but not provided.
 	ErrNameRequired = errors.New("field Name is required")
 
-	// Err Age is returned when the Age is required but not provided.
+	// ErrAgeRequired is returned when the Age is required but not provided.
 	ErrAgeRequired = errors.New("field Age is required")
 
-	// Err Items is returned when the Items is required but not provided.
+	// ErrItemsRequired is returned when the Items is required but not provided.
 	ErrItemsRequired = errors.New("field Items is required")
 )
 
-func ValidateUser(t *User) error {
+func ValidateRequired(t *Required) error {
 	if t == nil {
-		return ErrNilUser
+		return ErrNilRequired
 	}
 
 	if t.Name == "" {
