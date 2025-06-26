@@ -32,6 +32,7 @@ func zero(typ types.Type) string {
 		if underlying := types.Unalias(t).Underlying(); underlying != nil {
 			return zero(underlying)
 		}
+
 		return ""
 	default:
 		return ""
