@@ -21,8 +21,9 @@ import (
 	"fmt"
 
 	"github.com/gostaticanalysis/codegen"
-	"github.com/sivchari/govalid/internal/config"
 	"golang.org/x/tools/go/analysis"
+
+	"github.com/sivchari/govalid/internal/config"
 )
 
 // AnalyzerInitializer is an interface for initializing analyzers.

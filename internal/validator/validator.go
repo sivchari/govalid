@@ -25,4 +25,5 @@ type Validator interface {
 	ErrVariable() string
 }
 
-var generatorMemory = map[string]bool{}
+// GeneratorMemory is a map used to track the state of generated validators.
+var GeneratorMemory = map[string]bool{}

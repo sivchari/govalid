@@ -14,15 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package validator implements the required validator for govalid.
-package validator
+// Package validatorhelper provides helper functions for the govalid validator.
+package validatorhelper
 
 import (
 	"go/types"
 )
 
-// zero returns the zero value for the given type.
-func zero(typ types.Type) string {
+// Zero returns the zero value for the given type.
+func Zero(typ types.Type) string {
 	switch t := typ.(type) {
 	case *types.Basic:
 		return zeroOfBasic(t)
@@ -30,7 +30,7 @@ func zero(typ types.Type) string {
 		return "nil"
 	case *types.Alias, *types.Named:
 		if underlying := types.Unalias(t).Underlying(); underlying != nil {
-			return zero(underlying)
+			return Zero(underlying)
 		}
 
 		return ""

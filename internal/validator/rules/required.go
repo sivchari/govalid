@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package validator implements rules for validating fields.
-package validator
+// Package rules implements validation rules for fields in structs.
+package rules
 
 import (
 	"fmt"
@@ -24,6 +24,9 @@ import (
 	"strings"
 
 	"github.com/gostaticanalysis/codegen"
+
+	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/validatorhelper"
 )
 
 type requiredValidator struct {
@@ -31,7 +34,7 @@ type requiredValidator struct {
 	field *ast.Field
 }
 
-var _ Validator = (*requiredValidator)(nil)
+var _ validator.Validator = (*requiredValidator)(nil)
 
 const requiredKey = "%s-required"
 
@@ -42,7 +45,7 @@ func (r *requiredValidator) Validate() string {
 }
 
 func required(name string, typ types.Type) string {
-	zero := zero(typ)
+	zero := validatorhelper.Zero(typ)
 	if zero == "" {
 		switch typ.(type) {
 		case *types.Slice, *types.Array, *types.Map, *types.Chan:
@@ -60,24 +63,24 @@ func (r *requiredValidator) FieldName() string {
 }
 
 func (r *requiredValidator) Err() string {
-	if generatorMemory[fmt.Sprintf(requiredKey, r.FieldName())] {
+	if validator.GeneratorMemory[fmt.Sprintf(requiredKey, r.FieldName())] {
 		return ""
 	}
 
-	generatorMemory[fmt.Sprintf(requiredKey, r.FieldName())] = true
+	validator.GeneratorMemory[fmt.Sprintf(requiredKey, r.FieldName())] = true
 
 	return strings.ReplaceAll(`
-	// Err@Required is returned when the @ is required but not provided.
-	Err@Required = errors.New("field @ is required")`, "@", r.FieldName())
+	// Err@RequiredValidation is returned when the @ is required but not provided.
+	Err@RequiredValidation = errors.New("field @ is required")`, "@", r.FieldName())
 }
 
 func (r *requiredValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@Required", "@", r.FieldName())
+	return strings.ReplaceAll("Err@RequiredValidation", "@", r.FieldName())
 }
 
 // ValidateRequired creates a new required validator for the given field.
-func ValidateRequired(pass *codegen.Pass, field *ast.Field) Validator {
-	generatorMemory[fmt.Sprintf(requiredKey, field.Names[0].Name)] = false
+func ValidateRequired(pass *codegen.Pass, field *ast.Field) validator.Validator {
+	validator.GeneratorMemory[fmt.Sprintf(requiredKey, field.Names[0].Name)] = false
 
 	return &requiredValidator{
 		pass:  pass,

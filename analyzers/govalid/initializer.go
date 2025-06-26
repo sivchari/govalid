@@ -18,6 +18,7 @@ package govalid
 
 import (
 	"github.com/gostaticanalysis/codegen"
+
 	"github.com/sivchari/govalid/internal/config"
 	"github.com/sivchari/govalid/internal/registry"
 )
