@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/gostaticanalysis/codegen/codegentest"
+
 	"github.com/sivchari/govalid/analyzers/govalid"
 	"github.com/sivchari/govalid/analyzers/markers"
 	"github.com/sivchari/govalid/internal/registry"
@@ -50,6 +51,7 @@ func Test(t *testing.T) {
 	markers := []string{
 		"required",
 		"min",
+		"max",
 	}
 
 	for _, tc := range markers {

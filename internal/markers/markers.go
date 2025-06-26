@@ -24,10 +24,15 @@ var (
 	// GoValidMarkerMin is the marker for minimum value in govalid.
 	// This marker is only available for numeric types.
 	GoValidMarkerMin = "govalid:min"
+
+	// GoValidMarkerMax is the marker for maximum value in govalid.
+	// This marker is only available for numeric types.
+	GoValidMarkerMax = "govalid:max"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerRequired: {},
 	GoValidMarkerMin:      {},
+	GoValidMarkerMax:      {},
 }

@@ -19,9 +19,10 @@ package markers
 import (
 	"sync"
 
+	"golang.org/x/tools/go/analysis"
+
 	"github.com/sivchari/govalid/internal/config"
 	"github.com/sivchari/govalid/internal/registry"
-	"golang.org/x/tools/go/analysis"
 )
 
 // Initializer returns a new instance of the initializer for the markers analyzer.

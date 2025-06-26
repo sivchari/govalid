@@ -9,50 +9,50 @@ var (
 	// ErrNilMin is returned when the Min is nil.
 	ErrNilMin = errors.New("input Min is nil")
 
-	// ErrIntMin is the error returned when the value of the field is less than the minimum value.
-	ErrIntMin = errors.New("field Int must be greater than or equal to the minimum value")
+	// ErrIntMinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrIntMinValidation = errors.New("field Int must be greater than 1")
 
-	// ErrInt8Min is the error returned when the value of the field is less than the minimum value.
-	ErrInt8Min = errors.New("field Int8 must be greater than or equal to the minimum value")
+	// ErrInt8MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrInt8MinValidation = errors.New("field Int8 must be greater than 1")
 
-	// ErrInt16Min is the error returned when the value of the field is less than the minimum value.
-	ErrInt16Min = errors.New("field Int16 must be greater than or equal to the minimum value")
+	// ErrInt16MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrInt16MinValidation = errors.New("field Int16 must be greater than 1")
 
-	// ErrInt32Min is the error returned when the value of the field is less than the minimum value.
-	ErrInt32Min = errors.New("field Int32 must be greater than or equal to the minimum value")
+	// ErrInt32MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrInt32MinValidation = errors.New("field Int32 must be greater than 1")
 
-	// ErrInt64Min is the error returned when the value of the field is less than the minimum value.
-	ErrInt64Min = errors.New("field Int64 must be greater than or equal to the minimum value")
+	// ErrInt64MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrInt64MinValidation = errors.New("field Int64 must be greater than 1")
 
-	// ErrFloat32Min is the error returned when the value of the field is less than the minimum value.
-	ErrFloat32Min = errors.New("field Float32 must be greater than or equal to the minimum value")
+	// ErrFloat32MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrFloat32MinValidation = errors.New("field Float32 must be greater than 1")
 
-	// ErrFloat64Min is the error returned when the value of the field is less than the minimum value.
-	ErrFloat64Min = errors.New("field Float64 must be greater than or equal to the minimum value")
+	// ErrFloat64MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrFloat64MinValidation = errors.New("field Float64 must be greater than 1")
 
-	// ErrUintMin is the error returned when the value of the field is less than the minimum value.
-	ErrUintMin = errors.New("field Uint must be greater than or equal to the minimum value")
+	// ErrUintMinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrUintMinValidation = errors.New("field Uint must be greater than 1")
 
-	// ErrUint8Min is the error returned when the value of the field is less than the minimum value.
-	ErrUint8Min = errors.New("field Uint8 must be greater than or equal to the minimum value")
+	// ErrUint8MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrUint8MinValidation = errors.New("field Uint8 must be greater than 1")
 
-	// ErrUint16Min is the error returned when the value of the field is less than the minimum value.
-	ErrUint16Min = errors.New("field Uint16 must be greater than or equal to the minimum value")
+	// ErrUint16MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrUint16MinValidation = errors.New("field Uint16 must be greater than 1")
 
-	// ErrUint32Min is the error returned when the value of the field is less than the minimum value.
-	ErrUint32Min = errors.New("field Uint32 must be greater than or equal to the minimum value")
+	// ErrUint32MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrUint32MinValidation = errors.New("field Uint32 must be greater than 1")
 
-	// ErrUint64Min is the error returned when the value of the field is less than the minimum value.
-	ErrUint64Min = errors.New("field Uint64 must be greater than or equal to the minimum value")
+	// ErrUint64MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrUint64MinValidation = errors.New("field Uint64 must be greater than 1")
 
-	// ErrUintptrMin is the error returned when the value of the field is less than the minimum value.
-	ErrUintptrMin = errors.New("field Uintptr must be greater than or equal to the minimum value")
+	// ErrUintptrMinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrUintptrMinValidation = errors.New("field Uintptr must be greater than 1")
 
-	// ErrComplex64Min is the error returned when the value of the field is less than the minimum value.
-	ErrComplex64Min = errors.New("field Complex64 must be greater than or equal to the minimum value")
+	// ErrComplex64MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrComplex64MinValidation = errors.New("field Complex64 must be greater than 1")
 
-	// ErrComplex128Min is the error returned when the value of the field is less than the minimum value.
-	ErrComplex128Min = errors.New("field Complex128 must be greater than or equal to the minimum value")
+	// ErrComplex128MinValidation is the error returned when the value of the field is less than the minimum value.
+	ErrComplex128MinValidation = errors.New("field Complex128 must be greater than 1")
 )
 
 func ValidateMin(t *Min) error {
@@ -61,70 +61,70 @@ func ValidateMin(t *Min) error {
 	}
 
 	if t.Int < 1 {
-		return ErrIntMin
+		return ErrIntMinValidation
 	}
 
 	if t.Int8 < 1 {
-		return ErrInt8Min
+		return ErrInt8MinValidation
 	}
 
 	if t.Int16 < 1 {
-		return ErrInt16Min
+		return ErrInt16MinValidation
 	}
 
 	if t.Int32 < 1 {
-		return ErrInt32Min
+		return ErrInt32MinValidation
 	}
 
 	if t.Int64 < 1 {
-		return ErrInt64Min
+		return ErrInt64MinValidation
 	}
 
 	if t.Float32 < 1 {
-		return ErrFloat32Min
+		return ErrFloat32MinValidation
 	}
 
 	if t.Float64 < 1 {
-		return ErrFloat64Min
+		return ErrFloat64MinValidation
 	}
 
 	if t.Uint < 1 {
-		return ErrUintMin
+		return ErrUintMinValidation
 	}
 
 	if t.Uint8 < 1 {
-		return ErrUint8Min
+		return ErrUint8MinValidation
 	}
 
 	if t.Uint16 < 1 {
-		return ErrUint16Min
+		return ErrUint16MinValidation
 	}
 
 	if t.Uint32 < 1 {
-		return ErrUint32Min
+		return ErrUint32MinValidation
 	}
 
 	if t.Uint64 < 1 {
-		return ErrUint64Min
+		return ErrUint64MinValidation
 	}
 
 	if t.Uintptr < 1 {
-		return ErrUintptrMin
+		return ErrUintptrMinValidation
 	}
 
 	if t.Complex64 < 1 {
-		return ErrComplex64Min
+		return ErrComplex64MinValidation
 	}
 
 	if t.Complex128 < 1 {
-		return ErrComplex128Min
+		return ErrComplex128MinValidation
 	}
 
 	{
 		t := t.Struct
 
 		if t.Int < 1 {
-			return ErrIntMin
+			return ErrIntMinValidation
 		}
 
 	}

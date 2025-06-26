@@ -28,13 +28,15 @@ import (
 	"text/template"
 
 	"github.com/gostaticanalysis/codegen"
+	"golang.org/x/tools/go/analysis"
+	"golang.org/x/tools/go/analysis/passes/inspect"
+	"golang.org/x/tools/go/ast/inspector"
+
 	"github.com/sivchari/govalid/analyzers/markers"
 	govaliderrors "github.com/sivchari/govalid/internal/errors"
 	govalidmarkers "github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
-	"golang.org/x/tools/go/analysis"
-	"golang.org/x/tools/go/analysis/passes/inspect"
-	"golang.org/x/tools/go/ast/inspector"
+	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
 const (
@@ -196,9 +198,11 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 
 		switch marker.Identifier {
 		case govalidmarkers.GoValidMarkerRequired:
-			v = validator.ValidateRequired(pass, field)
+			v = rules.ValidateRequired(pass, field)
 		case govalidmarkers.GoValidMarkerMin:
-			v = validator.ValidateMin(pass, field, marker.Expressions)
+			v = rules.ValidateMin(pass, field, marker.Expressions)
+		case govalidmarkers.GoValidMarkerMax:
+			v = rules.ValidateMax(pass, field, marker.Expressions)
 		default:
 			continue
 		}

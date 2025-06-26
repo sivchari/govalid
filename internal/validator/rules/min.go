@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package validator implements rules for validating fields.
-package validator
+// Package rules implements validation rules for fields in structs.
+package rules
 
 import (
 	"fmt"
@@ -25,6 +25,7 @@ import (
 
 	"github.com/gostaticanalysis/codegen"
 	"github.com/sivchari/govalid/internal/markers"
+	"github.com/sivchari/govalid/internal/validator"
 )
 
 type minValidator struct {
@@ -33,7 +34,7 @@ type minValidator struct {
 	minValue string
 }
 
-var _ Validator = (*minValidator)(nil)
+var _ validator.Validator = (*minValidator)(nil)
 
 const minKey = "%s-min"
 
@@ -46,23 +47,23 @@ func (m *minValidator) FieldName() string {
 }
 
 func (m *minValidator) Err() string {
-	if generatorMemory[fmt.Sprintf(minKey, m.FieldName())] {
+	if validator.GeneratorMemory[fmt.Sprintf(minKey, m.FieldName())] {
 		return ""
 	}
 
-	generatorMemory[fmt.Sprintf(minKey, m.FieldName())] = true
+	validator.GeneratorMemory[fmt.Sprintf(minKey, m.FieldName())] = true
 
-	return strings.ReplaceAll(`
-	// Err@Min is the error returned when the value of the field is less than the minimum value.
-	Err@Min = errors.New("field @ must be greater than or equal to the minimum value")`, "@", m.FieldName())
+	return fmt.Sprintf(strings.ReplaceAll(`
+	// Err@MinValidation is the error returned when the value of the field is less than the minimum value.
+	Err@MinValidation = errors.New("field @ must be greater than %s")`, "@", m.FieldName()), m.minValue)
 }
 
 func (m *minValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@Min", "@", m.FieldName())
+	return strings.ReplaceAll("Err@MinValidation", "@", m.FieldName())
 }
 
 // ValidateMin creates a new minValidator if the field type is numeric and the min marker is present.
-func ValidateMin(pass *codegen.Pass, field *ast.Field, expressions map[string]string) Validator {
+func ValidateMin(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 
