@@ -13,61 +13,61 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package max
+package gt
 
-//go:generate govalid ./max.go
+//go:generate govalid ./gt.go
 
-type Min struct {
-	// +govalid:max=1
+type GT struct {
+	// +govalid:gt=1
 	Int int
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Int8 int8
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Int16 int16
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Int32 int32
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Int64 int64
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Float32 float32
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Float64 float64
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Uint uint
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Uint8 uint8
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Uint16 uint16
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Uint32 uint32
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Uint64 uint64
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Uintptr uintptr
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Complex64 complex64
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	Complex128 complex128
 
-	// +govalid:max=1
+	// +govalid:gt=1
 	String string
 
 	Struct struct {
-		// +govalid:max=1
+		// +govalid:gt=1
 		Int int
 	}
 }

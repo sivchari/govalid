@@ -199,10 +199,10 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 		switch marker.Identifier {
 		case govalidmarkers.GoValidMarkerRequired:
 			v = rules.ValidateRequired(pass, field)
-		case govalidmarkers.GoValidMarkerMin:
-			v = rules.ValidateMin(pass, field, marker.Expressions)
-		case govalidmarkers.GoValidMarkerMax:
-			v = rules.ValidateMax(pass, field, marker.Expressions)
+		case govalidmarkers.GoValidMarkerLT:
+			v = rules.ValidateLT(pass, field, marker.Expressions)
+		case govalidmarkers.GoValidMarkerGT:
+			v = rules.ValidateGT(pass, field, marker.Expressions)
 		default:
 			continue
 		}

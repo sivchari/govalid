@@ -27,12 +27,12 @@ type Required struct {
 	Items []string `validate:"required" json:"items"`
 }
 
-type Min struct {
-	// +govalid:min=10
-	Age int `validate:"min=10" json:"age"`
+type LT struct {
+	// +govalid:lt=10
+	Age int `validate:"lt=10" json:"age"`
 }
 
-type Max struct {
-	// +govalid:max=100
-	Age int `validate:"max=100" json:"age"`
+type GT struct {
+	// +govalid:gt=100
+	Age int `validate:"gt=100" json:"age"`
 }

@@ -21,18 +21,18 @@ var (
 	// GoValidMarkerRequired is the marker for required fields in govalid.
 	GoValidMarkerRequired = "govalid:required"
 
-	// GoValidMarkerMin is the marker for minimum value in govalid.
+	// GoValidMarkerLT is the marker fro checking if a value is less than a specified maximum in govalid.
 	// This marker is only available for numeric types.
-	GoValidMarkerMin = "govalid:min"
+	GoValidMarkerLT = "govalid:lt"
 
-	// GoValidMarkerMax is the marker for maximum value in govalid.
+	// GoValidMarkerGT is the marker for checking if a value is greater than a specified minimum in govalid.
 	// This marker is only available for numeric types.
-	GoValidMarkerMax = "govalid:max"
+	GoValidMarkerGT = "govalid:gt"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerRequired: {},
-	GoValidMarkerMin:      {},
-	GoValidMarkerMax:      {},
+	GoValidMarkerLT:       {},
+	GoValidMarkerGT:       {},
 }

@@ -83,11 +83,11 @@ govalid supports the following markers:
   }
   ```
 
-### `govalid:min`
-- **Description**: Ensures that a numeric field has a minimum value.
+### `govalid:lt`
+- **Description**: Ensures that a numeric field is less than a specified value.
 - **Example**:
   ```go
-  // +govalid:min=18
+  // +govalid:lt=18
   type Profile struct {
       Age int `json:"age"`
   }
@@ -99,19 +99,19 @@ govalid supports the following markers:
           return ErrNilProfile
       }
 
-      if t.Age < 18 {
-          return ErrAgeTooMinValidation
+      if t.Age >= 18 {
+          return ErrAgeLtValidation
       }
 
       return nil
   }
   ```
 
-### `govalid:max`
-- **Description**: Ensures that a numeric field has a maximum value.
+### `govalid:gt`
+- **Description**: Ensures that a numeric field is greater than a specified value.
 - **Example**:
   ```go
-  // +govalid:max=100
+  // +govalid:gt=100
   type Profile struct {
       Age int `json:"age"`
   }
@@ -123,8 +123,8 @@ govalid supports the following markers:
           return ErrNilProfile
       }
 
-      if t.Age > 100 {
-          return ErrAgeTooMaxValidation
+      if t.Age <= 100 {
+          return ErrAgeGtValidation
       }
 
       return nil
