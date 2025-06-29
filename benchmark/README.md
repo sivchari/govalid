@@ -1,6 +1,6 @@
 # Benchmark Results: govalid vs go-playground/validator
 
-This document provides a structured comparison of the benchmark results for `govalid` and `go-playground/validator`. The benchmarks focus on the `required`, `min`, and `max` validation markers, with metrics derived from tests conducted using `-benchmem` and `-count 10`.
+This document provides a structured comparison of the benchmark results for `govalid` and `go-playground/validator`. The benchmarks focus on the `required`, `lt`, and `gt` validation markers, with metrics derived from tests conducted using `-benchmem` and `-count 10`.
 
 ## Specifications
 
@@ -18,12 +18,12 @@ This document provides a structured comparison of the benchmark results for `gov
 - **Memory Allocations/op:** 0
 - **Bytes Allocated/op:** 0
 
-#### Min Validation
+#### LT Validation
 - **Average Time/op:** ~1.75 ns
 - **Memory Allocations/op:** 0
 - **Bytes Allocated/op:** 0
 
-#### Max Validation
+#### GT Validation
 - **Average Time/op:** ~1.75 ns
 - **Memory Allocations/op:** 0
 - **Bytes Allocated/op:** 0
@@ -35,12 +35,12 @@ This document provides a structured comparison of the benchmark results for `gov
 - **Memory Allocations/op:** 8
 - **Bytes Allocated/op:** 440
 
-#### Min Validation
+#### LT Validation
 - **Average Time/op:** ~135 ns
 - **Memory Allocations/op:** 4
 - **Bytes Allocated/op:** 192
 
-#### Max Validation
+#### GT Validation
 - **Average Time/op:** ~135 ns
 - **Memory Allocations/op:** 4
 - **Bytes Allocated/op:** 192
@@ -55,11 +55,11 @@ This document provides a structured comparison of the benchmark results for `gov
 - `govalid` is **140x faster** than `go-playground/validator`.
 - `govalid` performs no memory allocations, while `go-playground/validator` allocates 440 bytes across 8 blocks.
 
-#### Min Validation
+#### LT Validation
 - `govalid` is **77x faster** than `go-playground/validator`.
 - `govalid` performs no memory allocations, while `go-playground/validator` allocates 192 bytes across 4 blocks.
 
-#### Max Validation
+#### GT Validation
 - `govalid` is **77x faster** than `go-playground/validator`.
 - `govalid` performs no memory allocations, while `go-playground/validator` allocates 192 bytes across 4 blocks.
 
@@ -73,13 +73,13 @@ This document provides a structured comparison of the benchmark results for `gov
 | govalid                | ~1.75            | 0              | 0        |
 | go-playground/validator | ~245             | 8              | 440      |
 
-### `Min` Validation
+### `LT` Validation
 | Library                 | Avg Time/op (ns) | Allocations/op | Bytes/op |
 |-------------------------|------------------|----------------|----------|
 | govalid                | ~1.75            | 0              | 0        |
 | go-playground/validator | ~135             | 4              | 192      |
 
-### `Max` Validation
+### `GT` Validation
 | Library                 | Avg Time/op (ns) | Allocations/op | Bytes/op |
 |-------------------------|------------------|----------------|----------|
 | govalid                | ~1.75            | 0              | 0        |

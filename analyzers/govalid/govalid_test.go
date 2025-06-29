@@ -50,8 +50,8 @@ func Test(t *testing.T) {
 
 	markers := []string{
 		"required",
-		"min",
-		"max",
+		"lt",
+		"gt",
 	}
 
 	for _, tc := range markers {

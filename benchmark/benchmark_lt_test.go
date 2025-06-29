@@ -22,13 +22,13 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func BenchmarkGovalidValidatorMin(b *testing.B) {
-	min := Min{
-		Age: 9,
+func BenchmarkGovalidValidatorLT(b *testing.B) {
+	lt := LT{
+		Age: 10,
 	}
 	b.ResetTimer()
 	for b.Loop() {
-		err := ValidateMin(&min)
+		err := ValidateLT(&lt)
 		if err == nil {
 			b.Fatal("expected validation error, got nil")
 		}
@@ -36,14 +36,14 @@ func BenchmarkGovalidValidatorMin(b *testing.B) {
 	b.StopTimer()
 }
 
-func BenchmarkPlaygroundValidatorMin(b *testing.B) {
-	min := Min{
-		Age: 9,
+func BenchmarkPlaygroundValidatorLT(b *testing.B) {
+	lt := LT{
+		Age: 10,
 	}
 	validate := validator.New()
 	b.ResetTimer()
 	for b.Loop() {
-		err := validate.Struct(min)
+		err := validate.Struct(lt)
 		if err == nil {
 			b.Fatal("expected validation error, got nil")
 		}
