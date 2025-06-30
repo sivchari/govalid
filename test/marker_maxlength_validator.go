@@ -18,7 +18,7 @@ func ValidateMaxLength(t *MaxLength) error {
 		return ErrNilMaxLength
 	}
 
-	if len(t.Name) > 50 {
+	if len([]rune(t.Name)) > 50 {
 		return ErrNameMaxLengthValidation
 	}
 

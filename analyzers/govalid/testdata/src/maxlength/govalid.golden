@@ -21,14 +21,14 @@ func ValidateMaxLength(t *MaxLength) error {
 		return ErrNilMaxLength
 	}
 
-	if len(t.String) > 10 {
+	if len([]rune(t.String)) > 10 {
 		return ErrStringMaxLengthValidation
 	}
 
 	{
 		t := t.Struct
 
-		if len(t.Name) > 20 {
+		if len([]rune(t.Name)) > 20 {
 			return ErrNameMaxLengthValidation
 		}
 

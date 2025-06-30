@@ -70,22 +70,28 @@ func TestMaxLengthValidation(t *testing.T) {
 			description: "string two characters over the limit",
 		},
 		{
-			name:        "unicode characters - byte count at limit",
-			data:        MaxLengthTestData{Name: strings.Repeat("a", 50)}, // 50 ascii chars = 50 bytes
+			name:        "unicode characters at limit",
+			data:        MaxLengthTestData{Name: strings.Repeat("🔥", 50)}, // 50 unicode chars
 			expectError: false,
-			description: "ascii characters using byte-based counting at limit",
+			description: "unicode characters at exactly the 50 character limit",
 		},
 		{
-			name:        "unicode characters - byte count over limit",
-			data:        MaxLengthTestData{Name: strings.Repeat("🔥", 13)}, // 13 unicode chars = 52 bytes (over limit)
+			name:        "unicode characters over limit",
+			data:        MaxLengthTestData{Name: strings.Repeat("🔥", 51)}, // 51 unicode chars
 			expectError: true,
-			description: "unicode characters exceeding byte limit (govalid uses byte count, playground uses rune count)",
+			description: "unicode characters exceeding the 50 character limit",
 		},
 		{
-			name:        "unicode - known behavior difference",
-			data:        MaxLengthTestData{Name: strings.Repeat("🔥", 12)}, // 12 unicode chars = 48 bytes
+			name:        "mixed ascii and unicode at limit",
+			data:        MaxLengthTestData{Name: strings.Repeat("a🔥", 25)}, // 50 chars (25 * 2)
 			expectError: false,
-			description: "unicode characters under byte limit",
+			description: "mixed characters at exactly the 50 character limit",
+		},
+		{
+			name:        "mixed ascii and unicode over limit",
+			data:        MaxLengthTestData{Name: strings.Repeat("a🔥", 25) + "x"}, // 51 chars
+			expectError: true,
+			description: "mixed characters exceeding the 50 character limit",
 		},
 		{
 			name:        "whitespace at limit",
@@ -123,26 +129,15 @@ func TestMaxLengthValidation(t *testing.T) {
 			playgroundErr := validate.Struct(&tt.data)
 			playgroundHasError := playgroundErr != nil
 
-			// Compare results - handle known Unicode behavior differences
-			if strings.Contains(tt.name, "unicode characters - byte count over limit") {
-				// Known difference: govalid uses byte count, playground uses rune count for Unicode
-				if !govalidHasError {
-					t.Errorf("govalid: expected to treat Unicode byte overflow as invalid, got valid")
-				}
-				if playgroundHasError {
-					t.Errorf("go-playground: expected to treat Unicode rune count as valid, got invalid")
-				}
-			} else {
-				// For all other cases, expect identical behavior
-				if govalidHasError != tt.expectError {
-					t.Errorf("govalid: expected error=%v, got error=%v (%v) - %s (length: %d)", tt.expectError, govalidHasError, govalidErr, tt.description, len(tt.data.Name))
-				}
-				if playgroundHasError != tt.expectError {
-					t.Errorf("go-playground: expected error=%v, got error=%v (%v) - %s (length: %d)", tt.expectError, playgroundHasError, playgroundErr, tt.description, len(tt.data.Name))
-				}
-				if govalidHasError != playgroundHasError {
-					t.Errorf("behavior mismatch: govalid=%v, playground=%v - %s (length: %d)", govalidHasError, playgroundHasError, tt.description, len(tt.data.Name))
-				}
+			// Compare results - both should now use rune count consistently
+			if govalidHasError != tt.expectError {
+				t.Errorf("govalid: expected error=%v, got error=%v (%v) - %s (runes: %d, bytes: %d)", tt.expectError, govalidHasError, govalidErr, tt.description, len([]rune(tt.data.Name)), len(tt.data.Name))
+			}
+			if playgroundHasError != tt.expectError {
+				t.Errorf("go-playground: expected error=%v, got error=%v (%v) - %s (runes: %d, bytes: %d)", tt.expectError, playgroundHasError, playgroundErr, tt.description, len([]rune(tt.data.Name)), len(tt.data.Name))
+			}
+			if govalidHasError != playgroundHasError {
+				t.Errorf("behavior mismatch: govalid=%v, playground=%v - %s (runes: %d, bytes: %d)", govalidHasError, playgroundHasError, tt.description, len([]rune(tt.data.Name)), len(tt.data.Name))
 			}
 		})
 	}
