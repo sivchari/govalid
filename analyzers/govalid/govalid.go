@@ -54,10 +54,10 @@ func newGenerator() (*codegen.Generator, error) {
 
 // TemplateData holds the data for the template used to generate validation code.
 type TemplateData struct {
-	PackageName     string
-	TypeName        string
-	Metadata        []*AnalyzedMetadata
-	ImportPackages  map[string]struct{}
+	PackageName    string
+	TypeName       string
+	Metadata       []*AnalyzedMetadata
+	ImportPackages map[string]struct{}
 }
 
 // run is the main function that runs the govalid analyzer.
@@ -205,10 +205,10 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 	return validators
 }
 
-// collectImportPackages analyzes validators and collects required import packages
+// collectImportPackages analyzes validators and collects required import packages.
 func collectImportPackages(metadata []*AnalyzedMetadata) map[string]struct{} {
 	packages := make(map[string]struct{})
-	
+
 	for _, meta := range metadata {
 		for _, validator := range meta.Validators {
 			for _, pkg := range validator.Imports() {
@@ -216,7 +216,7 @@ func collectImportPackages(metadata []*AnalyzedMetadata) map[string]struct{} {
 			}
 		}
 	}
-	
+
 	return packages
 }
 
