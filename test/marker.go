@@ -1,9 +1,7 @@
-
 //go:generate govalid ./marker.go
 
-package benchmark
+package test
 
-// Validation types
 type Required struct {
 	// +govalid:required
 	Name string `validate:"required" json:"name"`
@@ -30,8 +28,8 @@ type MaxLength struct {
 	Name string `validate:"max=50" json:"name"`
 }
 
-// Benchmark test data types
-type RequiredBenchData Required
-type LTBenchData LT
-type GTBenchData GT
-type MaxLengthBenchData MaxLength
+// Test instances for validation
+type TestRequired Required
+type TestLT LT
+type TestGT GT
+type TestMaxLength MaxLength

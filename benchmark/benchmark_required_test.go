@@ -7,35 +7,23 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func BenchmarkGovalidValidatorRequired(b *testing.B) {
-	required := Required{
-		Name:  "",
-		Age:   0,
-		Items: []string{},
-	}
-	b.ResetTimer()
-	for b.Loop() {
-		err := ValidateRequired(&required)
-		if err == nil {
-			b.Fatal("expected validation error, got nil")
-		}
-	}
-	b.StopTimer()
+type RequiredTestInstance RequiredBenchData
+
+var requiredInstance = RequiredTestInstance{
+	Name:  "test",
+	Age:   1,
+	Items: []string{"test"},
 }
 
-func BenchmarkPlaygroundValidatorRequired(b *testing.B) {
-	required := Required{
-		Name:  "",
-		Age:   0,
-		Items: []string{},
+func BenchmarkGoValidRequired(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = ValidateRequired((*Required)(&requiredInstance))
 	}
+}
+
+func BenchmarkGoPlaygroundRequired(b *testing.B) {
 	validate := validator.New()
-	b.ResetTimer()
-	for b.Loop() {
-		err := validate.Struct(required)
-		if err == nil {
-			b.Fatal("expected validation error, got nil")
-		}
+	for i := 0; i < b.N; i++ {
+		_ = validate.Struct(&requiredInstance)
 	}
-	b.StopTimer()
 }
