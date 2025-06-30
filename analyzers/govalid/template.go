@@ -6,7 +6,9 @@ package {{.PackageName}}
 import (
 	{{if .Metadata }}
 	"errors"
+	{{- if .NeedsUTF8 }}
 	"unicode/utf8"
+	{{- end }}
 	{{- end -}}
 )
 
