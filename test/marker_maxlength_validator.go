@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	"unicode/utf8"
 )
 
 var (
@@ -18,7 +19,7 @@ func ValidateMaxLength(t *MaxLength) error {
 		return ErrNilMaxLength
 	}
 
-	if len([]rune(t.Name)) > 50 {
+	if utf8.RuneCountInString(t.Name) > 50 {
 		return ErrNameMaxLengthValidation
 	}
 

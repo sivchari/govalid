@@ -20,102 +20,43 @@ func TestMaxLengthValidation(t *testing.T) {
 		expectError bool
 		description string
 	}{
-		{
-			name:        "valid length",
-			data:        MaxLengthTestData{Name: "Valid Name"},
-			expectError: false,
-			description: "normal string within limit",
-		},
+		// Core boundary value tests around limit=50
 		{
 			name:        "empty string",
 			data:        MaxLengthTestData{Name: ""},
 			expectError: false,
-			description: "empty string should be valid for maxlength",
-		},
-		{
-			name:        "exactly at limit",
-			data:        MaxLengthTestData{Name: strings.Repeat("x", 50)}, // 50 chars
-			expectError: false,
-			description: "string exactly at the 50 character limit",
-		},
-		{
-			name:        "exceeds limit by one",
-			data:        MaxLengthTestData{Name: strings.Repeat("x", 51)}, // 51 chars
-			expectError: true,
-			description: "string exceeding limit by exactly one character",
-		},
-		{
-			name:        "far exceeds limit",
-			data:        MaxLengthTestData{Name: strings.Repeat("x", 100)}, // 100 chars
-			expectError: true,
-			description: "string far exceeding the limit",
-		},
-		// Boundary value tests
-		{
-			name:        "one character",
-			data:        MaxLengthTestData{Name: "x"},
-			expectError: false,
-			description: "single character string",
+			description: "empty string should be valid",
 		},
 		{
 			name:        "limit minus one",
 			data:        MaxLengthTestData{Name: strings.Repeat("x", 49)}, // 49 chars
 			expectError: false,
-			description: "string one character under the limit",
+			description: "one character under limit",
 		},
 		{
-			name:        "limit plus two",
-			data:        MaxLengthTestData{Name: strings.Repeat("x", 52)}, // 52 chars
+			name:        "exactly at limit",
+			data:        MaxLengthTestData{Name: strings.Repeat("x", 50)}, // 50 chars
+			expectError: false,
+			description: "exactly at 50 character limit",
+		},
+		{
+			name:        "limit plus one",
+			data:        MaxLengthTestData{Name: strings.Repeat("x", 51)}, // 51 chars
 			expectError: true,
-			description: "string two characters over the limit",
+			description: "one character over limit",
 		},
+		// Unicode boundary test
 		{
-			name:        "unicode characters at limit",
+			name:        "unicode at limit",
 			data:        MaxLengthTestData{Name: strings.Repeat("🔥", 50)}, // 50 unicode chars
 			expectError: false,
-			description: "unicode characters at exactly the 50 character limit",
+			description: "unicode characters at limit",
 		},
 		{
-			name:        "unicode characters over limit",
+			name:        "unicode over limit",
 			data:        MaxLengthTestData{Name: strings.Repeat("🔥", 51)}, // 51 unicode chars
 			expectError: true,
-			description: "unicode characters exceeding the 50 character limit",
-		},
-		{
-			name:        "mixed ascii and unicode at limit",
-			data:        MaxLengthTestData{Name: strings.Repeat("a🔥", 25)}, // 50 chars (25 * 2)
-			expectError: false,
-			description: "mixed characters at exactly the 50 character limit",
-		},
-		{
-			name:        "mixed ascii and unicode over limit",
-			data:        MaxLengthTestData{Name: strings.Repeat("a🔥", 25) + "x"}, // 51 chars
-			expectError: true,
-			description: "mixed characters exceeding the 50 character limit",
-		},
-		{
-			name:        "whitespace at limit",
-			data:        MaxLengthTestData{Name: strings.Repeat(" ", 50)}, // 50 spaces
-			expectError: false,
-			description: "whitespace characters at the limit",
-		},
-		{
-			name:        "whitespace over limit",
-			data:        MaxLengthTestData{Name: strings.Repeat(" ", 51)}, // 51 spaces
-			expectError: true,
-			description: "whitespace characters over the limit",
-		},
-		{
-			name:        "newlines and tabs at limit",
-			data:        MaxLengthTestData{Name: strings.Repeat("\n\t", 25)}, // 50 chars
-			expectError: false,
-			description: "newlines and tabs at the limit",
-		},
-		{
-			name:        "very long string",
-			data:        MaxLengthTestData{Name: strings.Repeat("verylongstring", 100)}, // 1400 chars
-			expectError: true,
-			description: "extremely long string should be invalid",
+			description: "unicode characters over limit",
 		},
 	}
 

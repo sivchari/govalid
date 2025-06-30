@@ -3,6 +3,7 @@ package maxlength
 
 import (
 	"errors"
+	"unicode/utf8"
 )
 
 var (
@@ -21,14 +22,14 @@ func ValidateMaxLength(t *MaxLength) error {
 		return ErrNilMaxLength
 	}
 
-	if len([]rune(t.String)) > 10 {
+	if utf8.RuneCountInString(t.String) > 10 {
 		return ErrStringMaxLengthValidation
 	}
 
 	{
 		t := t.Struct
 
-		if len([]rune(t.Name)) > 20 {
+		if utf8.RuneCountInString(t.Name) > 20 {
 			return ErrNameMaxLengthValidation
 		}
 
