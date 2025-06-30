@@ -131,6 +131,30 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:maxlength`
+- **Description**: Ensures that a string field's length does not exceed the specified maximum value.
+- **Example**:
+  ```go
+  type User struct {
+      // +govalid:maxlength=50
+      Username string `json:"username"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateUser(t *User) error {
+      if t == nil {
+          return ErrNilUser
+      }
+
+      if len(t.Username) > 50 {
+          return ErrUsernameMaxLengthValidation
+      }
+
+      return nil
+  }
+  ```
+
 
 ## License
 
