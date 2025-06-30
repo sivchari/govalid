@@ -47,7 +47,7 @@ func TestRequiredValidation(t *testing.T) {
 			name:        "empty items",
 			data:        RequiredTestData{Name: "John", Age: 25, Items: []string{}},
 			expectError: true,
-			description: "govalid treats empty slice as invalid, playground treats as valid - behavior difference",
+			description: "empty slice should be invalid for required validation",
 		},
 		// Boundary value tests
 		{
@@ -104,15 +104,16 @@ func TestRequiredValidation(t *testing.T) {
 			playgroundErr := validate.Struct(&tt.data)
 			playgroundHasError := playgroundErr != nil
 
-			// Compare results - allow for known behavior difference in empty slice handling
+			// Compare results - allow for known behavior difference in empty slice handling for required
 			if tt.name == "empty items" {
-				// Known difference: govalid treats empty slices as invalid, playground treats as valid
+				// Known difference: govalid treats empty slices as invalid (correct), playground treats as valid
 				if !govalidHasError {
 					t.Errorf("govalid: expected to treat empty slice as invalid, got valid")
 				}
 				if playgroundHasError {
-					t.Errorf("go-playground: expected to treat empty slice as valid, got invalid")
+					t.Errorf("go-playground: expected to treat empty slice as valid (though this is arguably incorrect), got invalid")
 				}
+				// Note: We consider govalid's behavior correct here - empty slice should fail required validation
 			} else {
 				// For all other cases, expect identical behavior
 				if govalidHasError != tt.expectError {
