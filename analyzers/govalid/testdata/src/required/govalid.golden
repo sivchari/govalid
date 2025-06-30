@@ -69,11 +69,11 @@ func ValidateRequired(t *Required) error {
 		return ErrArrayRequiredValidation
 	}
 
-	if len(t.Slice) == 0 {
+	if t.Slice == nil {
 		return ErrSliceRequiredValidation
 	}
 
-	if len(t.Map) == 0 {
+	if t.Map == nil {
 		return ErrMapRequiredValidation
 	}
 
@@ -125,7 +125,7 @@ func ValidateRequired(t *Required) error {
 
 	}
 
-	if len(t.Channel) == 0 {
+	if t.Channel == nil {
 		return ErrChannelRequiredValidation
 	}
 

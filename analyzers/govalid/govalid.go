@@ -57,6 +57,7 @@ type TemplateData struct {
 	PackageName string
 	TypeName    string
 	Metadata    []*AnalyzedMetadata
+	NeedsUTF8   bool
 }
 
 // run is the main function that runs the govalid analyzer.
@@ -97,6 +98,7 @@ func (g *generator) run(pass *codegen.Pass) error {
 			PackageName: pass.Pkg.Name(),
 			TypeName:    ts.Name.Name,
 			Metadata:    metadata,
+			NeedsUTF8:   needsUTF8(metadata),
 		}
 
 		data, ok := tmplList[ts.Name.Name]
@@ -201,6 +203,18 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 	}
 
 	return validators
+}
+
+// needsUTF8 checks if any validator requires the unicode/utf8 package
+func needsUTF8(metadata []*AnalyzedMetadata) bool {
+	for _, meta := range metadata {
+		for _, validator := range meta.Validators {
+			if strings.Contains(validator.Validate(), "utf8.RuneCountInString") {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) error {

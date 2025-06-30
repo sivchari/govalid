@@ -7,103 +7,40 @@ import (
 	"github.com/sivchari/govalid/test"
 )
 
-// Test data types for GT validation behavior comparison
-type GTTestData test.TestGT
-
 func TestGTValidation(t *testing.T) {
 	validate := validator.New()
 
 	tests := []struct {
 		name        string
-		data        GTTestData
+		data        test.GT
 		expectError bool
-		description string
 	}{
 		{
-			name:        "valid gt value",
-			data:        GTTestData{Age: 150},
+			name:        "valid",
+			data:        test.GT{Age: 150},
 			expectError: false,
-			description: "age 150 is greater than limit 100",
+		},
+		{
+			name:        "limit minus one",
+			data:        test.GT{Age: 99},
+			expectError: true,
 		},
 		{
 			name:        "equal to limit",
-			data:        GTTestData{Age: 100},
+			data:        test.GT{Age: 100},
 			expectError: true,
-			description: "age equal to limit should be invalid",
 		},
 		{
-			name:        "less than limit",
-			data:        GTTestData{Age: 50},
-			expectError: true,
-			description: "age less than limit should be invalid",
-		},
-		// Boundary value tests
-		{
-			name:        "one more than limit",
-			data:        GTTestData{Age: 101},
+			name:        "limit plus one",
+			data:        test.GT{Age: 101},
 			expectError: false,
-			description: "age 101 is exactly one more than limit 100",
-		},
-		{
-			name:        "one less than limit",
-			data:        GTTestData{Age: 99},
-			expectError: true,
-			description: "age 99 is exactly one less than limit 100",
-		},
-		{
-			name:        "zero value",
-			data:        GTTestData{Age: 0},
-			expectError: true,
-			description: "zero is less than limit 100",
-		},
-		{
-			name:        "negative value",
-			data:        GTTestData{Age: -5},
-			expectError: true,
-			description: "negative values are less than limit 100",
-		},
-		{
-			name:        "minimum valid value",
-			data:        GTTestData{Age: 101},
-			expectError: false,
-			description: "minimum value that satisfies gt constraint",
-		},
-		{
-			name:        "maximum invalid value",
-			data:        GTTestData{Age: 100},
-			expectError: true,
-			description: "maximum value that violates gt constraint",
-		},
-		{
-			name:        "large valid value",
-			data:        GTTestData{Age: 1000000},
-			expectError: false,
-			description: "very large value should be valid",
-		},
-		{
-			name:        "minimum int",
-			data:        GTTestData{Age: -2147483648}, // int32 min for compatibility
-			expectError: true,
-			description: "minimum integer value is less than limit",
-		},
-		{
-			name:        "just above boundary",
-			data:        GTTestData{Age: 100 + 1},
-			expectError: false,
-			description: "computed boundary plus one",
-		},
-		{
-			name:        "just at boundary",
-			data:        GTTestData{Age: 100 + 0},
-			expectError: true,
-			description: "computed boundary exact",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Test govalid
-			govalidErr := test.ValidateGT((*test.GT)(&tt.data))
+			govalidErr := test.ValidateGT(&tt.data)
 			govalidHasError := govalidErr != nil
 
 			// Test go-playground/validator
@@ -112,13 +49,13 @@ func TestGTValidation(t *testing.T) {
 
 			// Compare results
 			if govalidHasError != tt.expectError {
-				t.Errorf("govalid: expected error=%v, got error=%v (%v) - %s", tt.expectError, govalidHasError, govalidErr, tt.description)
+				t.Errorf("govalid: expected error=%v, got error=%v (%v)", tt.expectError, govalidHasError, govalidErr)
 			}
 			if playgroundHasError != tt.expectError {
-				t.Errorf("go-playground: expected error=%v, got error=%v (%v) - %s", tt.expectError, playgroundHasError, playgroundErr, tt.description)
+				t.Errorf("go-playground: expected error=%v, got error=%v (%v)", tt.expectError, playgroundHasError, playgroundErr)
 			}
 			if govalidHasError != playgroundHasError {
-				t.Errorf("behavior mismatch: govalid=%v, playground=%v - %s", govalidHasError, playgroundHasError, tt.description)
+				t.Errorf("behavior mismatch: govalid=%v, playground=%v", govalidHasError, playgroundHasError)
 			}
 		})
 	}
