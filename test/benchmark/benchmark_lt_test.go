@@ -1,4 +1,3 @@
-
 package benchmark
 
 import (
@@ -8,21 +7,31 @@ import (
 	"github.com/sivchari/govalid/test"
 )
 
-type LTTestInstance test.TestLT
-
-var ltInstance = LTTestInstance{
-	Age: 5,
-}
-
 func BenchmarkGoValidLT(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_ = test.ValidateLT((*test.LT)(&ltInstance))
+	instance := test.LT{
+		Age: 5,
 	}
+	b.ResetTimer()
+	for b.Loop() {
+		err := test.ValidateLT(&instance)
+		if err != nil {
+			b.Fatal("unexpected error:", err)
+		}
+	}
+	b.StopTimer()
 }
 
 func BenchmarkGoPlaygroundLT(b *testing.B) {
 	validate := validator.New()
-	for i := 0; i < b.N; i++ {
-		_ = validate.Struct(&ltInstance)
+	instance := test.LT{
+		Age: 5,
 	}
+	b.ResetTimer()
+	for b.Loop() {
+		err := validate.Struct(&instance)
+		if err != nil {
+			b.Fatal("unexpected error:", err)
+		}
+	}
+	b.StopTimer()
 }

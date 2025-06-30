@@ -65,6 +65,10 @@ func (r *requiredValidator) ErrVariable() string {
 	return strings.ReplaceAll("Err@RequiredValidation", "@", r.FieldName())
 }
 
+func (r *requiredValidator) Imports() []string {
+	return []string{}
+}
+
 // ValidateRequired creates a new required validator for the given field.
 func ValidateRequired(pass *codegen.Pass, field *ast.Field) validator.Validator {
 	validator.GeneratorMemory[fmt.Sprintf(requiredKey, field.Names[0].Name)] = false

@@ -1,4 +1,3 @@
-
 package benchmark
 
 import (
@@ -8,23 +7,35 @@ import (
 	"github.com/sivchari/govalid/test"
 )
 
-type RequiredTestInstance test.TestRequired
-
-var requiredInstance = RequiredTestInstance{
-	Name:  "test",
-	Age:   1,
-	Items: []string{"test"},
-}
-
 func BenchmarkGoValidRequired(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_ = test.ValidateRequired((*test.Required)(&requiredInstance))
+	instance := test.Required{
+		Name:  "test",
+		Age:   1,
+		Items: []string{"test"},
 	}
+	b.ResetTimer()
+	for b.Loop() {
+		err := test.ValidateRequired(&instance)
+		if err != nil {
+			b.Fatal("unexpected error:", err)
+		}
+	}
+	b.StopTimer()
 }
 
 func BenchmarkGoPlaygroundRequired(b *testing.B) {
 	validate := validator.New()
-	for i := 0; i < b.N; i++ {
-		_ = validate.Struct(&requiredInstance)
+	instance := test.Required{
+		Name:  "test",
+		Age:   1,
+		Items: []string{"test"},
 	}
+	b.ResetTimer()
+	for b.Loop() {
+		err := validate.Struct(&instance)
+		if err != nil {
+			b.Fatal("unexpected error:", err)
+		}
+	}
+	b.StopTimer()
 }

@@ -46,6 +46,10 @@ func (m *maxLengthValidator) ErrVariable() string {
 	return strings.ReplaceAll("Err@MaxLengthValidation", "@", m.FieldName())
 }
 
+func (m *maxLengthValidator) Imports() []string {
+	return []string{"unicode/utf8"}
+}
+
 // ValidateMaxLength creates a new maxLengthValidator if the field type is string and the maxlength marker is present.
 func ValidateMaxLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)

@@ -7,6 +7,7 @@ type Validator interface {
 	FieldName() string
 	Err() string
 	ErrVariable() string
+	Imports() []string
 }
 
 // GeneratorMemory is a map used to track the state of generated validators.

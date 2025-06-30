@@ -7,21 +7,31 @@ import (
 	"github.com/sivchari/govalid/test"
 )
 
-type MaxLengthTestInstance test.TestMaxLength
-
-var maxLengthInstance = MaxLengthTestInstance{
-	Name: "This is a test string for maxlength validation",
-}
-
 func BenchmarkGoValidMaxLength(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_ = test.ValidateMaxLength((*test.MaxLength)(&maxLengthInstance))
+	instance := test.MaxLength{
+		Name: "This is a test string for maxlength validation",
 	}
+	b.ResetTimer()
+	for b.Loop() {
+		err := test.ValidateMaxLength(&instance)
+		if err != nil {
+			b.Fatal("unexpected error:", err)
+		}
+	}
+	b.StopTimer()
 }
 
 func BenchmarkGoPlaygroundMaxLength(b *testing.B) {
 	validate := validator.New()
-	for i := 0; i < b.N; i++ {
-		_ = validate.Struct(&maxLengthInstance)
+	instance := test.MaxLength{
+		Name: "This is a test string for maxlength validation",
 	}
+	b.ResetTimer()
+	for b.Loop() {
+		err := validate.Struct(&instance)
+		if err != nil {
+			b.Fatal("unexpected error:", err)
+		}
+	}
+	b.StopTimer()
 }
