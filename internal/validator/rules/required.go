@@ -29,14 +29,17 @@ func (r *requiredValidator) Validate() string {
 }
 
 func required(name string, typ types.Type) string {
+	// Handle slices, maps, and channels specifically for required validation
+	switch typ.(type) {
+	case *types.Slice, *types.Map, *types.Chan:
+		return fmt.Sprintf("t.%s == nil", name)
+	case *types.Array:
+		return fmt.Sprintf("len(t.%s) == 0", name)
+	}
+
 	zero := validatorhelper.Zero(typ)
 	if zero == "" {
-		switch typ.(type) {
-		case *types.Slice, *types.Array, *types.Map, *types.Chan:
-			return fmt.Sprintf("len(t.%s) == 0", name)
-		default:
-			return ""
-		}
+		return ""
 	}
 
 	return fmt.Sprintf("t.%s == %s", name, zero)

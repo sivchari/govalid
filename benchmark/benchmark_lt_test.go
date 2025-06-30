@@ -7,31 +7,21 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func BenchmarkGovalidValidatorLT(b *testing.B) {
-	lt := LT{
-		Age: 10,
-	}
-	b.ResetTimer()
-	for b.Loop() {
-		err := ValidateLT(&lt)
-		if err == nil {
-			b.Fatal("expected validation error, got nil")
-		}
-	}
-	b.StopTimer()
+type LTTestInstance LTBenchData
+
+var ltInstance = LTTestInstance{
+	Age: 5,
 }
 
-func BenchmarkPlaygroundValidatorLT(b *testing.B) {
-	lt := LT{
-		Age: 10,
+func BenchmarkGoValidLT(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = ValidateLT((*LT)(&ltInstance))
 	}
+}
+
+func BenchmarkGoPlaygroundLT(b *testing.B) {
 	validate := validator.New()
-	b.ResetTimer()
-	for b.Loop() {
-		err := validate.Struct(lt)
-		if err == nil {
-			b.Fatal("expected validation error, got nil")
-		}
+	for i := 0; i < b.N; i++ {
+		_ = validate.Struct(&ltInstance)
 	}
-	b.StopTimer()
 }
