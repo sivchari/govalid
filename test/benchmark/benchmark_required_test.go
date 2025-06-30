@@ -5,9 +5,10 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/sivchari/govalid/test"
 )
 
-type RequiredTestInstance RequiredBenchData
+type RequiredTestInstance test.TestRequired
 
 var requiredInstance = RequiredTestInstance{
 	Name:  "test",
@@ -17,7 +18,7 @@ var requiredInstance = RequiredTestInstance{
 
 func BenchmarkGoValidRequired(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = ValidateRequired((*Required)(&requiredInstance))
+		_ = test.ValidateRequired((*test.Required)(&requiredInstance))
 	}
 }
 

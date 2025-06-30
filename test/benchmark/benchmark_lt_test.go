@@ -5,9 +5,10 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/sivchari/govalid/test"
 )
 
-type LTTestInstance LTBenchData
+type LTTestInstance test.TestLT
 
 var ltInstance = LTTestInstance{
 	Age: 5,
@@ -15,7 +16,7 @@ var ltInstance = LTTestInstance{
 
 func BenchmarkGoValidLT(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = ValidateLT((*LT)(&ltInstance))
+		_ = test.ValidateLT((*test.LT)(&ltInstance))
 	}
 }
 
