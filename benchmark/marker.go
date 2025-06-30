@@ -1,4 +1,6 @@
 
+//go:generate govalid ./marker.go
+
 package benchmark
 
 type Required struct {
@@ -20,4 +22,9 @@ type LT struct {
 type GT struct {
 	// +govalid:gt=100
 	Age int `validate:"gt=100" json:"age"`
+}
+
+type MaxLength struct {
+	// +govalid:maxlength=50
+	Name string `validate:"max=50" json:"name"`
 }

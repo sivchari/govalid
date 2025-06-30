@@ -1,6 +1,6 @@
 # Benchmark Results: govalid vs go-playground/validator
 
-This document provides a structured comparison of the benchmark results for `govalid` and `go-playground/validator`. The benchmarks focus on the `required`, `lt`, and `gt` validation markers, with metrics derived from tests conducted using `-benchmem` and `-count 10`.
+This document provides a structured comparison of the benchmark results for `govalid` and `go-playground/validator`. The benchmarks focus on the `required`, `lt`, `gt`, and `maxlength` validation markers, with metrics derived from tests conducted using `-benchmem` and `-count 10`.
 
 ## Specifications
 
@@ -28,6 +28,11 @@ This document provides a structured comparison of the benchmark results for `gov
 - **Memory Allocations/op:** 0
 - **Bytes Allocated/op:** 0
 
+#### MaxLength Validation
+- **Average Time/op:** ~0.26 ns
+- **Memory Allocations/op:** 0
+- **Bytes Allocated/op:** 0
+
 ### `go-playground/validator`
 
 #### Required Validation
@@ -44,6 +49,11 @@ This document provides a structured comparison of the benchmark results for `gov
 - **Average Time/op:** ~135 ns
 - **Memory Allocations/op:** 4
 - **Bytes Allocated/op:** 192
+
+#### MaxLength Validation
+- **Average Time/op:** ~66.57 ns
+- **Memory Allocations/op:** 0
+- **Bytes Allocated/op:** 0
 
 ---
 
@@ -62,6 +72,10 @@ This document provides a structured comparison of the benchmark results for `gov
 #### GT Validation
 - `govalid` is **77x faster** than `go-playground/validator`.
 - `govalid` performs no memory allocations, while `go-playground/validator` allocates 192 bytes across 4 blocks.
+
+#### MaxLength Validation
+- `govalid` is **256x faster** than `go-playground/validator`.
+- Both libraries perform no memory allocations for MaxLength validation.
 
 ---
 
@@ -84,6 +98,12 @@ This document provides a structured comparison of the benchmark results for `gov
 |-------------------------|------------------|----------------|----------|
 | govalid                | ~1.75            | 0              | 0        |
 | go-playground/validator | ~135             | 4              | 192      |
+
+### `MaxLength` Validation
+| Library                 | Avg Time/op (ns) | Allocations/op | Bytes/op |
+|-------------------------|------------------|----------------|----------|
+| govalid                | ~0.26            | 0              | 0        |
+| go-playground/validator | ~66.57           | 0              | 0        |
 
 ---
 

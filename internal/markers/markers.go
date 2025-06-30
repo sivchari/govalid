@@ -12,11 +12,16 @@ var (
 	// GoValidMarkerGT is the marker for checking if a value is greater than a specified minimum in govalid.
 	// This marker is only available for numeric types.
 	GoValidMarkerGT = "govalid:gt"
+
+	// GoValidMarkerMaxLength is the marker for checking if a string's length is less than or equal to a specified maximum in govalid.
+	// This marker is only available for string types.
+	GoValidMarkerMaxLength = "govalid:maxlength"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
-	GoValidMarkerRequired: {},
-	GoValidMarkerLT:       {},
-	GoValidMarkerGT:       {},
+	GoValidMarkerRequired:  {},
+	GoValidMarkerLT:        {},
+	GoValidMarkerGT:        {},
+	GoValidMarkerMaxLength: {},
 }
