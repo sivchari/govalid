@@ -134,4 +134,4 @@ govalid supports the following markers:
 
 ## License
 
-govalid is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for details.
+govalid is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
