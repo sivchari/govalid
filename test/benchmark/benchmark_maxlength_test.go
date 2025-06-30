@@ -4,9 +4,10 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/sivchari/govalid/test"
 )
 
-type MaxLengthTestInstance MaxLengthBenchData
+type MaxLengthTestInstance test.TestMaxLength
 
 var maxLengthInstance = MaxLengthTestInstance{
 	Name: "This is a test string for maxlength validation",
@@ -14,7 +15,7 @@ var maxLengthInstance = MaxLengthTestInstance{
 
 func BenchmarkGoValidMaxLength(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = ValidateMaxLength((*MaxLength)(&maxLengthInstance))
+		_ = test.ValidateMaxLength((*test.MaxLength)(&maxLengthInstance))
 	}
 }
 

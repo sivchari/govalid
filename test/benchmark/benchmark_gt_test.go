@@ -4,9 +4,10 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/sivchari/govalid/test"
 )
 
-type GTTestInstance GTBenchData
+type GTTestInstance test.TestGT
 
 var gtInstance = GTTestInstance{
 	Age: 150,
@@ -14,7 +15,7 @@ var gtInstance = GTTestInstance{
 
 func BenchmarkGoValidGT(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = ValidateGT((*GT)(&gtInstance))
+		_ = test.ValidateGT((*test.GT)(&gtInstance))
 	}
 }
 
