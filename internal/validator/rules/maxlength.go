@@ -23,7 +23,7 @@ var _ validator.Validator = (*maxLengthValidator)(nil)
 const maxLengthKey = "%s-maxlength"
 
 func (m *maxLengthValidator) Validate() string {
-	return fmt.Sprintf("len([]rune(t.%s)) > %s", m.FieldName(), m.maxLengthValue)
+	return fmt.Sprintf("utf8.RuneCountInString(t.%s) > %s", m.FieldName(), m.maxLengthValue)
 }
 
 func (m *maxLengthValidator) FieldName() string {
