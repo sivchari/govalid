@@ -46,6 +46,10 @@ func (m *ltValidator) ErrVariable() string {
 	return strings.ReplaceAll("Err@LTValidation", "@", m.FieldName())
 }
 
+func (m *ltValidator) Imports() []string {
+	return []string{}
+}
+
 // ValidateLT creates a new ltValidator if the field type is numeric and the min marker is present.
 func ValidateLT(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)

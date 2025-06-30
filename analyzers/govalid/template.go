@@ -6,8 +6,8 @@ package {{.PackageName}}
 import (
 	{{if .Metadata }}
 	"errors"
-	{{- if .NeedsUTF8 }}
-	"unicode/utf8"
+	{{- range $pkg, $_ := .ImportPackages }}
+	"{{ $pkg }}"
 	{{- end }}
 	{{- end -}}
 )

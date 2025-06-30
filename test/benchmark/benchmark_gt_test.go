@@ -7,21 +7,31 @@ import (
 	"github.com/sivchari/govalid/test"
 )
 
-type GTTestInstance test.TestGT
-
-var gtInstance = GTTestInstance{
-	Age: 150,
-}
-
 func BenchmarkGoValidGT(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_ = test.ValidateGT((*test.GT)(&gtInstance))
+	instance := test.GT{
+		Age: 150,
 	}
+	b.ResetTimer()
+	for b.Loop() {
+		err := test.ValidateGT(&instance)
+		if err != nil {
+			b.Fatal("unexpected error:", err)
+		}
+	}
+	b.StopTimer()
 }
 
 func BenchmarkGoPlaygroundGT(b *testing.B) {
 	validate := validator.New()
-	for i := 0; i < b.N; i++ {
-		_ = validate.Struct(&gtInstance)
+	instance := test.GT{
+		Age: 150,
 	}
+	b.ResetTimer()
+	for b.Loop() {
+		err := validate.Struct(&instance)
+		if err != nil {
+			b.Fatal("unexpected error:", err)
+		}
+	}
+	b.StopTimer()
 }

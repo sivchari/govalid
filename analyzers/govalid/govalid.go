@@ -54,10 +54,10 @@ func newGenerator() (*codegen.Generator, error) {
 
 // TemplateData holds the data for the template used to generate validation code.
 type TemplateData struct {
-	PackageName string
-	TypeName    string
-	Metadata    []*AnalyzedMetadata
-	NeedsUTF8   bool
+	PackageName     string
+	TypeName        string
+	Metadata        []*AnalyzedMetadata
+	ImportPackages  map[string]struct{}
 }
 
 // run is the main function that runs the govalid analyzer.
@@ -95,10 +95,10 @@ func (g *generator) run(pass *codegen.Pass) error {
 		}
 
 		tmplData := TemplateData{
-			PackageName: pass.Pkg.Name(),
-			TypeName:    ts.Name.Name,
-			Metadata:    metadata,
-			NeedsUTF8:   needsUTF8(metadata),
+			PackageName:    pass.Pkg.Name(),
+			TypeName:       ts.Name.Name,
+			Metadata:       metadata,
+			ImportPackages: collectImportPackages(metadata),
 		}
 
 		data, ok := tmplList[ts.Name.Name]
@@ -205,16 +205,19 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 	return validators
 }
 
-// needsUTF8 checks if any validator requires the unicode/utf8 package
-func needsUTF8(metadata []*AnalyzedMetadata) bool {
+// collectImportPackages analyzes validators and collects required import packages
+func collectImportPackages(metadata []*AnalyzedMetadata) map[string]struct{} {
+	packages := make(map[string]struct{})
+	
 	for _, meta := range metadata {
 		for _, validator := range meta.Validators {
-			if strings.Contains(validator.Validate(), "utf8.RuneCountInString") {
-				return true
+			for _, pkg := range validator.Imports() {
+				packages[pkg] = struct{}{}
 			}
 		}
 	}
-	return false
+	
+	return packages
 }
 
 func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) error {

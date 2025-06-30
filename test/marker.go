@@ -27,9 +27,3 @@ type MaxLength struct {
 	// +govalid:maxlength=50
 	Name string `validate:"max=50" json:"name"`
 }
-
-// Test instances for validation
-type TestRequired Required
-type TestLT LT
-type TestGT GT
-type TestMaxLength MaxLength
