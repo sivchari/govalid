@@ -25,6 +25,14 @@ BenchmarkGoValidRequired-16           	638489334	         1.892 ns/op	       0 B
 BenchmarkGoPlaygroundRequired-16      	14232363	        83.66 ns/op	       0 B/op	       0 allocs/op
 ```
 
+## govalid-Specific Validators
+
+These validators are unique to govalid and don't have direct equivalents in go-playground/validator:
+
+```
+BenchmarkGoValidEnum-16               	539464647	         2.164 ns/op	       0 B/op	       0 allocs/op
+```
+
 ## Performance Summary
 
 | Validator | GoValid (ns/op) | go-playground/validator (ns/op) | Improvement |
@@ -37,20 +45,28 @@ BenchmarkGoPlaygroundRequired-16      	14232363	        83.66 ns/op	       0 B/o
 | MinLength | 11.47           | 65.94                         | **5.7x faster** |
 | Required  | 1.89            | 83.66                         | **44x faster** |
 
-## Collection Validators (govalid-only)
+## govalid-Exclusive Features
 
+### Enum Validation
+- **Enum**: Comprehensive enum validation for string, numeric, and custom types (~2.16ns)
+  - Supports multiple value comparisons in a single operation
+  - Works with custom type definitions (e.g., `type Status string`)
+  - Zero-allocation enum checking with compile-time safety
+
+### Collection Type Extension
 These validators support map and channel types, which go-playground/validator doesn't support:
 
-- **MaxItems**: slice, array, map, channel length ≤ limit
+- **MaxItems**: slice, array, map, channel length ≤ limit  
 - **MinItems**: slice, array, map, channel length ≥ limit
 
 ## Key Findings
 
 1. **Exceptional Performance**: GoValid shows 4.5x to 44x performance improvements across all validators
-2. **Sub-3ns Execution**: All collection and numeric validators execute in <3ns
+2. **Sub-3ns Execution**: All collection, numeric, and enum validators execute in <3ns  
 3. **Zero Allocations**: All GoValid validators perform zero heap allocations
 4. **Unicode Efficiency**: String length validators with Unicode support still 4.5-5.7x faster
 5. **Extended Type Support**: Collection validators work with map/channel types unsupported by playground
+6. **Enum Innovation**: First-class enum validation for multiple types with compile-time safety
 
 ## Implementation Notes
 
