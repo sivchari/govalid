@@ -17,8 +17,8 @@ var (
 	// This marker is only available for string types.
 	GoValidMarkerMaxLength = "govalid:maxlength"
 
-	// GoValidMarkerMaxItems is the marker for checking if a slice/array's length is less than or equal to a specified maximum in govalid.
-	// This marker is only available for slice and array types.
+	// GoValidMarkerMaxItems is the marker for checking if a collection's length is less than or equal to a specified maximum in govalid.
+	// This marker is available for slice, array, map, and channel types.
 	GoValidMarkerMaxItems = "govalid:maxitems"
 )
 

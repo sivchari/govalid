@@ -11,6 +11,12 @@ var (
 
 	// ErrItemsMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 5.
 	ErrItemsMaxItemsValidation = errors.New("field Items must have a maximum of 5 items")
+
+	// ErrMetadataMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 3.
+	ErrMetadataMaxItemsValidation = errors.New("field Metadata must have a maximum of 3 items")
+
+	// ErrChanFieldMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 2.
+	ErrChanFieldMaxItemsValidation = errors.New("field ChanField must have a maximum of 2 items")
 )
 
 func ValidateMaxItems(t *MaxItems) error {
@@ -20,6 +26,14 @@ func ValidateMaxItems(t *MaxItems) error {
 
 	if len(t.Items) > 5 {
 		return ErrItemsMaxItemsValidation
+	}
+
+	if len(t.Metadata) > 3 {
+		return ErrMetadataMaxItemsValidation
+	}
+
+	if len(t.ChanField) > 2 {
+		return ErrChanFieldMaxItemsValidation
 	}
 
 	return nil
