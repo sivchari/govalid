@@ -38,6 +38,11 @@ type GTE struct {
 	Age int `validate:"gte=18" json:"age"`
 }
 
+type LTE struct {
+	// +govalid:lte=100
+	Age int `validate:"lte=100" json:"age"`
+}
+
 type MaxItems struct {
 	// +govalid:maxitems=5
 	Items []string `validate:"max=5" json:"items"`

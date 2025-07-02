@@ -41,6 +41,7 @@ func Test(t *testing.T) {
 		"minitems",
 		"minlength",
 		"gte",
+		"lte",
 	}
 
 	for _, tc := range markers {
