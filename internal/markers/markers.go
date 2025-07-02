@@ -16,6 +16,10 @@ var (
 	// GoValidMarkerMaxLength is the marker for checking if a string's length is less than or equal to a specified maximum in govalid.
 	// This marker is only available for string types.
 	GoValidMarkerMaxLength = "govalid:maxlength"
+
+	// GoValidMarkerMaxItems is the marker for checking if a slice/array's length is less than or equal to a specified maximum in govalid.
+	// This marker is only available for slice and array types.
+	GoValidMarkerMaxItems = "govalid:maxitems"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -24,4 +28,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerLT:        {},
 	GoValidMarkerGT:        {},
 	GoValidMarkerMaxLength: {},
+	GoValidMarkerMaxItems:  {},
 }

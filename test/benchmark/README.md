@@ -17,6 +17,8 @@ BenchmarkGoValidMaxLength-16              	88987215	        13.48 ns/op	       0
 BenchmarkGoPlaygroundMaxLength-16         	17163094	        70.16 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidRequired-16               	1000000000	         1.013 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundRequired-16          	14326383	        81.89 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidMaxItems-16               	574773432	         1.907 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundMaxItems-16          	20432972	        58.37 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidMaxLengthError-16         	48645196	        24.79 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundMaxLengthError-16    	 6990411	       182.0 ns/op	     216 B/op	       5 allocs/op
 ```
@@ -29,6 +31,7 @@ BenchmarkGoPlaygroundMaxLengthError-16    	 6990411	       182.0 ns/op	     216 
 | LT        | 0.52            | 59.64                         | **115x faster** |
 | MaxLength | 13.48           | 70.16                         | **5.2x faster** |
 | Required  | 1.01            | 81.89                         | **81x faster** |
+| MaxItems  | 1.91            | 58.37                         | **31x faster** |
 | MaxLength (Error) | 24.79     | 182.0                      | **7.3x faster** |
 
 ## Key Findings

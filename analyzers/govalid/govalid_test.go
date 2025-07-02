@@ -37,6 +37,7 @@ func Test(t *testing.T) {
 		"lt",
 		"gt",
 		"maxlength",
+		"maxitems",
 	}
 
 	for _, tc := range markers {
