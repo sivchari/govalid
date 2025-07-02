@@ -32,6 +32,10 @@ var (
 	// GoValidMarkerGTE is the marker for checking if a value is greater than or equal to a specified minimum in govalid.
 	// This marker is only available for numeric types.
 	GoValidMarkerGTE = "govalid:gte"
+
+	// GoValidMarkerLTE is the marker for checking if a value is less than or equal to a specified maximum in govalid.
+	// This marker is only available for numeric types.
+	GoValidMarkerLTE = "govalid:lte"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -44,4 +48,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerMinItems:  {},
 	GoValidMarkerMinLength: {},
 	GoValidMarkerGTE:       {},
+	GoValidMarkerLTE:       {},
 }
