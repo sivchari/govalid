@@ -31,10 +31,21 @@ type MaxLength struct {
 type MaxItems struct {
 	// +govalid:maxitems=5
 	Items []string `validate:"max=5" json:"items"`
-	
+
 	// +govalid:maxitems=3
 	Metadata map[string]string `json:"metadata"`
-	
+
 	// +govalid:maxitems=2
+	ChanField chan int `json:"chan_field"`
+}
+
+type MinItems struct {
+	// +govalid:minitems=2
+	Items []string `validate:"min=2" json:"items"`
+
+	// +govalid:minitems=1
+	Metadata map[string]string `json:"metadata"`
+
+	// +govalid:minitems=1
 	ChanField chan int `json:"chan_field"`
 }
