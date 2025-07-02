@@ -27,3 +27,8 @@ type MaxLength struct {
 	// +govalid:maxlength=50
 	Name string `validate:"max=50" json:"name"`
 }
+
+type MaxItems struct {
+	// +govalid:maxitems=5
+	Items []string `validate:"max=5" json:"items"`
+}

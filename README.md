@@ -155,6 +155,30 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:maxitems`
+- **Description**: Ensures that a slice or array field's length does not exceed the specified maximum number of items.
+- **Example**:
+  ```go
+  type Collection struct {
+      // +govalid:maxitems=10
+      Items []string `json:"items"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateCollection(t *Collection) error {
+      if t == nil {
+          return ErrNilCollection
+      }
+
+      if len(t.Items) > 10 {
+          return ErrItemsMaxItemsValidation
+      }
+
+      return nil
+  }
+  ```
+
 
 ## License
 

@@ -191,6 +191,8 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 			v = rules.ValidateGT(pass, field, marker.Expressions)
 		case govalidmarkers.GoValidMarkerMaxLength:
 			v = rules.ValidateMaxLength(pass, field, marker.Expressions)
+		case govalidmarkers.GoValidMarkerMaxItems:
+			v = rules.ValidateMaxItems(pass, field, marker.Expressions)
 		default:
 			continue
 		}
