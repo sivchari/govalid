@@ -19,8 +19,22 @@ BenchmarkGoValidRequired-16               	1000000000	         1.013 ns/op	     
 BenchmarkGoPlaygroundRequired-16          	14326383	        81.89 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidMaxItems-16               	574773432	         1.907 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundMaxItems-16          	20432972	        58.37 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidMinLength-16              	224338778	         5.256 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundMinLength-16         	19335181	        61.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidGTE-16                    	565656739	         2.127 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundGTE-16               	18250533	        66.01 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidLTE-16                    	574773432	         2.063 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundLTE-16               	18777334	        65.50 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidMaxLengthError-16         	48645196	        24.79 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundMaxLengthError-16    	 6990411	       182.0 ns/op	     216 B/op	       5 allocs/op
+```
+
+## GoValid-Exclusive Validators
+
+Some validators are unique to GoValid and don't have direct equivalents in go-playground/validator:
+
+```
+BenchmarkGoValidEnum-16                   	587095758	         2.063 ns/op	       0 B/op	       0 allocs/op
 ```
 
 ## Performance Summary
@@ -32,15 +46,25 @@ BenchmarkGoPlaygroundMaxLengthError-16    	 6990411	       182.0 ns/op	     216 
 | MaxLength | 13.48           | 70.16                         | **5.2x faster** |
 | Required  | 1.01            | 81.89                         | **81x faster** |
 | MaxItems  | 1.91            | 58.37                         | **31x faster** |
+| MinLength | 5.26            | 61.87                         | **12x faster** |
+| GTE       | 2.13            | 66.01                         | **31x faster** |
+| LTE       | 2.06            | 65.50                         | **32x faster** |
 | MaxLength (Error) | 24.79     | 182.0                      | **7.3x faster** |
+
+### GoValid-Exclusive Performance
+
+| Validator | GoValid (ns/op) | Description |
+|-----------|-----------------|-------------|
+| Enum      | 2.06            | **Enumeration validation** |
 
 ## Key Findings
 
 1. **Exceptional Performance**: GoValid shows 5x to 115x performance improvements across all validators
-2. **Sub-nanosecond Execution**: GT/LT validators execute in ~0.5ns, Required in ~1ns
-3. **Zero Allocations**: All GoValid validators perform zero heap allocations (vs 5 allocs for playground errors)
-4. **Unicode Efficiency**: MaxLength with Unicode support still 5x faster than playground
-5. **Error Handling**: Even error cases are 7x faster with zero allocations
+2. **Unique Features**: GoValid provides enum validation with ~2ns performance
+3. **Sub-nanosecond Execution**: GT/LT validators execute in ~0.5ns, Required in ~1ns
+4. **Zero Allocations**: All GoValid validators perform zero heap allocations (vs 5 allocs for playground errors)
+5. **Unicode Efficiency**: MaxLength with Unicode support still 5x faster than playground
+6. **Error Handling**: Even error cases are 7x faster with zero allocations
 
 ## Implementation Notes
 

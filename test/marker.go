@@ -32,3 +32,28 @@ type MaxItems struct {
 	// +govalid:maxitems=5
 	Items []string `validate:"max=5" json:"items"`
 }
+
+type MinLength struct {
+	// +govalid:minlength=3
+	Name string `validate:"min=3" json:"name"`
+}
+
+type MinItems struct {
+	// +govalid:minitems=2
+	Items []string `validate:"min=2" json:"items"`
+}
+
+type GTE struct {
+	// +govalid:gte=18
+	Age int `validate:"gte=18" json:"age"`
+}
+
+type LTE struct {
+	// +govalid:lte=100
+	Score int `validate:"lte=100" json:"score"`
+}
+
+type Enum struct {
+	// +govalid:enum=admin user guest
+	Role string `json:"role"`
+}
