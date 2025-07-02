@@ -50,13 +50,13 @@ func (m *maxItemsValidator) Imports() []string {
 	return []string{}
 }
 
-// ValidateMaxItems creates a new maxItemsValidator if the field type is slice or array and the maxitems marker is present.
+// ValidateMaxItems creates a new maxItemsValidator if the field type supports len() and the maxitems marker is present.
 func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
-	
-	// Check if it's a slice or array
+
+	// Check if it's a type that supports len() (exclude strings - use maxlength instead)
 	switch typ.Underlying().(type) {
-	case *types.Slice, *types.Array:
+	case *types.Slice, *types.Array, *types.Map, *types.Chan:
 		// Valid types for maxitems
 	default:
 		return nil
