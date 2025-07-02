@@ -176,6 +176,7 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 	return analyzed
 }
 
+//nolint:cyclop
 func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Field) []validator.Validator {
 	validators := make([]validator.Validator, 0)
 
@@ -195,6 +196,8 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 			v = rules.ValidateMaxItems(pass, field, marker.Expressions)
 		case govalidmarkers.GoValidMarkerMinItems:
 			v = rules.ValidateMinItems(pass, field, marker.Expressions)
+		case govalidmarkers.GoValidMarkerMinLength:
+			v = rules.ValidateMinLength(pass, field, marker.Expressions)
 		default:
 			continue
 		}

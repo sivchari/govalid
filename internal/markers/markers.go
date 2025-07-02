@@ -17,6 +17,10 @@ var (
 	// This marker is only available for string types.
 	GoValidMarkerMaxLength = "govalid:maxlength"
 
+	// GoValidMarkerMinLength is the marker for checking if a string's length is greater than or equal to a specified minimum in govalid.
+	// This marker is only available for string types.
+	GoValidMarkerMinLength = "govalid:minlength"
+
 	// GoValidMarkerMaxItems is the marker for checking if a collection's length is less than or equal to a specified maximum in govalid.
 	// This marker is available for slice, array, map, and channel types.
 	GoValidMarkerMaxItems = "govalid:maxitems"
@@ -34,4 +38,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerMaxLength: {},
 	GoValidMarkerMaxItems:  {},
 	GoValidMarkerMinItems:  {},
+	GoValidMarkerMinLength: {},
 }
