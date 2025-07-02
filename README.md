@@ -242,7 +242,7 @@ govalid supports the following markers:
   ```
 
 ### `govalid:enum`
-- **Description**: Ensures that a field value is within a specified set of allowed values. Supports string, numeric, and custom types with comparable values.
+- **Description**: Ensures that a field value is within a specified set of allowed values. Supports string, numeric, and custom types with comparable values. Values should be comma-separated.
 - **Example**:
   ```go
   // Custom types
@@ -251,19 +251,19 @@ govalid supports the following markers:
 
   type User struct {
       // String enum
-      // +govalid:enum=admin user guest
+      // +govalid:enum=admin,user,guest
       Role string `json:"role"`
       
       // Numeric enum
-      // +govalid:enum=1 2 3
+      // +govalid:enum=1,2,3
       Level int `json:"level"`
       
       // Custom string type enum
-      // +govalid:enum=manager developer tester
+      // +govalid:enum=manager,developer,tester
       UserRole UserRole `json:"user_role"`
       
       // Custom numeric type enum
-      // +govalid:enum=10 20 30
+      // +govalid:enum=10,20,30
       Priority Priority `json:"priority"`
   }
   ```

@@ -27,6 +27,7 @@ const enumKey = "%s-enum"
 
 func (e *enumValidator) Validate() string {
 	fieldName := e.FieldName()
+
 	var conditions []string
 
 	for _, value := range e.enumValues {
@@ -54,6 +55,7 @@ func (e *enumValidator) Err() string {
 	validator.GeneratorMemory[fmt.Sprintf(enumKey, e.FieldName())] = true
 
 	enumList := strings.Join(e.enumValues, ", ")
+
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@EnumValidation is the error returned when the value is not in the allowed enum values [%s].
 	Err@EnumValidation = errors.New("field @ must be one of [%s]")`, "@", e.FieldName()), enumList, enumList)
@@ -70,14 +72,18 @@ func (e *enumValidator) Imports() []string {
 // ValidateEnum creates a new enumValidator for string, numeric, and custom types.
 func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
-	
+
 	enumValue, ok := expressions[markers.GoValidMarkerEnum]
 	if !ok {
 		return nil
 	}
 
-	// Parse space-separated enum values
-	enumValues := strings.Fields(enumValue)
+	enumValues := strings.Split(enumValue, ",")
+
+	for i, v := range enumValues {
+		enumValues[i] = strings.TrimSpace(v)
+	}
+
 	if len(enumValues) == 0 {
 		return nil
 	}
@@ -89,14 +95,15 @@ func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]s
 	}
 
 	// Determine the type and set appropriate flags
+	//nolint:exhaustive
 	switch underlying := typ.Underlying().(type) {
 	case *types.Basic:
 		switch underlying.Kind() {
 		case types.String:
 			validator.isString = true
 		case types.Int, types.Int8, types.Int16, types.Int32, types.Int64,
-			 types.Uint, types.Uint8, types.Uint16, types.Uint32, types.Uint64,
-			 types.Float32, types.Float64:
+			types.Uint, types.Uint8, types.Uint16, types.Uint32, types.Uint64,
+			types.Float32, types.Float64:
 			validator.isNumeric = true
 		default:
 			// Unsupported basic type

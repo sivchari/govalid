@@ -71,18 +71,18 @@ type Priority int
 
 type Enum struct {
 	// String enum
-	// +govalid:enum=admin user guest
+	// +govalid:enum=admin,user,guest
 	Role string `json:"role"`
 
 	// Numeric enum
-	// +govalid:enum=1 2 3
+	// +govalid:enum=1,2,3
 	Level int `json:"level"`
 
 	// Custom string type enum
-	// +govalid:enum=manager developer tester
+	// +govalid:enum=manager,developer,tester
 	UserRole UserRole `json:"user_role"`
 
 	// Custom numeric type enum
-	// +govalid:enum=10 20 30
+	// +govalid:enum=10,20,30
 	Priority Priority `json:"priority"`
 }

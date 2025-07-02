@@ -39,6 +39,7 @@ var (
 
 	// GoValidMarkerEnum is the marker for checking if a field value is within a specified set of allowed values in govalid.
 	// This marker is available for string, numeric, and custom types with comparable values.
+	// Values should be comma-separated (e.g., admin,user,guest).
 	GoValidMarkerEnum = "govalid:enum"
 )
 
