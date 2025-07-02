@@ -36,6 +36,10 @@ var (
 	// GoValidMarkerLTE is the marker for checking if a value is less than or equal to a specified maximum in govalid.
 	// This marker is only available for numeric types.
 	GoValidMarkerLTE = "govalid:lte"
+
+	// GoValidMarkerEnum is the marker for checking if a field value is within a specified set of allowed values in govalid.
+	// This marker is available for string, numeric, and custom types with comparable values.
+	GoValidMarkerEnum = "govalid:enum"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -49,4 +53,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerMinLength: {},
 	GoValidMarkerGTE:       {},
 	GoValidMarkerLTE:       {},
+	GoValidMarkerEnum:      {},
 }

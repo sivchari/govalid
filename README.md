@@ -241,6 +241,69 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:enum`
+- **Description**: Ensures that a field value is within a specified set of allowed values. Supports string, numeric, and custom types with comparable values.
+- **Example**:
+  ```go
+  // Custom types
+  type UserRole string
+  type Priority int
+
+  type User struct {
+      // String enum
+      // +govalid:enum=admin user guest
+      Role string `json:"role"`
+      
+      // Numeric enum
+      // +govalid:enum=1 2 3
+      Level int `json:"level"`
+      
+      // Custom string type enum
+      // +govalid:enum=manager developer tester
+      UserRole UserRole `json:"user_role"`
+      
+      // Custom numeric type enum
+      // +govalid:enum=10 20 30
+      Priority Priority `json:"priority"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateUser(t *User) error {
+      if t == nil {
+          return ErrNilUser
+      }
+
+      if t.Role != "admin" && t.Role != "user" && t.Role != "guest" {
+          return ErrRoleEnumValidation
+      }
+
+      if t.Level != 1 && t.Level != 2 && t.Level != 3 {
+          return ErrLevelEnumValidation
+      }
+
+      if t.UserRole != "manager" && t.UserRole != "developer" && t.UserRole != "tester" {
+          return ErrUserRoleEnumValidation
+      }
+
+      if t.Priority != 10 && t.Priority != 20 && t.Priority != 30 {
+          return ErrPriorityEnumValidation
+      }
+
+      return nil
+  }
+  ```
+
+## govalid-Specific Features
+
+Some markers are unique to govalid and don't have direct equivalents in go-playground/validator:
+
+- **`govalid:enum`**: Comprehensive enum validation for string, numeric, and custom types
+- **`govalid:maxitems`**: Extended support for maps and channels in addition to slices/arrays  
+- **`govalid:minitems`**: Extended support for maps and channels in addition to slices/arrays
+
+These features provide zero-allocation validation with compile-time safety.
+
 
 ## License
 
