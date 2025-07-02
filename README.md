@@ -132,7 +132,7 @@ govalid supports the following markers:
   ```
 
 ### `govalid:maxlength`
-- **Description**: Ensures that a string field's length does not exceed the specified maximum value.
+- **Description**: Ensures that a string field's length does not exceed the specified maximum value (Unicode-aware).
 - **Example**:
   ```go
   type User struct {
@@ -147,7 +147,7 @@ govalid supports the following markers:
           return ErrNilUser
       }
 
-      if len(t.Username) > 50 {
+      if utf8.RuneCountInString(t.Username) > 50 {
           return ErrUsernameMaxLengthValidation
       }
 
@@ -155,13 +155,40 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:minlength`
+- **Description**: Ensures that a string field's length is at least the specified minimum value (Unicode-aware).
+- **Example**:
+  ```go
+  type User struct {
+      // +govalid:minlength=3
+      Username string `json:"username"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateUser(t *User) error {
+      if t == nil {
+          return ErrNilUser
+      }
+
+      if utf8.RuneCountInString(t.Username) < 3 {
+          return ErrUsernameMinLengthValidation
+      }
+
+      return nil
+  }
+  ```
+
 ### `govalid:maxitems`
-- **Description**: Ensures that a slice or array field's length does not exceed the specified maximum number of items.
+- **Description**: Ensures that a collection field's length does not exceed the specified maximum number of items. Supports slice, array, map, and channel types.
 - **Example**:
   ```go
   type Collection struct {
       // +govalid:maxitems=10
       Items []string `json:"items"`
+      
+      // +govalid:maxitems=5
+      Metadata map[string]string `json:"metadata"`
   }
   ```
 - **Generated Code**:
@@ -173,6 +200,41 @@ govalid supports the following markers:
 
       if len(t.Items) > 10 {
           return ErrItemsMaxItemsValidation
+      }
+
+      if len(t.Metadata) > 5 {
+          return ErrMetadataMaxItemsValidation
+      }
+
+      return nil
+  }
+  ```
+
+### `govalid:minitems`
+- **Description**: Ensures that a collection field's length is at least the specified minimum number of items. Supports slice, array, map, and channel types.
+- **Example**:
+  ```go
+  type Collection struct {
+      // +govalid:minitems=1
+      Items []string `json:"items"`
+      
+      // +govalid:minitems=2
+      Tags []string `json:"tags"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateCollection(t *Collection) error {
+      if t == nil {
+          return ErrNilCollection
+      }
+
+      if len(t.Items) < 1 {
+          return ErrItemsMinItemsValidation
+      }
+
+      if len(t.Tags) < 2 {
+          return ErrTagsMinItemsValidation
       }
 
       return nil
