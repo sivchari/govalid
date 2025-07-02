@@ -28,6 +28,10 @@ var (
 	// GoValidMarkerMinItems is the marker for checking if a collection's length is greater than or equal to a specified minimum in govalid.
 	// This marker is available for slice, array, map, and channel types.
 	GoValidMarkerMinItems = "govalid:minitems"
+
+	// GoValidMarkerGTE is the marker for checking if a value is greater than or equal to a specified minimum in govalid.
+	// This marker is only available for numeric types.
+	GoValidMarkerGTE = "govalid:gte"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -39,4 +43,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerMaxItems:  {},
 	GoValidMarkerMinItems:  {},
 	GoValidMarkerMinLength: {},
+	GoValidMarkerGTE:       {},
 }

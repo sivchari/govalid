@@ -33,6 +33,11 @@ type MinLength struct {
 	Name string `validate:"min=3" json:"name"`
 }
 
+type GTE struct {
+	// +govalid:gte=18
+	Age int `validate:"gte=18" json:"age"`
+}
+
 type MaxItems struct {
 	// +govalid:maxitems=5
 	Items []string `validate:"max=5" json:"items"`
