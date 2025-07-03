@@ -64,7 +64,6 @@ type MinItems struct {
 	// +govalid:minitems=1
 	ChanField chan int `json:"chan_field"`
 }
-
 // Custom types for enum testing
 type UserRole string
 type Priority int
@@ -95,4 +94,9 @@ type Email struct {
 type UUID struct {
 	// +govalid:uuid
 	UUID string `validate:"uuid" json:"uuid"`
+}
+
+type URL struct {
+	// +govalid:url
+	URL string `validate:"url" json:"url"`
 }

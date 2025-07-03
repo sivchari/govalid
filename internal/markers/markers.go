@@ -49,6 +49,10 @@ var (
 	// GoValidMarkerUUID is the marker for checking if a string is a valid UUID in govalid.
 	// This marker is only available for string types and follows RFC 4122 UUID specification.
 	GoValidMarkerUUID = "govalid:uuid"
+
+	// GoValidMarkerURL is the marker for checking if a string is a valid URL in govalid.
+	// This marker is only available for string types and follows RFC 3986 URL specification.
+	GoValidMarkerURL = "govalid:url"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -65,4 +69,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerEnum:      {},
 	GoValidMarkerEmail:     {},
 	GoValidMarkerUUID:      {},
+	GoValidMarkerURL:       {},
 }

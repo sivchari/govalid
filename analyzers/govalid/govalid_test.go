@@ -45,6 +45,7 @@ func Test(t *testing.T) {
 		"enum",
 		"email",
 		"uuid",
+		"url",
 	}
 
 	for _, tc := range markers {
