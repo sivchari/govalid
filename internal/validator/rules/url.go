@@ -30,22 +30,19 @@ func (u *urlValidator) FieldName() string {
 	return u.field.Names[0].Name
 }
 
-func (u *urlValidator) Err() string {
-	fieldName := u.FieldName()
-	
-	var result strings.Builder
-	
-	// Generate isValidURL function only once
-	if !validator.GeneratorMemory["url-function-generated"] {
-		validator.GeneratorMemory["url-function-generated"] = true
-		result.WriteString(`
+func (u *urlValidator) getURLValidationHeader() string {
+	return `
 	// isValidURL validates URL format manually for maximum performance
 	// Validates HTTP/HTTPS URLs with basic structure checking
 	isValidURL = func(url string) bool {
 		// Check minimum length
 		if len(url) < 10 { // "http://a.b" = 10 chars minimum
 			return false
-		}
+		}`
+}
+
+func (u *urlValidator) getURLProtocolValidation() string {
+	return `
 		
 		// Check protocol
 		var rest string
@@ -83,7 +80,11 @@ func (u *urlValidator) Err() string {
 		
 		if len(rest) == 0 {
 			return false
-		}
+		}`
+}
+
+func (u *urlValidator) getURLHostValidation() string {
+	return `
 		
 		// Find path, query, or fragment separator
 		pathIndex := -1
@@ -133,7 +134,11 @@ func (u *urlValidator) Err() string {
 					return false
 				}
 			}
-		}
+		}`
+}
+
+func (u *urlValidator) getURLHostnameValidation() string {
+	return `
 		
 		// Validate hostname
 		if len(host) == 0 || len(host) > 253 {
@@ -184,7 +189,11 @@ func (u *urlValidator) Err() string {
 		
 		if len(labels) < 2 {
 			return false
-		}
+		}`
+}
+
+func (u *urlValidator) getURLPathValidation() string {
+	return `
 		
 		// Basic path/query/fragment validation (if present)
 		if pathPart != "" {
@@ -202,19 +211,39 @@ func (u *urlValidator) Err() string {
 		}
 		
 		return true
-	}`)
+	}`
+}
+
+func (u *urlValidator) generateValidationFunction() string {
+	return u.getURLValidationHeader() +
+		u.getURLProtocolValidation() +
+		u.getURLHostValidation() +
+		u.getURLHostnameValidation() +
+		u.getURLPathValidation()
+}
+
+func (u *urlValidator) Err() string {
+	fieldName := u.FieldName()
+
+	var result strings.Builder
+
+	// Generate isValidURL function only once
+	if !validator.GeneratorMemory["url-function-generated"] {
+		validator.GeneratorMemory["url-function-generated"] = true
+
+		result.WriteString(u.generateValidationFunction())
 	}
-	
+
 	if validator.GeneratorMemory[fmt.Sprintf(urlKey, fieldName)] {
 		return result.String()
 	}
 
 	validator.GeneratorMemory[fmt.Sprintf(urlKey, fieldName)] = true
 
-	result.WriteString(fmt.Sprintf(strings.ReplaceAll(`
+	result.WriteString(strings.ReplaceAll(`
 	// Err@URLValidation is the error returned when the field is not a valid URL.
-	Err@URLValidation = errors.New("field @ must be a valid URL")`, "@", fieldName)))
-	
+	Err@URLValidation = errors.New("field @ must be a valid URL")`, "@", fieldName))
+
 	return result.String()
 }
 
@@ -227,7 +256,7 @@ func (u *urlValidator) Imports() []string {
 }
 
 // ValidateURL creates a new urlValidator for string types.
-func ValidateURL(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateURL(pass *codegen.Pass, field *ast.Field, _ map[string]string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type
