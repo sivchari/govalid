@@ -36,6 +36,10 @@ var (
 	// GoValidMarkerLTE is the marker for checking if a value is less than or equal to a specified maximum in govalid.
 	// This marker is only available for numeric types.
 	GoValidMarkerLTE = "govalid:lte"
+
+	// GoValidMarkerEmail is the marker for checking if a string is a valid email address in govalid.
+	// This marker is only available for string types and follows HTML5 email validation specification.
+	GoValidMarkerEmail = "govalid:email"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -49,4 +53,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerMinLength: {},
 	GoValidMarkerGTE:       {},
 	GoValidMarkerLTE:       {},
+	GoValidMarkerEmail:     {},
 }

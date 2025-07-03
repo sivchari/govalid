@@ -23,6 +23,8 @@ BenchmarkGoValidMinLength-16          	100000000	        11.47 ns/op	       0 B/
 BenchmarkGoPlaygroundMinLength-16     	18134911	        65.94 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidRequired-16           	638489334	         1.892 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundRequired-16      	14232363	        83.66 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidEmail-16              	 5443528	       204.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundEmail-16         	 1960687	       619.4 ns/op	      89 B/op	       5 allocs/op
 ```
 
 ## Performance Summary
@@ -36,6 +38,7 @@ BenchmarkGoPlaygroundRequired-16      	14232363	        83.66 ns/op	       0 B/o
 | MinItems  | 2.75            | 76.50                         | **28x faster** |
 | MinLength | 11.47           | 65.94                         | **5.7x faster** |
 | Required  | 1.89            | 83.66                         | **44x faster** |
+| Email     | 204.8           | 619.4                         | **3.0x faster** |
 
 ## Collection Validators (govalid-only)
 
@@ -46,11 +49,12 @@ These validators support map and channel types, which go-playground/validator do
 
 ## Key Findings
 
-1. **Exceptional Performance**: GoValid shows 4.5x to 44x performance improvements across all validators
+1. **Exceptional Performance**: GoValid shows 3.0x to 44x performance improvements across all validators
 2. **Sub-3ns Execution**: All collection and numeric validators execute in <3ns
-3. **Zero Allocations**: All GoValid validators perform zero heap allocations
+3. **Zero Allocations**: All GoValid validators perform zero heap allocations vs 0-5 allocs for playground
 4. **Unicode Efficiency**: String length validators with Unicode support still 4.5-5.7x faster
-5. **Extended Type Support**: Collection validators work with map/channel types unsupported by playground
+5. **Regex Performance**: Email validation 3x faster with zero allocations vs 89B/5 allocs
+6. **Extended Type Support**: Collection validators work with map/channel types unsupported by playground
 
 ## Implementation Notes
 

@@ -241,6 +241,30 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:email`
+- **Description**: Ensures that a string field is a valid email address using HTML5-compliant validation.
+- **Example**:
+  ```go
+  type User struct {
+      // +govalid:email
+      Email string `validate:"email" json:"email"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateUser(t *User) error {
+      if t == nil {
+          return ErrNilUser
+      }
+
+      if !emailRegex.MatchString(t.Email) {
+          return ErrEmailEmailValidation
+      }
+
+      return nil
+  }
+  ```
+
 
 ## License
 

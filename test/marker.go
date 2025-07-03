@@ -64,3 +64,8 @@ type MinItems struct {
 	// +govalid:minitems=1
 	ChanField chan int `json:"chan_field"`
 }
+
+type Email struct {
+	// +govalid:email
+	Email string `validate:"email" json:"email"`
+}
