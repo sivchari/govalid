@@ -1,3 +1,4 @@
+// Package rules implements validation rules for fields in structs.
 package rules
 
 import (
@@ -21,8 +22,8 @@ const uuidKey = "%s-uuid"
 
 func (u *uuidValidator) Validate() string {
 	fieldName := u.FieldName()
-	// Use external helper function for better maintainability
-	return fmt.Sprintf("!validationhelper.IsValidUUID(t.%s)", fieldName)
+	// Generate inline manual UUID validation for maximum performance
+	return fmt.Sprintf("!isValidUUID(t.%s)", fieldName)
 }
 
 func (u *uuidValidator) FieldName() string {
@@ -31,34 +32,79 @@ func (u *uuidValidator) FieldName() string {
 
 func (u *uuidValidator) Err() string {
 	fieldName := u.FieldName()
-
+	
 	var result strings.Builder
-
-	// No need to generate inline function - using external helper
+	
+	// Generate isValidUUID function only once
+	if !validator.GeneratorMemory["uuid-function-generated"] {
+		validator.GeneratorMemory["uuid-function-generated"] = true
+		result.WriteString(`
+	// isValidUUID validates UUID format manually for maximum performance
+	// Validates RFC 4122 format: 8-4-4-4-12 hex digits with hyphens
+	isValidUUID = func(s string) bool {
+		// Check length: 36 characters (32 hex + 4 hyphens)
+		if len(s) != 36 {
+			return false
+		}
+		
+		// Check hyphen positions: 8-4-4-4-12
+		if s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' {
+			return false
+		}
+		
+		// Check hex characters and version/variant
+		for i := 0; i < 36; i++ {
+			if i == 8 || i == 13 || i == 18 || i == 23 {
+				continue // skip hyphens
+			}
+			
+			c := s[i]
+			if !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
+				return false
+			}
+		}
+		
+		// Check version (position 14): must be 1-5
+		version := s[14]
+		if version < '1' || version > '5' {
+			return false
+		}
+		
+		// Check variant (position 19): must be 8, 9, A, B (case insensitive)
+		variant := s[19]
+		if !(variant == '8' || variant == '9' || 
+			 variant == 'A' || variant == 'a' || 
+			 variant == 'B' || variant == 'b') {
+			return false
+		}
+		
+		return true
+	}`)
+	}
+	
 	if validator.GeneratorMemory[fmt.Sprintf(uuidKey, fieldName)] {
 		return result.String()
 	}
 
 	validator.GeneratorMemory[fmt.Sprintf(uuidKey, fieldName)] = true
 
-	result.WriteString(strings.ReplaceAll(`
+	result.WriteString(fmt.Sprintf(strings.ReplaceAll(`
 	// Err@UUIDValidation is the error returned when the field is not a valid UUID.
-	Err@UUIDValidation = errors.New("field @ must be a valid UUID")`, `@`, fieldName))
-
+	Err@UUIDValidation = errors.New("field @ must be a valid UUID")`, "@", fieldName)))
+	
 	return result.String()
 }
 
 func (u *uuidValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@UUIDValidation", `@`, u.FieldName())
+	return strings.ReplaceAll("Err@UUIDValidation", "@", u.FieldName())
 }
 
 func (u *uuidValidator) Imports() []string {
-	// Import validation helper package
-	return []string{"github.com/sivchari/govalid/validation/validationhelper"}
+	return []string{} // No imports needed for manual validation
 }
 
 // ValidateUUID creates a new uuidValidator for string types.
-func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string) validator.Validator {
+func ValidateUUID(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type
