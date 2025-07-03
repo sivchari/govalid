@@ -36,6 +36,10 @@ var (
 	// GoValidMarkerLTE is the marker for checking if a value is less than or equal to a specified maximum in govalid.
 	// This marker is only available for numeric types.
 	GoValidMarkerLTE = "govalid:lte"
+
+	// GoValidMarkerURL is the marker for checking if a string is a valid URL in govalid.
+	// This marker is only available for string types and follows RFC 3986 URL specification.
+	GoValidMarkerURL = "govalid:url"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -49,4 +53,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerMinLength: {},
 	GoValidMarkerGTE:       {},
 	GoValidMarkerLTE:       {},
+	GoValidMarkerURL:       {},
 }

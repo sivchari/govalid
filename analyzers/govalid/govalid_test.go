@@ -42,6 +42,7 @@ func Test(t *testing.T) {
 		"minlength",
 		"gte",
 		"lte",
+		"url",
 	}
 
 	for _, tc := range markers {
