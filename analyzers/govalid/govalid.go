@@ -202,6 +202,8 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 			v = rules.ValidateGTE(pass, field, marker.Expressions)
 		case govalidmarkers.GoValidMarkerLTE:
 			v = rules.ValidateLTE(pass, field, marker.Expressions)
+		case govalidmarkers.GoValidMarkerURL:
+			v = rules.ValidateURL(pass, field, marker.Expressions)
 		default:
 			continue
 		}

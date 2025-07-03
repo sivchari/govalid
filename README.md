@@ -241,6 +241,30 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:url`
+- **Description**: Ensures that a string field is a valid URL using HTTP/HTTPS protocol validation.
+- **Example**:
+  ```go
+  type Resource struct {
+      // +govalid:url
+      URL string `validate:"url" json:"url"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateResource(t *Resource) error {
+      if t == nil {
+          return ErrNilResource
+      }
+
+      if !urlRegex.MatchString(t.URL) {
+          return ErrURLURLValidation
+      }
+
+      return nil
+  }
+  ```
+
 
 ## License
 
