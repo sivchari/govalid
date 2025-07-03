@@ -294,6 +294,30 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:email`
+- **Description**: Ensures that a string field is a valid email address using HTML5-compliant validation.
+- **Example**:
+  ```go
+  type User struct {
+      // +govalid:email
+      Email string `validate:"email" json:"email"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateUser(t *User) error {
+      if t == nil {
+          return ErrNilUser
+      }
+
+      if !emailRegex.MatchString(t.Email) {
+          return ErrEmailEmailValidation
+      }
+
+      return nil
+  }
+  ```
+
 ## govalid-Specific Features
 
 Some markers are unique to govalid and don't have direct equivalents in go-playground/validator:
@@ -303,7 +327,6 @@ Some markers are unique to govalid and don't have direct equivalents in go-playg
 - **`govalid:minitems`**: Extended support for maps and channels in addition to slices/arrays
 
 These features provide zero-allocation validation with compile-time safety.
-
 
 ## License
 

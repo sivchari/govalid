@@ -43,6 +43,7 @@ func Test(t *testing.T) {
 		"gte",
 		"lte",
 		"enum",
+		"email",
 	}
 
 	for _, tc := range markers {
