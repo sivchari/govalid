@@ -30,15 +30,8 @@ func (u *uuidValidator) FieldName() string {
 	return u.field.Names[0].Name
 }
 
-func (u *uuidValidator) Err() string {
-	fieldName := u.FieldName()
-	
-	var result strings.Builder
-	
-	// Generate isValidUUID function only once
-	if !validator.GeneratorMemory["uuid-function-generated"] {
-		validator.GeneratorMemory["uuid-function-generated"] = true
-		result.WriteString(`
+func (u *uuidValidator) getUUIDValidationHeader() string {
+	return `
 	// isValidUUID validates UUID format manually for maximum performance
 	// Validates RFC 4122 format: 8-4-4-4-12 hex digits with hyphens
 	isValidUUID = func(s string) bool {
@@ -50,7 +43,11 @@ func (u *uuidValidator) Err() string {
 		// Check hyphen positions: 8-4-4-4-12
 		if s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' {
 			return false
-		}
+		}`
+}
+
+func (u *uuidValidator) getUUIDHexValidation() string {
+	return `
 		
 		// Check hex characters and version/variant
 		for i := 0; i < 36; i++ {
@@ -62,7 +59,11 @@ func (u *uuidValidator) Err() string {
 			if !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
 				return false
 			}
-		}
+		}`
+}
+
+func (u *uuidValidator) getUUIDVersionVariantValidation() string {
+	return `
 		
 		// Check version (position 14): must be 1-5
 		version := s[14]
@@ -79,19 +80,37 @@ func (u *uuidValidator) Err() string {
 		}
 		
 		return true
-	}`)
+	}`
+}
+
+func (u *uuidValidator) generateValidationFunction() string {
+	return u.getUUIDValidationHeader() +
+		u.getUUIDHexValidation() +
+		u.getUUIDVersionVariantValidation()
+}
+
+func (u *uuidValidator) Err() string {
+	fieldName := u.FieldName()
+
+	var result strings.Builder
+
+	// Generate isValidUUID function only once
+	if !validator.GeneratorMemory["uuid-function-generated"] {
+		validator.GeneratorMemory["uuid-function-generated"] = true
+
+		result.WriteString(u.generateValidationFunction())
 	}
-	
+
 	if validator.GeneratorMemory[fmt.Sprintf(uuidKey, fieldName)] {
 		return result.String()
 	}
 
 	validator.GeneratorMemory[fmt.Sprintf(uuidKey, fieldName)] = true
 
-	result.WriteString(fmt.Sprintf(strings.ReplaceAll(`
+	result.WriteString(strings.ReplaceAll(`
 	// Err@UUIDValidation is the error returned when the field is not a valid UUID.
-	Err@UUIDValidation = errors.New("field @ must be a valid UUID")`, "@", fieldName)))
-	
+	Err@UUIDValidation = errors.New("field @ must be a valid UUID")`, "@", fieldName))
+
 	return result.String()
 }
 
@@ -104,7 +123,7 @@ func (u *uuidValidator) Imports() []string {
 }
 
 // ValidateUUID creates a new uuidValidator for string types.
-func ValidateUUID(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type
