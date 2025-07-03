@@ -318,6 +318,29 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:url`
+- **Description**: Ensures that a string field is a valid URL using HTTP/HTTPS protocol validation.
+- **Example**:
+  ```go
+  type Resource struct {
+      // +govalid:url
+      URL string `validate:"url" json:"url"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateResource(t *Resource) error {
+      if t == nil {
+          return ErrNilResource
+      }
+
+      if !urlRegex.MatchString(t.URL) {
+          return ErrURLURLValidation
+      }
+
+      return nil
+  }
+  ```
 ## govalid-Specific Features
 
 Some markers are unique to govalid and don't have direct equivalents in go-playground/validator:
@@ -325,6 +348,9 @@ Some markers are unique to govalid and don't have direct equivalents in go-playg
 - **`govalid:enum`**: Comprehensive enum validation for string, numeric, and custom types
 - **`govalid:maxitems`**: Extended support for maps and channels in addition to slices/arrays  
 - **`govalid:minitems`**: Extended support for maps and channels in addition to slices/arrays
+- **`govalid:email`**: HTML5-compliant email validation
+- **`govalid:url`**: HTTP/HTTPS URL validation with manual parsing for optimal performance
+- **`govalid:uuid`**: RFC 4122 UUID validation
 
 These features provide zero-allocation validation with compile-time safety.
 
