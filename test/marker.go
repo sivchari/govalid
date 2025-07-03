@@ -86,3 +86,8 @@ type Enum struct {
 	// +govalid:enum=10,20,30
 	Priority Priority `json:"priority"`
 }
+
+type Email struct {
+	// +govalid:email
+	Email string `validate:"email" json:"email"`
+}
