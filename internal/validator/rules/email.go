@@ -30,7 +30,6 @@ func (e *emailValidator) FieldName() string {
 	return e.field.Names[0].Name
 }
 
-
 func (e *emailValidator) Err() string {
 	fieldName := e.FieldName()
 
