@@ -114,6 +114,16 @@ go test ./benchmark/ -bench=Benchmark.*{MarkerName} -benchmem
 
 # 6. Update benchmark README
 # Edit test/benchmark/README.md with results
+
+# 7. Run lint checks and fix any issues
+cd .. && make golangci-lint
+
+# 8. Re-run benchmarks after any optimization changes
+# If code changes were made to fix lint issues or optimize performance:
+cd test && go test ./benchmark/ -bench=Benchmark.*{MarkerName} -benchmem
+
+# 9. Update benchmark README again if performance changed
+# Edit test/benchmark/README.md with updated results
 ```
 
 ### 5. Documentation Updates
@@ -164,6 +174,20 @@ func (v *{validator}Validator) Err() string {
     // Only generate error variables, no inline functions
 }
 ```
+
+**Performance optimization cycle for helper functions:**
+1. **Initial implementation**: Focus on correctness and functionality
+2. **Lint compliance**: Run `make golangci-lint` and fix all issues
+3. **Function decomposition**: Break complex functions into smaller, optimized components
+4. **Benchmark verification**: Ensure optimizations improve performance
+5. **Documentation update**: Update benchmark README with improved results
+
+**Helper function best practices:**
+- **Decompose complex logic**: Break functions into smaller, focused components
+- **Minimize allocations**: Avoid `strings.Split`, `strings.Contains` in hot paths
+- **Use manual parsing**: Character-by-character parsing for zero allocations
+- **Optimize for compiler**: Small functions are more likely to be inlined
+- **Lint compliance**: Ensure all helper functions pass golangci-lint checks
 
 ## 🔧 Advanced Technical Patterns
 
@@ -260,6 +284,35 @@ Based on MaxLength implementation:
 3. **Test Structure**: Keep boundary value tests simple and focused
 4. **Error Generation**: Use GeneratorMemory to avoid duplicate error definitions
 5. **Template Formatting**: Use consistent indentation and error message format
+6. **Lint Compliance**: Always run `make golangci-lint` after implementation changes
+7. **Performance Regression**: Re-run benchmarks after any code changes (lint fixes, refactoring)
+8. **Documentation Updates**: Always update benchmark README if performance numbers change
+
+## 🔄 Post-Implementation Workflow
+
+### Lint and Optimization Cycle
+```bash
+# After initial implementation
+make golangci-lint
+
+# If lint issues found:
+# 1. Fix lint issues (may involve code refactoring)
+# 2. Re-run benchmarks to check for performance changes
+go test ./benchmark/ -bench=Benchmark.*{MarkerName} -benchmem
+
+# 3. Update benchmark README if numbers changed
+# 4. Verify tests still pass
+go test ./unit/ -v
+
+# 5. Re-run lint to ensure fixes are correct
+make golangci-lint
+```
+
+### Performance Monitoring
+- **Before optimization**: Record baseline performance
+- **After lint fixes**: Check for performance impact (usually positive due to better compiler optimization)
+- **Document improvements**: Update README with new performance numbers
+- **Verify against competitors**: Ensure go-playground/validator comparison is still accurate
 
 ## 📝 Commit Message Pattern
 ```
