@@ -107,6 +107,30 @@ govalid supports the following markers:
   }
   ```
 
+### `govalid:lte`
+- **Description**: Ensures that a numeric field is less than or equal to a specified value.
+- **Example**:
+  ```go
+  // +govalid:lte=65
+  type Profile struct {
+      Age int `json:"age"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateProfile(t *Profile) error {
+      if t == nil {
+          return ErrNilProfile
+      }
+
+      if !(t.Age <= 65) {
+          return ErrAgeLTEValidation
+      }
+
+      return nil
+  }
+  ```
+
 ### `govalid:gt`
 - **Description**: Ensures that a numeric field is greater than a specified value.
 - **Example**:
@@ -125,6 +149,30 @@ govalid supports the following markers:
 
       if t.Age <= 100 {
           return ErrAgeGtValidation
+      }
+
+      return nil
+  }
+  ```
+
+### `govalid:gte`
+- **Description**: Ensures that a numeric field is greater than or equal to a specified value.
+- **Example**:
+  ```go
+  // +govalid:gte=18
+  type Profile struct {
+      Age int `json:"age"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateProfile(t *Profile) error {
+      if t == nil {
+          return ErrNilProfile
+      }
+
+      if !(t.Age >= 18) {
+          return ErrAgeGTEValidation
       }
 
       return nil
@@ -334,25 +382,67 @@ govalid supports the following markers:
           return ErrNilResource
       }
 
-      if !urlRegex.MatchString(t.URL) {
+      if !validationhelper.IsValidURL(t.URL) {
           return ErrURLURLValidation
       }
 
       return nil
   }
   ```
+
+### `govalid:uuid`
+- **Description**: Ensures that a string field is a valid UUID following RFC 4122 format.
+- **Example**:
+  ```go
+  type Resource struct {
+      // +govalid:uuid
+      ID string `json:"id"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateResource(t *Resource) error {
+      if t == nil {
+          return ErrNilResource
+      }
+
+      if !isValidUUID(t.ID) {
+          return ErrIDUUIDValidation
+      }
+
+      return nil
+  }
+  ```
+
 ## govalid-Specific Features
 
-Some markers are unique to govalid and don't have direct equivalents in go-playground/validator:
+govalid supports all common validation markers with performance-optimized implementations:
 
-- **`govalid:enum`**: Comprehensive enum validation for string, numeric, and custom types
-- **`govalid:maxitems`**: Extended support for maps and channels in addition to slices/arrays  
-- **`govalid:minitems`**: Extended support for maps and channels in addition to slices/arrays
-- **`govalid:email`**: HTML5-compliant email validation
+**Numeric Validators:**
+- **`govalid:gt`**: Greater than validation
+- **`govalid:gte`**: Greater than or equal validation  
+- **`govalid:lt`**: Less than validation
+- **`govalid:lte`**: Less than or equal validation
+
+**String Validators:**
+- **`govalid:minlength`**: Minimum string length (Unicode-aware)
+- **`govalid:maxlength`**: Maximum string length (Unicode-aware)
+- **`govalid:email`**: HTML5-compliant email validation with zero allocations
 - **`govalid:url`**: HTTP/HTTPS URL validation with manual parsing for optimal performance
-- **`govalid:uuid`**: RFC 4122 UUID validation
+- **`govalid:uuid`**: RFC 4122 UUID validation with inline functions
 
-These features provide zero-allocation validation with compile-time safety.
+**Collection Validators:**
+- **`govalid:minitems`**: Minimum collection size (slice, array, map, channel)
+- **`govalid:maxitems`**: Maximum collection size (slice, array, map, channel)
+
+**General Validators:**
+- **`govalid:required`**: Required field validation with Go zero-value semantics
+- **`govalid:enum`**: Comprehensive enum validation for string, numeric, and custom types
+
+**govalid-Exclusive Features:**
+- **Extended collection support**: Maps and channels work with `maxitems`/`minitems` (not supported by go-playground/validator)
+- **Zero-allocation validation**: All validators perform zero heap allocations
+- **Compile-time safety**: Type-safe validation functions generated at compile time
 
 ## License
 
