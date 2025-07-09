@@ -30,6 +30,8 @@ BenchmarkGoValidMinLength-16          	96840576	        11.77 ns/op	       0 B/o
 BenchmarkGoPlaygroundMinLength-16     	17009824	        70.59 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidRequired-16           	612683832	         1.959 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundRequired-16      	13983676	        86.59 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidURL-16                	36136322	        33.56 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundURL-16           	 4099124	       292.8 ns/op	     144 B/op	       1 allocs/op
 BenchmarkGoValidUUID-16               	36773295	        32.73 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundUUID-16          	 4684831	       258.2 ns/op	       0 B/op	       0 allocs/op
 ```
@@ -56,6 +58,7 @@ BenchmarkGoValidEnum-16               	539464647	         2.164 ns/op	       0 B
 | MinItems  | 3.09            | 81.00                         | **26.2x faster** |
 | MinLength | 11.77           | 70.59                         | **6.0x faster** |
 | Required  | 1.96            | 86.59                         | **44.2x faster** |
+| URL       | 33.56           | 292.8                         | **8.7x faster** |
 | UUID      | 32.73           | 258.2                         | **7.9x faster** |
 
 ## govalid-Exclusive Features
@@ -79,10 +82,11 @@ These validators support map and channel types, which go-playground/validator do
 3. **Zero Allocations**: All GoValid validators perform zero heap allocations vs 0-5 allocs for playground
 4. **Unicode Efficiency**: String length validators with Unicode support still 4.8-6.0x faster
 5. **Email Optimization**: Email validation **16.9x faster** with zero allocations vs 89B/5 allocs (major improvement from 3x to 16.9x)
-6. **UUID Validation**: UUID validation **7.9x faster** with zero allocations and optimal string parsing
-7. **Extended Type Support**: Collection validators work with map/channel types unsupported by playground
-8. **Enum Innovation**: First-class enum validation for multiple types with compile-time safety
-9. **Helper Function Architecture**: Complex validators use optimized external helper functions for better performance
+6. **URL Validation**: URL validation **8.7x faster** with zero allocations using external helper functions
+7. **UUID Validation**: UUID validation **7.9x faster** with zero allocations and optimal string parsing
+8. **Extended Type Support**: Collection validators work with map/channel types unsupported by playground
+9. **Enum Innovation**: First-class enum validation for multiple types with compile-time safety
+10. **Helper Function Architecture**: Complex validators use optimized external helper functions for better performance
 
 ## Implementation Notes
 
@@ -106,6 +110,19 @@ The email validator underwent significant optimization using external helper fun
   - Single-pass validation algorithm
   - Zero memory allocations
   - **Function decomposition**: Refactored into smaller, optimized functions for better compiler optimization
+
+### URL Validation Optimizations
+
+The URL validator is implemented using external helper functions for optimal performance:
+
+- **Performance**: 33.56 ns/op with zero allocations
+- **vs go-playground/validator**: 8.7x faster (292.8 ns/op, 144 B/op, 1 alloc/op)
+- **Key features**:
+  - Manual URL parsing without standard library allocations
+  - HTTP/HTTPS scheme validation with direct string indexing
+  - Optimized domain and port validation using character-by-character parsing
+  - Path validation with efficient character checking
+  - **Function decomposition**: Modular validation functions for better compiler optimization
 
 ### UUID Validation Optimizations
 

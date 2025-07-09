@@ -1,4 +1,4 @@
-package benchmark
+package benchmark_test
 
 import (
 	"testing"
@@ -8,7 +8,9 @@ import (
 )
 
 func BenchmarkGoValidURL(b *testing.B) {
-	instance := test.URL{URL: "https://example.com/path?query=value"}
+	instance := test.URL{
+		URL: "https://example.com/path/to/resource?key=value",
+	}
 	b.ResetTimer()
 	for b.Loop() {
 		err := test.ValidateURL(&instance)
@@ -21,7 +23,9 @@ func BenchmarkGoValidURL(b *testing.B) {
 
 func BenchmarkGoPlaygroundURL(b *testing.B) {
 	validate := validator.New()
-	instance := test.URL{URL: "https://example.com/path?query=value"}
+	instance := test.URL{
+		URL: "https://example.com/path/to/resource?key=value",
+	}
 	b.ResetTimer()
 	for b.Loop() {
 		err := validate.Struct(&instance)
