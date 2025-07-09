@@ -3,41 +3,23 @@ package rules
 import (
 	"fmt"
 	"go/ast"
+	"go/types"
+	"strings"
 
 	"github.com/gostaticanalysis/codegen"
-	"github.com/sivchari/govalid/internal/errors"
 	"github.com/sivchari/govalid/internal/validator"
 )
-
-// ValidateUUID validates a UUID field using external helper function.
-// This function generates validation code that uses validationhelper.IsValidUUID
-// for RFC 4122 compliant UUID validation.
-func ValidateUUID(pass *codegen.Pass, field *ast.Field, expressions []string) validator.Validator {
-	if len(expressions) != 0 {
-		return &uuidValidator{
-			pass:  pass,
-			field: field,
-			err:   errors.ErrInvalidUUIDExpression,
-		}
-	}
-
-	return &uuidValidator{
-		pass:  pass,
-		field: field,
-	}
-}
 
 type uuidValidator struct {
 	pass  *codegen.Pass
 	field *ast.Field
-	err   error
 }
 
-func (u *uuidValidator) Validate() string {
-	if u.err != nil {
-		return ""
-	}
+var _ validator.Validator = (*uuidValidator)(nil)
 
+const uuidKey = "%s-uuid"
+
+func (u *uuidValidator) Validate() string {
 	fieldName := u.FieldName()
 	// Use external helper function for better maintainability
 	return fmt.Sprintf("!validationhelper.IsValidUUID(t.%s)", fieldName)
@@ -48,17 +30,45 @@ func (u *uuidValidator) FieldName() string {
 }
 
 func (u *uuidValidator) Err() string {
-	if u.err != nil {
-		return u.err.Error()
+	fieldName := u.FieldName()
+
+	var result strings.Builder
+
+	// No need to generate inline function - using external helper
+	if validator.GeneratorMemory[fmt.Sprintf(uuidKey, fieldName)] {
+		return result.String()
 	}
 
-	return fmt.Sprintf("field %s must be a valid UUID", u.FieldName())
+	validator.GeneratorMemory[fmt.Sprintf(uuidKey, fieldName)] = true
+
+	result.WriteString(strings.ReplaceAll(`
+	// Err@UUIDValidation is the error returned when the field is not a valid UUID.
+	Err@UUIDValidation = errors.New("field @ must be a valid UUID")`, `@`, fieldName))
+
+	return result.String()
 }
 
 func (u *uuidValidator) ErrVariable() string {
-	return fmt.Sprintf("Err%s%sValidation", u.FieldName(), "UUID")
+	return strings.ReplaceAll("Err@UUIDValidation", `@`, u.FieldName())
 }
 
 func (u *uuidValidator) Imports() []string {
+	// Import validation helper package
 	return []string{"github.com/sivchari/govalid/validation/validationhelper"}
+}
+
+// ValidateUUID creates a new uuidValidator for string types.
+func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string) validator.Validator {
+	typ := pass.TypesInfo.TypeOf(field.Type)
+
+	// Check if it's a string type
+	basic, ok := typ.Underlying().(*types.Basic)
+	if !ok || basic.Kind() != types.String {
+		return nil
+	}
+
+	return &uuidValidator{
+		pass:  pass,
+		field: field,
+	}
 }
