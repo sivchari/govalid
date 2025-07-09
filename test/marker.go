@@ -91,3 +91,8 @@ type Email struct {
 	// +govalid:email
 	Email string `validate:"email" json:"email"`
 }
+
+type UUID struct {
+	// +govalid:uuid
+	UUID string `validate:"uuid" json:"uuid"`
+}
