@@ -3,117 +3,13 @@ package test
 
 import (
 	"errors"
+	"github.com/sivchari/govalid/validation/validationhelper"
 )
 
 var (
 	// ErrNilEmail is returned when the Email is nil.
 	ErrNilEmail = errors.New("input Email is nil")
 
-	// isValidEmail validates email format manually for maximum performance
-	// Validates practical email subset covering 95% of real-world cases
-	isValidEmail = func(email string) bool {
-		// Basic length check
-		if len(email) < 5 || len(email) > 254 {
-			return false
-		}
-
-		// Find @ symbol (must have exactly one)
-		atIndex := -1
-		atCount := 0
-		for i, c := range email {
-			if c == '@' {
-				atIndex = i
-				atCount++
-			}
-		}
-
-		if atCount != 1 || atIndex <= 0 || atIndex >= len(email)-1 {
-			return false
-		}
-
-		local := email[:atIndex]
-		domain := email[atIndex+1:]
-
-		// Validate local part (before @)
-		if len(local) == 0 || len(local) > 64 {
-			return false
-		}
-
-		// Can't start or end with dot
-		if local[0] == '.' || local[len(local)-1] == '.' {
-			return false
-		}
-
-		// Check for consecutive dots
-		for i := 0; i < len(local)-1; i++ {
-			if local[i] == '.' && local[i+1] == '.' {
-				return false
-			}
-		}
-
-		// Check allowed characters in local part
-		for _, c := range local {
-			if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-				(c >= '0' && c <= '9') || c == '.' || c == '+' || c == '-' || c == '_') {
-				return false
-			}
-		}
-
-		// Validate domain part (after @)
-		if len(domain) == 0 || len(domain) > 253 {
-			return false
-		}
-
-		// Must contain at least one dot
-		hasDot := false
-		for _, c := range domain {
-			if c == '.' {
-				hasDot = true
-				break
-			}
-		}
-		if !hasDot {
-			return false
-		}
-
-		// Split by dots and validate each label
-		labels := make([]string, 0, 4)
-		start := 0
-		for i := 0; i <= len(domain); i++ {
-			if i == len(domain) || domain[i] == '.' {
-				if i > start {
-					labels = append(labels, domain[start:i])
-				}
-				start = i + 1
-			}
-		}
-
-		if len(labels) < 2 {
-			return false
-		}
-
-		// Validate each domain label
-		for _, label := range labels {
-			if len(label) == 0 || len(label) > 63 {
-				return false
-			}
-
-			// Can't start or end with hyphen
-			if label[0] == '-' || label[len(label)-1] == '-' {
-				return false
-			}
-
-			// Check characters (alphanumeric + hyphen)
-			for _, c := range label {
-				if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-					(c >= '0' && c <= '9') || c == '-') {
-					return false
-				}
-			}
-		}
-
-		return true
-	}
 	// ErrEmailEmailValidation is the error returned when the field is not a valid email address.
 	ErrEmailEmailValidation = errors.New("field Email must be a valid email address")
 )
@@ -123,7 +19,7 @@ func ValidateEmail(t *Email) error {
 		return ErrNilEmail
 	}
 
-	if !isValidEmail(t.Email) {
+	if !validationhelper.IsValidEmail(t.Email) {
 		return ErrEmailEmailValidation
 	}
 

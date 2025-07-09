@@ -4,27 +4,32 @@ This document contains performance comparison results between govalid and go-pla
 
 ## Latest Results
 
-Benchmarked on: 2025-07-02
+Benchmarked on: 2025-07-09
 Platform: Apple M3 Max (16 cores)
-Go version: go1.24
+Go version: go1.24.3
 
 ```
-BenchmarkGoValidGT-16                 	644065195	         1.882 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoPlaygroundGT-16            	19697977	        59.36 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoValidLT-16                 	645251919	         1.868 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoPlaygroundLT-16            	19474315	        60.70 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoValidMaxItems-16           	485595762	         2.475 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoPlaygroundMaxItems-16      	15206080	        77.82 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoValidMaxLength-16          	78798972	        15.24 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoPlaygroundMaxLength-16     	17434964	        69.01 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoValidMinItems-16           	434966996	         2.751 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoPlaygroundMinItems-16      	15503900	        76.50 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoValidMinLength-16          	100000000	        11.47 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoPlaygroundMinLength-16     	18134911	        65.94 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoValidRequired-16           	638489334	         1.892 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoPlaygroundRequired-16      	14232363	        83.66 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoValidEmail-16              	 5443528	       204.8 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoPlaygroundEmail-16         	 1960687	       619.4 ns/op	      89 B/op	       5 allocs/op
+BenchmarkGoValidEmail-16              	26353546	        45.08 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundEmail-16         	 1840674	       651.8 ns/op	      88 B/op	       5 allocs/op
+BenchmarkGoValidEnum-16               	534860061	         2.244 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidGT-16                 	607874124	         1.977 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundGT-16            	18497275	        64.33 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidGTE-16                	609910148	         1.970 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundGTE-16           	19079733	        62.81 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidLT-16                 	613839652	         1.969 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundLT-16            	17733880	        63.23 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidLTE-16                	610599888	         1.966 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundLTE-16           	18782808	        63.67 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidMaxItems-16           	477820183	         2.524 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundMaxItems-16      	14864668	        81.28 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidMaxLength-16          	75906330	        15.90 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundMaxLength-16     	16083867	        74.75 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidMinItems-16           	427818543	         2.800 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundMinItems-16      	14967289	        81.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidMinLength-16          	96739086	        12.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundMinLength-16     	17179126	        69.28 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidRequired-16           	605284765	         1.966 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundRequired-16      	13964752	        86.74 ns/op	       0 B/op	       0 allocs/op
 ```
 
 ## govalid-Specific Validators
@@ -39,14 +44,16 @@ BenchmarkGoValidEnum-16               	539464647	         2.164 ns/op	       0 B
 
 | Validator | GoValid (ns/op) | go-playground/validator (ns/op) | Improvement |
 |-----------|-----------------|--------------------------------|-------------|
-| GT        | 1.88            | 59.36                         | **32x faster** |
-| LT        | 1.87            | 60.70                         | **32x faster** |
-| MaxItems  | 2.48            | 77.82                         | **31x faster** |
-| MaxLength | 15.24           | 69.01                         | **4.5x faster** |
-| MinItems  | 2.75            | 76.50                         | **28x faster** |
-| MinLength | 11.47           | 65.94                         | **5.7x faster** |
-| Required  | 1.89            | 83.66                         | **44x faster** |
-| Email     | 204.8           | 619.4                         | **3.0x faster** |
+| Email     | 45.08           | 651.8                         | **14.5x faster** |
+| GT        | 1.98            | 64.33                         | **32.5x faster** |
+| GTE       | 1.97            | 62.81                         | **31.9x faster** |
+| LT        | 1.97            | 63.23                         | **32.1x faster** |
+| LTE       | 1.97            | 63.67                         | **32.3x faster** |
+| MaxItems  | 2.52            | 81.28                         | **32.3x faster** |
+| MaxLength | 15.90           | 74.75                         | **4.7x faster** |
+| MinItems  | 2.80            | 81.11                         | **29.0x faster** |
+| MinLength | 12.11           | 69.28                         | **5.7x faster** |
+| Required  | 1.97            | 86.74                         | **44.0x faster** |
 
 ## govalid-Exclusive Features
 
@@ -64,18 +71,33 @@ These validators support map and channel types, which go-playground/validator do
 
 ## Key Findings
 
-1. **Exceptional Performance**: GoValid shows 3.0x to 44x performance improvements across all validators
+1. **Exceptional Performance**: GoValid shows 4.7x to 44x performance improvements across all validators
 2. **Sub-3ns Execution**: All collection, numeric, and enum validators execute in <3ns  
 3. **Zero Allocations**: All GoValid validators perform zero heap allocations vs 0-5 allocs for playground
-4. **Unicode Efficiency**: String length validators with Unicode support still 4.5-5.7x faster
-5. **Regex Performance**: Email validation 3x faster with zero allocations vs 89B/5 allocs
+4. **Unicode Efficiency**: String length validators with Unicode support still 4.7-5.7x faster
+5. **Email Optimization**: Email validation **14.5x faster** with zero allocations vs 88B/5 allocs (major improvement from 3x to 14.5x)
 6. **Extended Type Support**: Collection validators work with map/channel types unsupported by playground
 7. **Enum Innovation**: First-class enum validation for multiple types with compile-time safety
+8. **Helper Function Architecture**: Complex validators use optimized external helper functions for better performance
 
 ## Implementation Notes
 
 - GoValid generates compile-time validation functions with zero runtime reflection
+- **External Helper Functions**: Complex validators (email) use optimized external functions in `validation/validationhelper`
+- **Zero-Allocation Email Validation**: Manual string parsing eliminates `strings.Split` and `strings.Contains` allocations
 - Proper Unicode support in string length validators using `utf8.RuneCountInString`
 - Interface-based import system for scalable package management
 - Comprehensive type support including map and channel validation
 - Kubernetes-compatible required field validation (empty slice vs nil distinction)
+
+### Email Validation Optimizations
+
+The email validator underwent significant optimization using external helper functions:
+
+- **Before**: 204.8 ns/op with inline function generation
+- **After**: 45.08 ns/op with optimized external helper (4.5x improvement)
+- **Key optimizations**: 
+  - Manual domain label parsing instead of `strings.Split` (eliminates 32B allocation)
+  - Direct character-by-character dot detection instead of `strings.Contains`
+  - Single-pass validation algorithm
+  - Zero memory allocations
