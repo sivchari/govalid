@@ -1,5 +1,8 @@
 GOLANGCI_LINT = go tool -modfile tools/go.mod github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 
+# Default fuzz test duration
+FUZZ_TIME ?= 30s
+
 .PHONY: lint
 lint: golangci-lint
 
@@ -13,3 +16,65 @@ golangci-lint: ## Run golangci-lint over the codebase.
 .PHONY: golangci-lint-fix
 golangci-lint-fix: GOLANGCI_LINT_EXTRA_ARGS := --fix
 golangci-lint-fix: golangci-lint ## Run golangci-lint over the codebase and run auto-fixers if supported by the linter
+
+# Test targets
+.PHONY: test
+test: ## Run all tests except validation helper (due to known issues)
+	go test $$(go list ./... | grep -v '/validation/validationhelper')
+
+.PHONY: test-all
+test-all: ## Run all tests including validation helper
+	go test ./...
+
+# Fuzz test targets
+.PHONY: fuzz
+fuzz: fuzz-email fuzz-uuid fuzz-url ## Run all fuzz tests
+
+.PHONY: fuzz-email
+fuzz-email: ## Run email validation fuzz test
+	@echo "Running email validation fuzz test for $(FUZZ_TIME)..."
+	cd validation/validationhelper && go test -run "^$$" -fuzz=FuzzIsValidEmail -fuzztime=$(FUZZ_TIME) -v
+
+.PHONY: fuzz-uuid
+fuzz-uuid: ## Run UUID validation fuzz test
+	@echo "Running UUID validation fuzz test for $(FUZZ_TIME)..."
+	cd validation/validationhelper && go test -run "^$$" -fuzz=FuzzIsValidUUID -fuzztime=$(FUZZ_TIME) -v
+
+.PHONY: fuzz-url
+fuzz-url: ## Run URL validation fuzz test
+	@echo "Running URL validation fuzz test for $(FUZZ_TIME)..."
+	cd validation/validationhelper && go test -run "^$$" -fuzz=FuzzIsValidURL -fuzztime=$(FUZZ_TIME) -v
+
+.PHONY: fuzz-quick
+fuzz-quick: ## Run quick fuzz tests (15 seconds each)
+	@echo "Running quick fuzz tests (15 seconds each)..."
+	$(MAKE) fuzz FUZZ_TIME=15s
+
+.PHONY: fuzz-long
+fuzz-long: ## Run long fuzz tests (5 minutes each)
+	@echo "Running long fuzz tests (5 minutes each)..."
+	$(MAKE) fuzz FUZZ_TIME=5m
+
+.PHONY: fuzz-ci
+fuzz-ci: ## Run fuzz tests for CI (30 seconds each)
+	@echo "Running CI fuzz tests (30 seconds each)..."
+	$(MAKE) fuzz FUZZ_TIME=30s
+
+.PHONY: fuzz-dev
+fuzz-dev: ## Run development fuzz tests (1 minute each)
+	@echo "Running development fuzz tests (1 minute each)..."
+	$(MAKE) fuzz FUZZ_TIME=1m
+
+.PHONY: help
+help: ## Show this help message
+	@echo 'Usage: make [target] [FUZZ_TIME=duration]'
+	@echo ''
+	@echo 'Targets:'
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo ''
+	@echo 'Examples:'
+	@echo '  make fuzz-quick         # Run quick fuzz tests (15s each)'
+	@echo '  make fuzz-email         # Run email fuzz test (30s default)'
+	@echo '  make fuzz FUZZ_TIME=2m  # Run all fuzz tests for 2 minutes each'
+	@echo '  make test               # Run regular tests (excluding validation helper)'
+	@echo '  make lint               # Run linter'
