@@ -20,7 +20,7 @@ jobs:
 
       - name: Run tests
         run: |
-          go test -v ./...
+          make test
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6

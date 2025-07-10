@@ -309,8 +309,8 @@ func validateDomainLabels(domain string) bool {
 //	"ex ample"   -> contains space
 //	"ex_ample"   -> contains underscore (not allowed in domain)
 func isValidDomainLabel(label string) bool {
-	// Length check: maximum 63 characters (RFC 1035 section 2.3.1)
-	if len(label) > 63 {
+	// Length check: 1-63 characters (RFC 1035 section 2.3.1)
+	if len(label) == 0 || len(label) > 63 {
 		return false
 	}
 
