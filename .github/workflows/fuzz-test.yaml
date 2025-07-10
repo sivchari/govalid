@@ -1,0 +1,264 @@
+name: Fuzz Testing
+
+on:
+  # Run fuzz tests on schedule (every 3 days at 2 AM UTC)
+  schedule:
+    - cron: '0 2 */3 * *'
+  
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: 'Fuzz test duration (e.g., 30s, 5m, 1h)'
+        required: false
+        default: '5m'
+      
+  # Run on push to main branch (optional)
+  push:
+    branches: [ main ]
+    paths:
+      - 'validation/validationhelper/**'
+      - '.github/workflows/fuzz-test.yml'
+
+jobs:
+  fuzz-test:
+    name: Run Fuzz Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        fuzz-target:
+          - FuzzIsValidEmail
+          - FuzzIsValidUUID
+          - FuzzIsValidURL
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+          
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+            
+      - name: Install dependencies
+        run: go mod download
+        
+      - name: Create fuzz results directory
+        run: mkdir -p fuzz-results
+        
+      - name: Run fuzz test - ${{ matrix.fuzz-target }}
+        run: |
+          # Set fuzz duration (default 1 minute for scheduled runs, 15 seconds for push)
+          DURATION="${{ github.event.inputs.duration }}"
+          if [ -z "$DURATION" ]; then
+            if [ "${{ github.event_name }}" = "schedule" ]; then
+              DURATION="1m"
+            else
+              DURATION="15s"
+            fi
+          fi
+          
+          echo "Running ${{ matrix.fuzz-target }} for $DURATION using Makefile"
+          
+          # Map fuzz target to Makefile target
+          case "${{ matrix.fuzz-target }}" in
+            "FuzzIsValidEmail")
+              TARGET="fuzz-email"
+              ;;
+            "FuzzIsValidUUID")
+              TARGET="fuzz-uuid"
+              ;;
+            "FuzzIsValidURL")
+              TARGET="fuzz-url"
+              ;;
+            *)
+              echo "Unknown fuzz target: ${{ matrix.fuzz-target }}"
+              exit 1
+              ;;
+          esac
+          
+          # Run fuzz test using Makefile and capture output
+          make $TARGET FUZZ_TIME=$DURATION 2>&1 | tee fuzz-results/${{ matrix.fuzz-target }}.log
+          
+          # Check if any failures were found
+          if grep -q "FAIL" fuzz-results/${{ matrix.fuzz-target }}.log; then
+            echo "FUZZ_FAILURE=true" >> $GITHUB_ENV
+            echo "::error::Fuzz test ${{ matrix.fuzz-target }} found failures"
+          else
+            echo "FUZZ_FAILURE=false" >> $GITHUB_ENV
+            echo "::notice::Fuzz test ${{ matrix.fuzz-target }} completed successfully"
+          fi
+          
+      - name: Extract fuzz statistics
+        if: always()
+        run: |
+          LOG_FILE="fuzz-results/${{ matrix.fuzz-target }}.log"
+          
+          # Extract statistics from fuzz output
+          echo "## Fuzz Test Results - ${{ matrix.fuzz-target }}" > fuzz-results/${{ matrix.fuzz-target }}-summary.md
+          echo "" >> fuzz-results/${{ matrix.fuzz-target }}-summary.md
+          echo "**Test Duration:** $(grep -o 'fuzztime.*' $LOG_FILE | head -1 || echo 'N/A')" >> fuzz-results/${{ matrix.fuzz-target }}-summary.md
+          echo "**Test Cases:** $(grep -o 'executed [0-9]* inputs' $LOG_FILE | tail -1 || echo 'N/A')" >> fuzz-results/${{ matrix.fuzz-target }}-summary.md
+          echo "**Status:** $(if [ "$FUZZ_FAILURE" = "true" ]; then echo "❌ FAILURES FOUND"; else echo "✅ PASSED"; fi)" >> fuzz-results/${{ matrix.fuzz-target }}-summary.md
+          echo "" >> fuzz-results/${{ matrix.fuzz-target }}-summary.md
+          
+          # Add failure details if any
+          if [ "$FUZZ_FAILURE" = "true" ]; then
+            echo "### Failure Details" >> fuzz-results/${{ matrix.fuzz-target }}-summary.md
+            echo '```' >> fuzz-results/${{ matrix.fuzz-target }}-summary.md
+            grep -A 10 -B 5 "FAIL\|panic" $LOG_FILE || echo "No detailed failure information found" >> fuzz-results/${{ matrix.fuzz-target }}-summary.md
+            echo '```' >> fuzz-results/${{ matrix.fuzz-target }}-summary.md
+          fi
+          
+          # Show summary
+          cat fuzz-results/${{ matrix.fuzz-target }}-summary.md
+          
+      - name: Upload fuzz results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: fuzz-results-${{ matrix.fuzz-target }}
+          path: fuzz-results/
+          retention-days: 30
+          
+      - name: Create testdata directory for failures
+        if: env.FUZZ_FAILURE == 'true'
+        run: |
+          # Check if testdata directory exists in fuzz cache
+          if [ -d ./testdata ]; then
+            echo "Testdata directory found, copying failure cases"
+            cp -r ./testdata fuzz-results/testdata-${{ matrix.fuzz-target }}
+          else
+            echo "No testdata directory found"
+          fi
+          
+      - name: Upload failure testdata
+        if: env.FUZZ_FAILURE == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: fuzz-failures-${{ matrix.fuzz-target }}
+          path: fuzz-results/testdata-${{ matrix.fuzz-target }}
+          retention-days: 90
+          
+      - name: Fail job if fuzz test failed
+        if: env.FUZZ_FAILURE == 'true'
+        run: |
+          echo "::error::Fuzz test ${{ matrix.fuzz-target }} discovered failures"
+          exit 1
+
+  fuzz-report:
+    name: Generate Fuzz Report
+    runs-on: ubuntu-latest
+    needs: fuzz-test
+    if: always()
+    
+    steps:
+      - name: Download all fuzz results
+        uses: actions/download-artifact@v3
+        with:
+          path: all-fuzz-results
+          
+      - name: Generate combined report
+        run: |
+          echo "# Fuzz Test Report" > fuzz-report.md
+          echo "" >> fuzz-report.md
+          echo "**Date:** $(date -u)" >> fuzz-report.md
+          echo "**Commit:** ${{ github.sha }}" >> fuzz-report.md
+          echo "**Trigger:** ${{ github.event_name }}" >> fuzz-report.md
+          echo "" >> fuzz-report.md
+          
+          # Combine all individual reports
+          for result_dir in all-fuzz-results/fuzz-results-*; do
+            if [ -d "$result_dir" ]; then
+              for summary_file in "$result_dir"/*-summary.md; do
+                if [ -f "$summary_file" ]; then
+                  cat "$summary_file" >> fuzz-report.md
+                  echo "" >> fuzz-report.md
+                fi
+              done
+            fi
+          done
+          
+          echo "Generated fuzz report:"
+          cat fuzz-report.md
+          
+      - name: Upload combined report
+        uses: actions/upload-artifact@v3
+        with:
+          name: fuzz-report
+          path: fuzz-report.md
+          retention-days: 90
+          
+  notify:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    needs: fuzz-test
+    if: failure() && github.event_name == 'schedule'
+    
+    steps:
+      - name: Create issue on failure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `🐛 Fuzz Test Failures Detected - ${new Date().toISOString().split('T')[0]}`;
+            const body = `
+            ## Fuzz Test Failure Report
+            
+            **Date:** ${new Date().toISOString()}
+            **Commit:** ${{ github.sha }}
+            **Workflow:** ${{ github.workflow }}
+            **Run:** ${{ github.run_id }}
+            
+            Automated fuzz testing has detected potential issues in the validation helper functions.
+            
+            ### Actions Required
+            1. Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details
+            2. Download and analyze the failure artifacts
+            3. Fix any discovered issues
+            4. Re-run the fuzz tests to verify fixes
+            
+            ### Artifacts
+            - Fuzz test logs and results are available as workflow artifacts
+            - Failure test cases are preserved for reproduction
+            
+            This issue was automatically created by the scheduled fuzz testing workflow.
+            `;
+            
+            // Check if similar issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['fuzz-test', 'bug'],
+              state: 'open'
+            });
+            
+            const similarIssue = existingIssues.data.find(issue => 
+              issue.title.includes('Fuzz Test Failures Detected')
+            );
+            
+            if (!similarIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['fuzz-test', 'bug', 'automated']
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: similarIssue.number,
+                body: `New fuzz test failure detected in run: ${{ github.run_id }}`
+              });
+            }

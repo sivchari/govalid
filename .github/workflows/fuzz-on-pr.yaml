@@ -1,0 +1,142 @@
+name: Fuzz Testing on PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  quick-fuzz-test:
+    name: Quick Fuzz Test
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+          
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+            
+      - name: Install dependencies
+        run: go mod download
+        
+      - name: Run quick fuzz tests
+        run: |
+          echo "Running quick fuzz tests on PR changes using Makefile..."
+          
+          # Run each fuzz test for 15 seconds (quick check)
+          for fuzz_target in fuzz-email fuzz-uuid fuzz-url; do
+            echo "Testing $fuzz_target..."
+            
+            # Get the corresponding function name for logging
+            case "$fuzz_target" in
+              "fuzz-email")
+                fuzz_func="FuzzIsValidEmail"
+                ;;
+              "fuzz-uuid")
+                fuzz_func="FuzzIsValidUUID"
+                ;;
+              "fuzz-url")
+                fuzz_func="FuzzIsValidURL"
+                ;;
+            esac
+            
+            # Run fuzz test using Makefile
+            make $fuzz_target FUZZ_TIME=15s 2>&1 | tee ${fuzz_func}-pr.log
+            
+            if grep -q "FAIL" ${fuzz_func}-pr.log; then
+              echo "❌ $fuzz_func found issues"
+              echo "FUZZ_ISSUES=true" >> $GITHUB_ENV
+            else
+              echo "✅ $fuzz_func passed"
+            fi
+          done
+          
+      - name: Create PR comment with results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let comment = `## 🔍 Fuzz Testing Results\n\n`;
+            
+            const fuzzTests = ['FuzzIsValidEmail', 'FuzzIsValidUUID', 'FuzzIsValidURL'];
+            let allPassed = true;
+            
+            for (const test of fuzzTests) {
+              const logFile = `${test}-pr.log`;
+              
+              if (fs.existsSync(logFile)) {
+                const content = fs.readFileSync(logFile, 'utf8');
+                const hasFail = content.includes('FAIL');
+                
+                if (hasFail) {
+                  allPassed = false;
+                  comment += `❌ **${test}**: Found potential issues\n`;
+                  
+                  // Extract relevant failure information
+                  const lines = content.split('\n');
+                  const failLines = lines.filter(line => 
+                    line.includes('FAIL') || line.includes('panic') || line.includes('ERROR')
+                  );
+                  
+                  if (failLines.length > 0) {
+                    comment += `<details>\n<summary>View failure details</summary>\n\n\`\`\`\n`;
+                    comment += failLines.slice(0, 10).join('\n'); // Limit to first 10 lines
+                    comment += `\n\`\`\`\n</details>\n\n`;
+                  }
+                } else {
+                  comment += `✅ **${test}**: Passed (15 seconds)\n`;
+                  
+                  // Extract execution statistics
+                  const executedMatch = content.match(/executed (\d+) inputs/);
+                  if (executedMatch) {
+                    comment += `   - Executed ${executedMatch[1]} inputs\n`;
+                  }
+                }
+              } else {
+                comment += `⚠️ **${test}**: No log file found\n`;
+              }
+            }
+            
+            comment += `\n---\n`;
+            
+            if (allPassed) {
+              comment += `🎉 All fuzz tests passed! The changes don't introduce any obvious issues.\n\n`;
+              comment += `**Note:** This was a quick 15-second fuzz test. More extensive testing runs on the main branch.`;
+            } else {
+              comment += `⚠️ Some fuzz tests found potential issues. Please review the failures above.\n\n`;
+              comment += `**Action Required:**\n`;
+              comment += `1. Analyze the failure details\n`;
+              comment += `2. Fix any legitimate issues\n`;
+              comment += `3. Test your changes locally with: \`go test -fuzz=FuzzIsValid* ./validation/validationhelper/\`\n`;
+              comment += `4. Push updates to re-run the tests`;
+            }
+            
+            // Post comment to PR
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+            
+      - name: Fail if issues found
+        if: env.FUZZ_ISSUES == 'true'
+        run: |
+          echo "::error::Fuzz testing found potential issues in the PR changes"
+          echo "Please review the fuzz test results and fix any legitimate issues"
+          exit 1
