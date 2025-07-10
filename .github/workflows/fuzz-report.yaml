@@ -1,0 +1,254 @@
+name: Weekly Fuzz Testing Report
+
+on:
+  # Run bi-weekly fuzz report on 1st and 15th of each month at 9 AM UTC
+  schedule:
+    - cron: '0 9 1,15 * *'
+  
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: 'Extended fuzz test duration (e.g., 5m, 10m, 30m)'
+        required: false
+        default: '5m'
+
+jobs:
+  extended-fuzz-test:
+    name: Extended Fuzz Testing
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        fuzz-target:
+          - FuzzIsValidEmail
+          - FuzzIsValidUUID
+          - FuzzIsValidURL
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+            
+      - name: Install dependencies
+        run: go mod download
+        
+      - name: Create fuzz results directory
+        run: mkdir -p weekly-fuzz-results
+        
+      - name: Run extended fuzz test - ${{ matrix.fuzz-target }}
+        run: |
+          # Set extended fuzz duration (default 5 minutes)
+          DURATION="${{ github.event.inputs.duration || '5m' }}"
+          
+          echo "Running extended ${{ matrix.fuzz-target }} for $DURATION"
+          
+          # Run extended fuzz test
+          go test -fuzz=${{ matrix.fuzz-target }} -fuzztime=$DURATION ./validation/validationhelper/ \
+            -v 2>&1 | tee weekly-fuzz-results/${{ matrix.fuzz-target }}-extended.log
+          
+          # Generate detailed statistics
+          LOG_FILE="weekly-fuzz-results/${{ matrix.fuzz-target }}-extended.log"
+          
+          echo "## Extended Fuzz Test Results - ${{ matrix.fuzz-target }}" > weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          echo "" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          echo "**Test Duration:** $DURATION" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          echo "**Date:** $(date -u)" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          echo "" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          
+          # Extract detailed statistics
+          INPUTS_EXECUTED=$(grep -o 'executed [0-9]* inputs' $LOG_FILE | tail -1 | grep -o '[0-9]*' || echo "0")
+          ELAPSED_TIME=$(grep -o 'elapsed: [0-9]*\.[0-9]*s' $LOG_FILE | tail -1 || echo "N/A")
+          
+          echo "**Inputs Executed:** $INPUTS_EXECUTED" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          echo "**Elapsed Time:** $ELAPSED_TIME" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          echo "**Status:** $(if grep -q 'FAIL' $LOG_FILE; then echo '❌ FAILURES'; else echo '✅ PASSED'; fi)" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          echo "" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          
+          # Calculate performance metrics
+          if [ "$INPUTS_EXECUTED" -gt 0 ]; then
+            # Extract execution time in seconds
+            SECONDS=$(echo "$ELAPSED_TIME" | grep -o '[0-9]*\.[0-9]*' || echo "1")
+            if [ "$SECONDS" != "1" ]; then
+              RATE=$(echo "scale=2; $INPUTS_EXECUTED / $SECONDS" | bc -l 2>/dev/null || echo "N/A")
+              echo "**Execution Rate:** $RATE inputs/second" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+            fi
+          fi
+          
+          echo "" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          
+          # Add any interesting findings
+          if grep -q "new interesting" $LOG_FILE; then
+            echo "### Interesting Inputs Found" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+            echo '```' >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+            grep -A 5 "new interesting" $LOG_FILE >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+            echo '```' >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+            echo "" >> weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          fi
+          
+          # Show individual report
+          cat weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
+          
+      - name: Upload extended fuzz results
+        uses: actions/upload-artifact@v3
+        with:
+          name: weekly-fuzz-results-${{ matrix.fuzz-target }}
+          path: weekly-fuzz-results/
+          retention-days: 90
+
+  generate-weekly-report:
+    name: Generate Weekly Report
+    runs-on: ubuntu-latest
+    needs: extended-fuzz-test
+    if: always()
+    
+    steps:
+      - name: Download all weekly fuzz results
+        uses: actions/download-artifact@v3
+        with:
+          path: all-weekly-results
+          
+      - name: Generate comprehensive weekly report
+        run: |
+          echo "# Weekly Fuzz Testing Report" > weekly-report.md
+          echo "" >> weekly-report.md
+          echo "**Report Date:** $(date -u)" >> weekly-report.md
+          echo "**Repository:** ${{ github.repository }}" >> weekly-report.md
+          echo "**Commit:** ${{ github.sha }}" >> weekly-report.md
+          echo "" >> weekly-report.md
+          
+          echo "## Executive Summary" >> weekly-report.md
+          echo "" >> weekly-report.md
+          
+          # Count total tests and failures
+          TOTAL_TESTS=0
+          FAILED_TESTS=0
+          TOTAL_INPUTS=0
+          
+          for result_dir in all-weekly-results/weekly-fuzz-results-*; do
+            if [ -d "$result_dir" ]; then
+              TOTAL_TESTS=$((TOTAL_TESTS + 1))
+              for report_file in "$result_dir"/*-report.md; do
+                if [ -f "$report_file" ]; then
+                  if grep -q "❌ FAILURES" "$report_file"; then
+                    FAILED_TESTS=$((FAILED_TESTS + 1))
+                  fi
+                  # Extract input count
+                  INPUTS=$(grep "Inputs Executed:" "$report_file" | grep -o '[0-9]*' || echo "0")
+                  TOTAL_INPUTS=$((TOTAL_INPUTS + INPUTS))
+                fi
+              done
+            fi
+          done
+          
+          echo "- **Total Fuzz Tests:** $TOTAL_TESTS" >> weekly-report.md
+          echo "- **Failed Tests:** $FAILED_TESTS" >> weekly-report.md
+          echo "- **Success Rate:** $(echo "scale=1; ($TOTAL_TESTS - $FAILED_TESTS) * 100 / $TOTAL_TESTS" | bc -l 2>/dev/null || echo "N/A")%" >> weekly-report.md
+          echo "- **Total Inputs Executed:** $TOTAL_INPUTS" >> weekly-report.md
+          echo "" >> weekly-report.md
+          
+          # Overall status
+          if [ $FAILED_TESTS -eq 0 ]; then
+            echo "**Overall Status:** ✅ All tests passed" >> weekly-report.md
+          else
+            echo "**Overall Status:** ❌ Some tests failed - requires attention" >> weekly-report.md
+          fi
+          echo "" >> weekly-report.md
+          
+          echo "## Detailed Results" >> weekly-report.md
+          echo "" >> weekly-report.md
+          
+          # Combine all individual reports
+          for result_dir in all-weekly-results/weekly-fuzz-results-*; do
+            if [ -d "$result_dir" ]; then
+              for report_file in "$result_dir"/*-report.md; do
+                if [ -f "$report_file" ]; then
+                  cat "$report_file" >> weekly-report.md
+                  echo "" >> weekly-report.md
+                  echo "---" >> weekly-report.md
+                  echo "" >> weekly-report.md
+                fi
+              done
+            fi
+          done
+          
+          echo "## Recommendations" >> weekly-report.md
+          echo "" >> weekly-report.md
+          
+          if [ $FAILED_TESTS -gt 0 ]; then
+            echo "⚠️  **Action Required:** Some fuzz tests have failed. Please:" >> weekly-report.md
+            echo "1. Review the failure details above" >> weekly-report.md
+            echo "2. Download and analyze the failure artifacts" >> weekly-report.md
+            echo "3. Create issues for any legitimate bugs found" >> weekly-report.md
+            echo "4. Update the validation logic if necessary" >> weekly-report.md
+            echo "" >> weekly-report.md
+          else
+            echo "✅ **All Clear:** All fuzz tests passed successfully." >> weekly-report.md
+            echo "" >> weekly-report.md
+            echo "**Performance Notes:**" >> weekly-report.md
+            echo "- Consider increasing fuzz duration if execution rate is high" >> weekly-report.md
+            echo "- Monitor for any performance regressions" >> weekly-report.md
+            echo "" >> weekly-report.md
+          fi
+          
+          echo "Generated weekly fuzz report:"
+          cat weekly-report.md
+          
+      - name: Upload weekly report
+        uses: actions/upload-artifact@v3
+        with:
+          name: weekly-fuzz-report
+          path: weekly-report.md
+          retention-days: 365
+          
+      - name: Comment on latest PR or commit
+        if: github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('weekly-report.md', 'utf8');
+            
+            // Create a summary comment
+            const summary = `## 📊 Weekly Fuzz Testing Report
+            
+            Automated weekly fuzz testing has completed. 
+            
+            **Quick Summary:**
+            ${report.split('## Executive Summary')[1].split('## Detailed Results')[0]}
+            
+            <details>
+            <summary>📋 View Full Report</summary>
+            
+            ${report}
+            
+            </details>
+            
+            ---
+            *This report was automatically generated by the weekly fuzz testing workflow.*
+            `;
+            
+            // Post as a repository discussion or issue comment
+            try {
+              await github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.sha,
+                body: summary
+              });
+            } catch (error) {
+              console.log('Could not post commit comment:', error.message);
+            }
