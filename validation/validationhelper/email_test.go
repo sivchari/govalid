@@ -553,12 +553,14 @@ func generateValidDomain(length int) string {
 	}
 
 	var result strings.Builder
+
 	remaining := length
 	labelCount := 0
 
 	for remaining > 0 {
 		if labelCount > 0 {
 			result.WriteByte('.')
+
 			remaining--
 			if remaining <= 0 {
 				break
@@ -575,6 +577,7 @@ func generateValidDomain(length int) string {
 		for i := range labelLen {
 			result.WriteByte(byte('a' + ((labelCount*labelLen + i) % 26)))
 		}
+
 		remaining -= labelLen
 		labelCount++
 	}
