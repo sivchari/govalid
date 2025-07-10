@@ -17,6 +17,15 @@ golangci-lint: ## Run golangci-lint over the codebase.
 golangci-lint-fix: GOLANGCI_LINT_EXTRA_ARGS := --fix
 golangci-lint-fix: golangci-lint ## Run golangci-lint over the codebase and run auto-fixers if supported by the linter
 
+# Documentation targets
+.PHONY: docs-dev
+docs-dev: ## Start Hugo development server
+	cd docs && hugo server
+
+.PHONY: docs-build
+docs-build: ## Build documentation for production
+	cd docs && hugo --minify --baseURL="https://sivchari.github.io/govalid/"
+
 # Test targets
 .PHONY: test
 test: ## Run all tests except validation helper (due to known issues)
