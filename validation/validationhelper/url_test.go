@@ -118,27 +118,30 @@ func TestIsValidSchemeChar(t *testing.T) {
 	}
 }
 
-func TestHasSpace(t *testing.T) {
+func TestHasInvalidChars(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    string
 		expected bool
 	}{
-		{"no_space", "https://example.com", false},
+		{"no_invalid_chars", "https://example.com", false},
 		{"space_in_middle", "https://example .com", true},
 		{"space_at_start", " https://example.com", true},
 		{"space_at_end", "https://example.com ", true},
 		{"multiple_spaces", "https://example .com /path", true},
 		{"empty_string", "", false},
 		{"only_space", " ", true},
-		{"tab_character", "https://example\t.com", false}, // tab is not space
+		{"tab_character", "https://example\t.com", true}, // tab is control character
+		{"newline_character", "https://example\n.com", true}, // newline is control character
+		{"null_character", "https://example\x00.com", true}, // null is control character
+		{"del_character", "https://example\x7f.com", true}, // DEL is control character
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := hasSpace(tt.input)
+			result := hasInvalidChars(tt.input)
 			if result != tt.expected {
-				t.Errorf("hasSpace(%q) = %v, expected %v", tt.input, result, tt.expected)
+				t.Errorf("hasInvalidChars(%q) = %v, expected %v", tt.input, result, tt.expected)
 			}
 		})
 	}

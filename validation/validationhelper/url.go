@@ -64,8 +64,8 @@ func IsValidURL(input string) bool {
 		return false
 	}
 
-	// Check for spaces (invalid in URLs)
-	if hasSpace(input) {
+	// Check for spaces and control characters (invalid in URLs)
+	if hasInvalidChars(input) {
 		return false
 	}
 
@@ -107,10 +107,16 @@ func isValidSchemeChar(char byte) bool {
 		char == '+' || char == '-' || char == '.'
 }
 
-// hasSpace checks if the input contains any spaces.
-func hasSpace(input string) bool {
+// hasInvalidChars checks if the input contains spaces or control characters.
+func hasInvalidChars(input string) bool {
 	for i := 0; i < len(input); i++ {
-		if input[i] == ' ' {
+		char := input[i]
+		// Check for spaces
+		if char == ' ' {
+			return true
+		}
+		// Check for control characters (0-31 and 127)
+		if char < 32 || char == 127 {
 			return true
 		}
 	}
