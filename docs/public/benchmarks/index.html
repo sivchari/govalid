@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benchmarks - govalid</title>
+    <meta name="description" content="Performance comparison between govalid and go-playground/validator">
+    
+    
+    <meta property="og:title" content="Benchmarks - govalid">
+    <meta property="og:description" content="Performance comparison between govalid and go-playground/validator">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="//localhost:1313/benchmarks/">
+    
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Benchmarks - govalid">
+    <meta name="twitter:description" content="Performance comparison between govalid and go-playground/validator">
+    
+    
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="/css/custom.css">
+    <link rel="stylesheet" href="/css/style.css">
+    
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    
+    
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            
+            <h1>govalid</h1>
+            <p>High-performance, type-safe validation library for Go with zero allocations</p>
+            
+        </div>
+    </header>
+    
+    <nav class="nav">
+        <div class="container">
+            <ul>
+                
+                <li><a href="/getting-started/">Getting Started</a></li>
+                
+                <li><a href="/validators/">Validators</a></li>
+                
+                <li><a href="/benchmarks/">Benchmarks</a></li>
+                
+                <li><a href="/examples/">Examples</a></li>
+                
+                <li><a href="https://github.com/sivchari/govalid">GitHub</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        
+<article>
+    <header style="margin-bottom: 2rem;">
+        <h1 style="color: var(--primary-color); margin-bottom: 0.5rem;">Benchmarks</h1>
+        
+        <p style="color: #666; font-size: 1.1rem; margin: 0;">Performance comparison between govalid and go-playground/validator</p>
+        
+    </header>
+    
+    <div class="content">
+        <h1 id="performance-benchmarks">Performance Benchmarks</h1>
+<p>govalid is designed for maximum performance with zero allocations. Here are the latest benchmark results comparing govalid with go-playground/validator.</p>
+<h2 id="latest-results">Latest Results</h2>
+<p><strong>Benchmarked on:</strong> 2025-07-09<br>
+<strong>Platform:</strong> Apple M3 Max (16 cores)<br>
+<strong>Go version:</strong> go1.24.3</p>
+<h2 id="performance-comparison">Performance Comparison</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Validator</th>
+          <th>govalid (ns/op)</th>
+          <th>go-playground/validator (ns/op)</th>
+          <th>Improvement</th>
+          <th>govalid Allocs</th>
+          <th>Competitor Allocs</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Required</td>
+          <td>1.96</td>
+          <td>86.59</td>
+          <td><strong>44.2x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>Email</td>
+          <td>38.15</td>
+          <td>644.1</td>
+          <td><strong>16.9x faster</strong></td>
+          <td>0</td>
+          <td>5</td>
+      </tr>
+      <tr>
+          <td>GT</td>
+          <td>1.97</td>
+          <td>64.42</td>
+          <td><strong>32.7x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>GTE</td>
+          <td>1.97</td>
+          <td>62.61</td>
+          <td><strong>31.8x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>LT</td>
+          <td>1.97</td>
+          <td>62.53</td>
+          <td><strong>31.7x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>LTE</td>
+          <td>1.97</td>
+          <td>63.91</td>
+          <td><strong>32.5x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>MaxItems</td>
+          <td>2.54</td>
+          <td>80.74</td>
+          <td><strong>31.8x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>MaxLength</td>
+          <td>15.75</td>
+          <td>74.93</td>
+          <td><strong>4.8x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>MinItems</td>
+          <td>3.09</td>
+          <td>81.00</td>
+          <td><strong>26.2x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>MinLength</td>
+          <td>11.77</td>
+          <td>70.59</td>
+          <td><strong>6.0x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>URL</td>
+          <td>33.56</td>
+          <td>292.8</td>
+          <td><strong>8.7x faster</strong></td>
+          <td>0</td>
+          <td>1</td>
+      </tr>
+      <tr>
+          <td>UUID</td>
+          <td>32.73</td>
+          <td>258.2</td>
+          <td><strong>7.9x faster</strong></td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="raw-benchmark-data">Raw Benchmark Data</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>BenchmarkGoValidEmail-16              	32228103	        38.15 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundEmail-16         	 1868752	       644.1 ns/op	      89 B/op	       5 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidEnum-16               	532029958	         2.242 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidGT-16                 	611265494	         1.965 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundGT-16            	18765514	        64.42 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidGTE-16                	610501644	         1.972 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundGTE-16           	18728052	        62.61 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidLT-16                 	612178263	         1.966 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundLT-16            	18604290	        62.53 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidLTE-16                	611989772	         1.965 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundLTE-16           	18566031	        63.91 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidMaxItems-16           	473255866	         2.537 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMaxItems-16      	14922596	        80.74 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidMaxLength-16          	75382410	        15.75 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMaxLength-16     	15913501	        74.93 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidMinItems-16           	386819032	         3.088 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMinItems-16      	14729302	        81.00 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidMinLength-16          	96840576	        11.77 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMinLength-16     	17009824	        70.59 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidRequired-16           	612683832	         1.959 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundRequired-16      	13983676	        86.59 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidURL-16                	36136322	        33.56 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundURL-16           	 4099124	       292.8 ns/op	     144 B/op	       1 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidUUID-16               	36773295	        32.73 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundUUID-16          	 4684831	       258.2 ns/op	       0 B/op	       0 allocs/op
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="performance-categories">Performance Categories</h2>
+<h3 id="-ultra-fast--3ns">🚀 Ultra-Fast (&lt; 3ns)</h3>
+<ul>
+<li><strong>Required</strong>: 1.96ns - 44.2x faster</li>
+<li><strong>GT/GTE/LT/LTE</strong>: ~1.97ns - 32x faster</li>
+<li><strong>Enum</strong>: 2.24ns - govalid exclusive</li>
+<li><strong>MaxItems</strong>: 2.54ns - 31.8x faster</li>
+<li><strong>MinItems</strong>: 3.09ns - 26.2x faster</li>
+</ul>
+<h3 id="-fast-3-40ns">⚡ Fast (3-40ns)</h3>
+<ul>
+<li><strong>MinLength</strong>: 11.77ns - 6.0x faster</li>
+<li><strong>MaxLength</strong>: 15.75ns - 4.8x faster</li>
+<li><strong>UUID</strong>: 32.73ns - 7.9x faster</li>
+<li><strong>URL</strong>: 33.56ns - 8.7x faster</li>
+<li><strong>Email</strong>: 38.15ns - 16.9x faster</li>
+</ul>
+<h2 id="key-performance-insights">Key Performance Insights</h2>
+<h3 id="1-zero-allocations">1. Zero Allocations</h3>
+<p><strong>All govalid validators perform zero heap allocations</strong>, while competitors often allocate 0-5 objects per validation.</p>
+<h3 id="2-sub-nanosecond-efficiency">2. Sub-Nanosecond Efficiency</h3>
+<p>Simple validators (GT, LT, Required) execute in under 2ns, making them essentially free operations.</p>
+<h3 id="3-complex-validation-optimization">3. Complex Validation Optimization</h3>
+<p>Even complex validators like email and URL are optimized with:</p>
+<ul>
+<li>Manual string parsing (no regex overhead)</li>
+<li>Single-pass validation algorithms</li>
+<li>Zero memory allocations</li>
+</ul>
+<h3 id="4-string-length-performance">4. String Length Performance</h3>
+<p>Unicode-aware string validators are 4.8-6.0x faster despite proper UTF-8 handling.</p>
+<h2 id="govalid-exclusive-features">govalid-Exclusive Features</h2>
+<h3 id="enum-validation">Enum Validation</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#57606a">// +govalid:enum=admin,user,guest</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">Role</span> <span style="color:#cf222e">string</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>Performance</strong>: 2.24ns with 0 allocations</li>
+<li><strong>No equivalent</strong> in go-playground/validator</li>
+<li>Supports string, numeric, and custom types</li>
+</ul>
+<h3 id="extended-collection-support">Extended Collection Support</h3>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#57606a">// +govalid:maxitems=10</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">Items</span> <span style="color:#cf222e">map</span><span style="color:#1f2328">[</span><span style="color:#cf222e">string</span><span style="color:#1f2328">]</span><span style="color:#cf222e">int</span>  <span style="color:#57606a">// Maps supported!</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a">// +govalid:minitems=1</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">Channel</span> <span style="color:#cf222e">chan</span> <span style="color:#cf222e">string</span>   <span style="color:#57606a">// Channels supported!</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>MaxItems/MinItems work with maps and channels</strong></li>
+<li>go-playground/validator only supports slices</li>
+</ul>
+<h2 id="optimization-techniques">Optimization Techniques</h2>
+<h3 id="1-code-generation">1. Code Generation</h3>
+<ul>
+<li><strong>Compile-time validation functions</strong> (no runtime reflection)</li>
+<li><strong>Inlined simple operations</strong> for maximum speed</li>
+<li><strong>Direct field access</strong> with no interface overhead</li>
+</ul>
+<h3 id="2-external-helper-functions">2. External Helper Functions</h3>
+<p>Complex validators use optimized external functions:</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#57606a">// Email validation with zero allocations</span>
+</span></span><span style="display:flex;"><span><span style="color:#cf222e">if</span> <span style="color:#1f2328">!</span><span style="color:#1f2328">validationhelper</span><span style="color:#1f2328">.</span><span style="color:#6639ba">IsValidEmail</span><span style="color:#1f2328">(</span><span style="color:#1f2328">t</span><span style="color:#1f2328">.</span><span style="color:#1f2328">Email</span><span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">return</span> <span style="color:#1f2328">ErrEmailValidation</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="3-manual-string-parsing">3. Manual String Parsing</h3>
+<ul>
+<li><strong>Character-by-character parsing</strong> instead of <code>strings.Split</code></li>
+<li><strong>Direct indexing</strong> instead of <code>strings.Contains</code></li>
+<li><strong>Single-pass algorithms</strong> for complex validation</li>
+</ul>
+<h3 id="4-memory-optimization">4. Memory Optimization</h3>
+<ul>
+<li><strong>Zero heap allocations</strong> across all validators</li>
+<li><strong>Stack-only operations</strong> for maximum cache efficiency</li>
+<li><strong>Minimal memory footprint</strong> in generated code</li>
+</ul>
+<h2 id="real-world-impact">Real-World Impact</h2>
+<h3 id="api-validation">API Validation</h3>
+<p>For APIs processing thousands of requests per second:</p>
+<ul>
+<li><strong>Required field validation</strong>: 44x faster = 44x more throughput</li>
+<li><strong>Email validation</strong>: 16.9x faster = 16.9x more throughput</li>
+<li><strong>Zero GC pressure</strong> from validation operations</li>
+</ul>
+<h3 id="high-performance-services">High-Performance Services</h3>
+<ul>
+<li><strong>Sub-nanosecond validation</strong> enables validation in hot paths</li>
+<li><strong>Predictable performance</strong> with zero allocations</li>
+<li><strong>CPU cache-friendly</strong> operations</li>
+</ul>
+<h2 id="running-benchmarks">Running Benchmarks</h2>
+<p>To run benchmarks yourself:</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/sivchari/govalid.git
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">cd</span> govalid/test
+</span></span><span style="display:flex;"><span>go <span style="color:#6639ba">test</span> ./benchmark/ -bench<span style="color:#0550ae">=</span>. -benchmem
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="conclusion">Conclusion</h2>
+<p>govalid delivers exceptional performance improvements:</p>
+<ul>
+<li><strong>4.8x to 44.2x faster</strong> than go-playground/validator</li>
+<li><strong>Zero allocations</strong> across all validators</li>
+<li><strong>Sub-3ns performance</strong> for simple operations</li>
+<li><strong>Extended type support</strong> (maps, channels, enums)</li>
+<li><strong>Production-ready</strong> with comprehensive test coverage</li>
+</ul>
+<p>Choose govalid when performance matters and zero allocations are critical for your application&rsquo;s success.</p>
+
+    </div>
+    
+    
+    <nav style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e9ecef;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            
+            <a href="//localhost:1313/examples/" class="btn btn-secondary">
+                ← Examples
+            </a>
+            
+            
+            
+            <a href="//localhost:1313/validators/" class="btn">
+                Validators →
+            </a>
+            
+        </div>
+    </nav>
+    
+</article>
+
+    </main>
+    
+    <footer style="background: #f8f9fa; padding: 2rem 0; margin-top: 4rem; border-top: 1px solid #e9ecef;">
+        <div class="container">
+            <p style="text-align: center; color: #666; margin: 0;">
+                &copy; 2025 sivchari. 
+                <a href="https://github.com/sivchari/govalid" style="color: #007d9c; text-decoration: none;">View on GitHub</a>
+            </p>
+        </div>
+    </footer>
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+        
+        
+        document.querySelectorAll('code.language-go').forEach((block) => {
+            const html = block.innerHTML;
+            
+            const enhanced = html.replace(
+                /(\/\/\s*\+govalid:[^<\n]+)/g,
+                '<span class="govalid-marker">$1</span>'
+            );
+            block.innerHTML = enhanced;
+        });
+        
+        
+        document.querySelectorAll('pre code').forEach((block) => {
+            const button = document.createElement('button');
+            button.className = 'copy-button';
+            button.textContent = 'Copy';
+            button.style.cssText = `
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #00add8;
+                color: white;
+                border: none;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                font-size: 0.8rem;
+                cursor: pointer;
+                opacity: 0;
+                transition: opacity 0.2s;
+                font-weight: 500;
+            `;
+            
+            block.parentNode.style.position = 'relative';
+            block.parentNode.appendChild(button);
+            
+            block.parentNode.addEventListener('mouseenter', () => {
+                button.style.opacity = '1';
+            });
+            
+            block.parentNode.addEventListener('mouseleave', () => {
+                button.style.opacity = '0';
+            });
+            
+            button.addEventListener('click', () => {
+                navigator.clipboard.writeText(block.textContent);
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>

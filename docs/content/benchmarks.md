@@ -1,6 +1,12 @@
-# Benchmark Results
+---
+title: "Benchmarks"
+description: "Performance comparison between govalid and go-playground/validator"
+weight: 30
+---
 
-This document contains performance comparison results between govalid and go-playground/validator.
+# Performance Benchmarks
+
+govalid is designed for maximum performance with zero allocations. Here are the latest benchmark results comparing govalid with go-playground/validator.
 
 ## Latest Results
 
@@ -56,41 +62,99 @@ BenchmarkGoPlaygroundURL-16          	 4240443	       276.2 ns/op	     144 B/op	
 | URL | 41.73ns | 276.2 | **6.6x faster** | 0 allocs/op | 1 allocs + 144 B/op |
 | Enum | 2.242ns | N/A (govalid exclusive) | **govalid exclusive** | 0 allocs/op | N/A |
 
+## Performance Categories
+
+### 🚀 Ultra-Fast (< 3ns)
+- **Required**: ~1.9ns - 45x faster
+- **GT/GTE/LT/LTE**: ~1.9ns - 32x faster
+- **Enum**: ~2.2ns - govalid exclusive
+- **MaxItems**: ~2.5ns - 32x faster
+- **MinItems**: ~2.8ns - 29x faster
+
+### ⚡ Fast (3-40ns)
+- **MinLength**: ~11ns - 6x faster
+- **MaxLength**: ~15ns - 5x faster
+- **UUID**: ~36ns - 7x faster
+- **URL**: ~41ns - 7x faster
+- **Email**: ~36ns - 17x faster
+
+## Key Performance Insights
+
+### 1. Zero Allocations
+**All govalid validators perform zero heap allocations**, while competitors often allocate 0-5 objects per validation.
+
+### 2. Sub-Nanosecond Efficiency
+Simple validators (GT, LT, Required) execute in under 2ns, making them essentially free operations.
+
+### 3. Complex Validation Optimization
+Even complex validators like email and URL are optimized with:
+- Manual string parsing (no regex overhead)
+- Single-pass validation algorithms
+- Zero memory allocations
+
+### 4. String Length Performance
+Unicode-aware string validators are 4.8-6.0x faster despite proper UTF-8 handling.
+
 ## govalid-Exclusive Features
 
 ### Enum Validation
-- **Enum**: Comprehensive enum validation for string, numeric, and custom types (~2.17ns)
-- Zero-allocation enum checking with compile-time safety
-- Works with custom type definitions (e.g., `type Status string`)
+```go
+// +govalid:enum=admin,user,guest
+Role string
+```
+- **Performance**: ~2.2ns with 0 allocations
+- **No equivalent** in go-playground/validator
+- Supports string, numeric, and custom types
 
-### Collection Type Extension
-These validators support map and channel types, which go-playground/validator doesn't support:
-- **MaxItems**: slice, array, map, channel length ≤ limit  
-- **MinItems**: slice, array, map, channel length ≥ limit
+### Extended Collection Support
+```go
+// +govalid:maxitems=10
+Items map[string]int  // Maps supported!
 
-## Key Findings
+// +govalid:minitems=1
+Channel chan string   // Channels supported!
+```
 
-1. **Exceptional Performance**: govalid shows 4.8x to 45x performance improvements across all validators
-2. **Sub-3ns Execution**: Most validators execute in under 3 nanoseconds  
-3. **Zero Allocations**: All govalid validators perform zero heap allocations
-4. **Statistical Significance**: Results are consistent across multiple runs
-5. **Extended Type Support**: Collection validators work with map/channel types
+## Optimization Techniques
 
-## Implementation Notes
+### 1. Code Generation
+- **Compile-time validation functions** (no runtime reflection)
+- **Inlined simple operations** for maximum speed
+- **Direct field access** with no interface overhead
 
-- govalid generates compile-time validation functions with zero runtime reflection
-- **External Helper Functions**: Complex validators use optimized external functions
-- **Zero-Allocation**: Manual string parsing eliminates allocations
-- Proper Unicode support in string length validators using `utf8.RuneCountInString`
-- Comprehensive type support including map and channel validation
+### 2. External Helper Functions
+Complex validators use optimized external functions for better performance.
 
-## Running Benchmarks Yourself
+### 3. Manual String Parsing
+- **Character-by-character parsing** instead of `strings.Split`
+- **Direct indexing** instead of `strings.Contains`
+- **Single-pass algorithms** for complex validation
+
+### 4. Memory Optimization
+- **Zero heap allocations** across all validators
+- **Stack-only operations** for maximum cache efficiency
+- **Minimal memory footprint** in generated code
+
+## Running Benchmarks
+
+To run benchmarks yourself:
 
 ```bash
-# Update all benchmark documentation
+# Sync all benchmark documentation
 make sync-benchmarks
 
 # Run benchmarks manually
 cd test
 go test ./benchmark/ -bench=. -benchmem
 ```
+
+## Conclusion
+
+govalid delivers exceptional performance improvements:
+- **4.8x to 45x faster** than go-playground/validator
+- **Zero allocations** across all validators
+- **Sub-3ns performance** for simple operations
+- **Extended type support** (maps, channels, enums)
+- **Production-ready** with comprehensive test coverage
+
+Choose govalid when performance matters and zero allocations are critical for your application's success.

@@ -1,0 +1,77 @@
+baseURL = "/"
+languageCode = "en-us"
+title = "govalid"
+
+# GitHub Pages configuration
+publishDir = "public"
+
+# Content configuration
+contentDir = "content"
+dataDir = "data"
+layoutDir = "layouts"
+staticDir = "static"
+
+# Menu configuration
+[menu]
+  [[menu.main]]
+    name = "Getting Started"
+    url = "/getting-started/"
+    weight = 10
+  [[menu.main]]
+    name = "Validators"
+    url = "/validators/"
+    weight = 20
+  [[menu.main]]
+    name = "Benchmarks"
+    url = "/benchmarks/"
+    weight = 30
+  [[menu.main]]
+    name = "Examples"
+    url = "/examples/"
+    weight = 40
+  [[menu.main]]
+    name = "GitHub"
+    url = "https://github.com/sivchari/govalid"
+    weight = 50
+
+# Site params
+[params]
+  description = "High-performance, type-safe validation library for Go with zero allocations"
+  author = "sivchari"
+  github_repo = "https://github.com/sivchari/govalid"
+  github_branch = "main"
+  version = "1.0.0"
+  
+  # Custom theme params
+  [params.ui]
+    navbar_logo = true
+    sidebar_menu_compact = true
+  
+  # Code highlighting
+  [params.highlight]
+    style = "github"
+    lineNos = true
+
+# Markup configuration
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = "github"
+    lineNos = true
+    anchorLineNos = false
+    codeFences = true
+    guessSyntax = true
+    hl_Lines = ""
+    lineAnchors = ""
+    lineNoStart = 1
+    lineNumbersInTable = true
+    noClasses = true
+    tabWidth = 4
+
+# GitHub Pages deployment
+[deployment]
+  [[deployment.targets]]
+    name = "github-pages"
+    URL = "https://sivchari.github.io/govalid/"

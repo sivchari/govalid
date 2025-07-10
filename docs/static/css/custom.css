@@ -1,0 +1,431 @@
+/* Custom styles for govalid documentation - Go-inspired design */
+
+:root {
+    --primary-color: #00add8;
+    --secondary-color: #f0f8ff;
+    --accent-color: #007d9c;
+    --text-color: #222;
+    --code-bg: #f8f9fa;
+    --border-color: #d1ecf1;
+    --go-blue: #00add8;
+    --go-dark-blue: #007d9c;
+    --go-light-blue: #e6f7ff;
+    --go-gopher: #00758d;
+}
+
+body {
+    font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background: #fff;
+}
+
+/* Header styles - Go-inspired */
+.header {
+    background: linear-gradient(135deg, var(--go-blue) 0%, var(--go-dark-blue) 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    opacity: 0.3;
+}
+
+.header .container {
+    position: relative;
+    z-index: 1;
+}
+
+.header h1 {
+    font-size: 4rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    letter-spacing: -0.02em;
+}
+
+.header p {
+    font-size: 1.4rem;
+    margin: 0;
+    opacity: 0.95;
+    font-weight: 300;
+}
+
+/* Performance badges */
+.performance-badge {
+    display: inline-block;
+    background: #28a745;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0.25rem;
+    text-decoration: none;
+}
+
+.performance-badge:hover {
+    background: #218838;
+    color: white;
+    text-decoration: none;
+}
+
+/* Feature cards - Go-inspired */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.feature-card {
+    background: white;
+    border: 2px solid var(--go-light-blue);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 173, 216, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--go-blue) 0%, var(--go-dark-blue) 100%);
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 173, 216, 0.2);
+    border-color: var(--go-blue);
+}
+
+.feature-card h3 {
+    color: var(--go-dark-blue);
+    margin-top: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.feature-card .icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    filter: grayscale(20%);
+}
+
+/* Code blocks - Go-inspired */
+pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    overflow-x: auto;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+code {
+    background: var(--code-bg);
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.3rem;
+    font-size: 0.95em;
+    font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+    color: var(--go-dark-blue);
+    border: 1px solid var(--border-color);
+}
+
+pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+    border: none;
+    color: inherit;
+}
+
+/* Marker/comment styling - Make govalid markers more prominent */
+.language-go .token.comment {
+    color: #00758d !important;
+    font-weight: 700 !important;
+    font-size: 1.2em !important;
+    background: rgba(0, 173, 216, 0.1) !important;
+    padding: 0.1rem 0.3rem !important;
+    border-radius: 0.2rem !important;
+    border-left: 3px solid var(--go-blue) !important;
+    margin: 0.1rem 0 !important;
+    display: inline-block !important;
+}
+
+/* Special styling for govalid markers - More prominent */
+.govalid-marker {
+    background: linear-gradient(135deg, rgba(0, 173, 216, 0.2) 0%, rgba(0, 125, 156, 0.15) 100%) !important;
+    color: #003640 !important;
+    font-weight: 900 !important;
+    font-size: 1.4em !important;
+    padding: 0.3rem 0.8rem !important;
+    border-radius: 0.4rem !important;
+    border: 2px solid var(--go-blue) !important;
+    border-left: 6px solid var(--go-blue) !important;
+    margin: 0.3rem 0 !important;
+    display: inline-block !important;
+    box-shadow: 0 2px 8px rgba(0, 173, 216, 0.25) !important;
+    font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace !important;
+    position: relative !important;
+}
+
+.govalid-marker::before {
+    content: '🏷️ ';
+    font-size: 0.8em !important;
+    margin-right: 0.2rem !important;
+}
+
+.govalid-marker:hover {
+    background: linear-gradient(135deg, rgba(0, 173, 216, 0.3) 0%, rgba(0, 125, 156, 0.25) 100%) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 4px 12px rgba(0, 173, 216, 0.4) !important;
+    transition: all 0.3s ease !important;
+    border-color: var(--go-dark-blue) !important;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    background: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background: var(--secondary-color);
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+tr:hover {
+    background: #f8f9fa;
+}
+
+/* Buttons - Go-inspired */
+.btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--go-blue) 0%, var(--go-dark-blue) 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: 2px solid var(--go-blue);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 173, 216, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, var(--go-dark-blue) 0%, var(--go-gopher) 100%);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 173, 216, 0.3);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--go-blue);
+    border: 2px solid var(--go-blue);
+    box-shadow: 0 4px 12px rgba(0, 173, 216, 0.1);
+}
+
+.btn-secondary:hover {
+    background: var(--go-light-blue);
+    color: var(--go-dark-blue);
+    border-color: var(--go-dark-blue);
+}
+
+/* Navigation - Go-inspired */
+.nav {
+    background: white;
+    border-bottom: 3px solid var(--go-blue);
+    padding: 0;
+    margin-bottom: 3rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 0;
+}
+
+.nav li {
+    position: relative;
+}
+
+.nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 1.2rem 1.5rem;
+    display: block;
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.nav a:hover {
+    color: var(--go-blue);
+    text-decoration: none;
+    background: var(--go-light-blue);
+    border-bottom-color: var(--go-blue);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .header p {
+        font-size: 1rem;
+    }
+    
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav ul {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Syntax highlighting improvements */
+.highlight {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.highlight pre {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+}
+
+/* Performance table specific styles */
+.performance-table td:nth-child(4) {
+    font-weight: 600;
+    color: #28a745;
+}
+
+/* Benchmark results styling */
+.benchmark-results {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--primary-color);
+    margin: 1rem 0;
+}
+
+.benchmark-results pre {
+    background: white;
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+/* Quick start section - Go-inspired */
+.quick-start {
+    background: linear-gradient(135deg, var(--go-light-blue) 0%, #f0f8ff 100%);
+    padding: 3rem;
+    border-radius: 1rem;
+    margin: 3rem 0;
+    border: 3px solid var(--go-blue);
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-start::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 173, 216, 0.05) 0%, transparent 70%);
+    animation: subtle-rotate 20s linear infinite;
+}
+
+.quick-start > * {
+    position: relative;
+    z-index: 1;
+}
+
+.quick-start h2 {
+    color: var(--go-dark-blue);
+    margin-top: 0;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+@keyframes subtle-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Animation for performance badges */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.performance-badge:hover {
+    animation: pulse 0.5s ease;
+}
