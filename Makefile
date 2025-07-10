@@ -20,7 +20,7 @@ golangci-lint-fix: golangci-lint ## Run golangci-lint over the codebase and run 
 # Test targets
 .PHONY: test
 test: ## Run all tests except validation helper (due to known issues)
-	go test $$(go list ./... | grep -v '/validation/validationhelper')
+	go test ./... -shuffle on -v -race
 
 .PHONY: test-all
 test-all: ## Run all tests including validation helper

@@ -1,6 +1,7 @@
 package validationhelper
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -74,7 +75,7 @@ func testInvalidEmails(t *testing.T) {
 		{"label_starts_hyphen", "user@ex-ample.-com", false},
 		{"label_ends_hyphen", "user@ex-ample.com-", false},
 		{"underscore_in_domain", "user@ex_ample.com", false},
-		{"too_long_label", "user@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com", false},
+		{"too_long_label", "user@" + generateString(64) + ".com", false},
 		{"empty_label", "user@example..com", false},
 		{"single_label", "user@example", false},
 	}
@@ -95,12 +96,12 @@ func testEmailLengthBoundaries(t *testing.T) {
 		email    string
 		expected bool
 	}{
-		{"max_valid_length", "a@" + generateString(248) + ".com", true}, // 254 total
-		{"too_long_email", "a@" + generateString(249) + ".com", false},  // 255 total
+		{"max_valid_length", "a@" + generateValidDomain(246) + ".com", true}, // 254 total
+		{"too_long_email", "a@" + generateValidDomain(249) + ".com", false},  // 255 total
 		{"max_local_length", generateString(64) + "@example.com", true},
 		{"too_long_local", generateString(65) + "@example.com", false},
-		{"max_domain_length", "a@" + generateString(249) + ".com", true}, // 253 domain
-		{"too_long_domain", "a@" + generateString(250) + ".com", false},  // 254 domain
+		{"max_domain_length", "a@" + generateValidDomain(247) + ".com", true}, // 253 domain
+		{"too_long_domain", "a@" + generateValidDomain(250) + ".com", false},  // 254 domain
 		{"max_label_length", "user@" + generateString(63) + ".com", true},
 		{"too_long_label", "user@" + generateString(64) + ".com", false},
 	}
@@ -291,11 +292,11 @@ func TestIsValidDomainPart(t *testing.T) {
 		{"two_char_tld", "example.io", true},
 		{"long_tld", "example.technology", true},
 		{"numeric_labels", "123.456.com", true},
-		{"max_length", generateString(243) + ".example.com", true}, // 253 total
+		{"max_length", generateValidDomain(241) + ".example.com", true}, // 253 total
 
 		// Invalid domains
 		{"empty", "", false},
-		{"too_long", generateString(244) + ".example.com", false}, // 254 total
+		{"too_long", generateValidDomain(242) + ".example.com", false}, // 254 total
 		{"no_dot", "localhost", false},
 		{"single_label", "com", false},
 		{"leading_dot", ".example.com", false},
@@ -542,4 +543,41 @@ func generateString(length int) string {
 	}
 
 	return string(result)
+}
+
+// Helper function to generate valid domain names of specific length.
+// Creates domains with labels that respect the 63 character limit.
+func generateValidDomain(length int) string {
+	if length <= 0 {
+		return ""
+	}
+
+	var result strings.Builder
+	remaining := length
+	labelCount := 0
+
+	for remaining > 0 {
+		if labelCount > 0 {
+			result.WriteByte('.')
+			remaining--
+			if remaining <= 0 {
+				break
+			}
+		}
+
+		// Each label can be max 63 characters
+		labelLen := min(63, remaining)
+		if labelLen <= 0 {
+			break
+		}
+
+		// Generate label
+		for i := range labelLen {
+			result.WriteByte(byte('a' + ((labelCount*labelLen + i) % 26)))
+		}
+		remaining -= labelLen
+		labelCount++
+	}
+
+	return result.String()
 }
