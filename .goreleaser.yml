@@ -47,7 +47,7 @@ release:
     name: govalid
   draft: false
   prerelease: auto
-  name_template: "{{ .ProjectName }} {{ .Version }}"
+  name_template: "{{ .Version }}"
   header: |
     ## Changes
 
@@ -76,6 +76,7 @@ homebrew_casks:
     repository:
       owner: sivchari
       name: homebrew-tap
+      token: {{ .ENV.HOMEBREW_TAP_GITHUB_TOKEN }}
     homepage: https://github.com/sivchari/govalid
     description: "A Go code generator for validation functions"
     license: MIT
