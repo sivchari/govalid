@@ -74,120 +74,9 @@
         <h1 id="performance-benchmarks">Performance Benchmarks</h1>
 <p>govalid is designed for maximum performance with zero allocations. Here are the latest benchmark results comparing govalid with go-playground/validator.</p>
 <h2 id="latest-results">Latest Results</h2>
-<p><strong>Benchmarked on:</strong> 2025-07-09<br>
-<strong>Platform:</strong> Apple M3 Max (16 cores)<br>
-<strong>Go version:</strong> go1.24.3</p>
-<h2 id="performance-comparison">Performance Comparison</h2>
-<table>
-  <thead>
-      <tr>
-          <th>Validator</th>
-          <th>govalid (ns/op)</th>
-          <th>go-playground/validator (ns/op)</th>
-          <th>Improvement</th>
-          <th>govalid Allocs</th>
-          <th>Competitor Allocs</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Required</td>
-          <td>1.96</td>
-          <td>86.59</td>
-          <td><strong>44.2x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>Email</td>
-          <td>38.15</td>
-          <td>644.1</td>
-          <td><strong>16.9x faster</strong></td>
-          <td>0</td>
-          <td>5</td>
-      </tr>
-      <tr>
-          <td>GT</td>
-          <td>1.97</td>
-          <td>64.42</td>
-          <td><strong>32.7x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>GTE</td>
-          <td>1.97</td>
-          <td>62.61</td>
-          <td><strong>31.8x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>LT</td>
-          <td>1.97</td>
-          <td>62.53</td>
-          <td><strong>31.7x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>LTE</td>
-          <td>1.97</td>
-          <td>63.91</td>
-          <td><strong>32.5x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>MaxItems</td>
-          <td>2.54</td>
-          <td>80.74</td>
-          <td><strong>31.8x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>MaxLength</td>
-          <td>15.75</td>
-          <td>74.93</td>
-          <td><strong>4.8x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>MinItems</td>
-          <td>3.09</td>
-          <td>81.00</td>
-          <td><strong>26.2x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>MinLength</td>
-          <td>11.77</td>
-          <td>70.59</td>
-          <td><strong>6.0x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>URL</td>
-          <td>33.56</td>
-          <td>292.8</td>
-          <td><strong>8.7x faster</strong></td>
-          <td>0</td>
-          <td>1</td>
-      </tr>
-      <tr>
-          <td>UUID</td>
-          <td>32.73</td>
-          <td>258.2</td>
-          <td><strong>7.9x faster</strong></td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-  </tbody>
-</table>
+<p><strong>Benchmarked on:</strong> 2025-07-10<br>
+<strong>Platform:</strong> Darwin 24.5.0 arm64<br>
+<strong>Go version:</strong> go1.25-devel_a8e99ab19c</p>
 <h2 id="raw-benchmark-data">Raw Benchmark Data</h2>
 <div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
@@ -218,49 +107,168 @@
 </span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>BenchmarkGoValidEmail-16              	32228103	        38.15 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundEmail-16         	 1868752	       644.1 ns/op	      89 B/op	       5 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidEnum-16               	532029958	         2.242 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidGT-16                 	611265494	         1.965 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundGT-16            	18765514	        64.42 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidGTE-16                	610501644	         1.972 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundGTE-16           	18728052	        62.61 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidLT-16                 	612178263	         1.966 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundLT-16            	18604290	        62.53 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidLTE-16                	611989772	         1.965 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundLTE-16           	18566031	        63.91 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidMaxItems-16           	473255866	         2.537 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMaxItems-16      	14922596	        80.74 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidMaxLength-16          	75382410	        15.75 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMaxLength-16     	15913501	        74.93 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidMinItems-16           	386819032	         3.088 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMinItems-16      	14729302	        81.00 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidMinLength-16          	96840576	        11.77 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMinLength-16     	17009824	        70.59 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidRequired-16           	612683832	         1.959 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundRequired-16      	13983676	        86.59 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidURL-16                	36136322	        33.56 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundURL-16           	 4099124	       292.8 ns/op	     144 B/op	       1 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoValidUUID-16               	36773295	        32.73 ns/op	       0 B/op	       0 allocs/op
-</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundUUID-16          	 4684831	       258.2 ns/op	       0 B/op	       0 allocs/op
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>BenchmarkGoValidEmail-16             	31843813	        37.61 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundEmail-16        	 1930374	       629.8 ns/op	      89 B/op	       5 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidEnum-16              	548327136	         2.230 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidGT-16                	614606246	         1.876 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundGT-16           	20117954	        59.96 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidGTE-16               	649853220	         1.832 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundGTE-16          	19230384	        61.01 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidLT-16                	622414173	         1.913 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundLT-16           	20024850	        59.85 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidLTE-16               	657234140	         1.838 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundLTE-16          	19951810	        59.21 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidMaxItems-16          	481109035	         2.497 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMaxItems-16     	15247614	        78.67 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidMaxLength-16         	79215328	        15.23 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMaxLength-16    	16983074	        70.79 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidMinItems-16          	430797020	         2.787 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMinItems-16     	15170478	        78.60 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidMinLength-16         	100000000	        11.47 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundMinLength-16    	18397171	        65.70 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidRequired-16          	628808877	         1.935 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundRequired-16     	14102072	        85.67 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidUUID-16              	29724859	        36.49 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundUUID-16         	 4872068	       248.7 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoValidURL-16               	29471809	        41.73 ns/op	       0 B/op	       0 allocs/op
+</span></span><span style="display:flex;"><span>BenchmarkGoPlaygroundURL-16          	 4240443	       276.2 ns/op	     144 B/op	       1 allocs/op
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="performance-categories">Performance Categories</h2>
+</div><h2 id="performance-comparison">Performance Comparison</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Validator</th>
+          <th>govalid (ns/op)</th>
+          <th>go-playground/validator (ns/op)</th>
+          <th>Improvement</th>
+          <th>govalid Allocs</th>
+          <th>Competitor Allocs</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Email</td>
+          <td>37.61ns</td>
+          <td>629.8</td>
+          <td><strong>16.7x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>5 allocs + 89 B/op</td>
+      </tr>
+      <tr>
+          <td>GT</td>
+          <td>1.876ns</td>
+          <td>59.96</td>
+          <td><strong>32.0x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>GTE</td>
+          <td>1.832ns</td>
+          <td>61.01</td>
+          <td><strong>33.3x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>LT</td>
+          <td>1.913ns</td>
+          <td>59.85</td>
+          <td><strong>31.3x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>LTE</td>
+          <td>1.838ns</td>
+          <td>59.21</td>
+          <td><strong>32.2x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>MaxItems</td>
+          <td>2.497ns</td>
+          <td>78.67</td>
+          <td><strong>31.5x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>MaxLength</td>
+          <td>15.23ns</td>
+          <td>70.79</td>
+          <td><strong>4.6x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>MinItems</td>
+          <td>2.787ns</td>
+          <td>78.60</td>
+          <td><strong>28.2x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>MinLength</td>
+          <td>11.47ns</td>
+          <td>65.70</td>
+          <td><strong>5.7x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>Required</td>
+          <td>1.935ns</td>
+          <td>85.67</td>
+          <td><strong>44.3x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>UUID</td>
+          <td>36.49ns</td>
+          <td>248.7</td>
+          <td><strong>6.8x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>0 allocs/op</td>
+      </tr>
+      <tr>
+          <td>URL</td>
+          <td>41.73ns</td>
+          <td>276.2</td>
+          <td><strong>6.6x faster</strong></td>
+          <td>0 allocs/op</td>
+          <td>1 allocs + 144 B/op</td>
+      </tr>
+      <tr>
+          <td>Enum</td>
+          <td>2.242ns</td>
+          <td>N/A (govalid exclusive)</td>
+          <td><strong>govalid exclusive</strong></td>
+          <td>0 allocs/op</td>
+          <td>N/A</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="performance-categories">Performance Categories</h2>
 <h3 id="-ultra-fast--3ns">🚀 Ultra-Fast (&lt; 3ns)</h3>
 <ul>
-<li><strong>Required</strong>: 1.96ns - 44.2x faster</li>
-<li><strong>GT/GTE/LT/LTE</strong>: ~1.97ns - 32x faster</li>
-<li><strong>Enum</strong>: 2.24ns - govalid exclusive</li>
-<li><strong>MaxItems</strong>: 2.54ns - 31.8x faster</li>
-<li><strong>MinItems</strong>: 3.09ns - 26.2x faster</li>
+<li><strong>Required</strong>: ~1.9ns - 45x faster</li>
+<li><strong>GT/GTE/LT/LTE</strong>: ~1.9ns - 32x faster</li>
+<li><strong>Enum</strong>: ~2.2ns - govalid exclusive</li>
+<li><strong>MaxItems</strong>: ~2.5ns - 32x faster</li>
+<li><strong>MinItems</strong>: ~2.8ns - 29x faster</li>
 </ul>
 <h3 id="-fast-3-40ns">⚡ Fast (3-40ns)</h3>
 <ul>
-<li><strong>MinLength</strong>: 11.77ns - 6.0x faster</li>
-<li><strong>MaxLength</strong>: 15.75ns - 4.8x faster</li>
-<li><strong>UUID</strong>: 32.73ns - 7.9x faster</li>
-<li><strong>URL</strong>: 33.56ns - 8.7x faster</li>
-<li><strong>Email</strong>: 38.15ns - 16.9x faster</li>
+<li><strong>MinLength</strong>: ~11ns - 6x faster</li>
+<li><strong>MaxLength</strong>: ~15ns - 5x faster</li>
+<li><strong>UUID</strong>: ~36ns - 7x faster</li>
+<li><strong>URL</strong>: ~41ns - 7x faster</li>
+<li><strong>Email</strong>: ~36ns - 17x faster</li>
 </ul>
 <h2 id="key-performance-insights">Key Performance Insights</h2>
 <h3 id="1-zero-allocations">1. Zero Allocations</h3>
@@ -289,7 +297,7 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><strong>Performance</strong>: 2.24ns with 0 allocations</li>
+<li><strong>Performance</strong>: ~2.2ns with 0 allocations</li>
 <li><strong>No equivalent</strong> in go-playground/validator</li>
 <li>Supports string, numeric, and custom types</li>
 </ul>
@@ -310,11 +318,7 @@
 </span></span><span style="display:flex;"><span><span style="color:#1f2328">Channel</span> <span style="color:#cf222e">chan</span> <span style="color:#cf222e">string</span>   <span style="color:#57606a">// Channels supported!</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li><strong>MaxItems/MinItems work with maps and channels</strong></li>
-<li>go-playground/validator only supports slices</li>
-</ul>
-<h2 id="optimization-techniques">Optimization Techniques</h2>
+</div><h2 id="optimization-techniques">Optimization Techniques</h2>
 <h3 id="1-code-generation">1. Code Generation</h3>
 <ul>
 <li><strong>Compile-time validation functions</strong> (no runtime reflection)</li>
@@ -322,22 +326,8 @@
 <li><strong>Direct field access</strong> with no interface overhead</li>
 </ul>
 <h3 id="2-external-helper-functions">2. External Helper Functions</h3>
-<p>Complex validators use optimized external functions:</p>
-<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#57606a">// Email validation with zero allocations</span>
-</span></span><span style="display:flex;"><span><span style="color:#cf222e">if</span> <span style="color:#1f2328">!</span><span style="color:#1f2328">validationhelper</span><span style="color:#1f2328">.</span><span style="color:#6639ba">IsValidEmail</span><span style="color:#1f2328">(</span><span style="color:#1f2328">t</span><span style="color:#1f2328">.</span><span style="color:#1f2328">Email</span><span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">return</span> <span style="color:#1f2328">ErrEmailValidation</span>
-</span></span><span style="display:flex;"><span><span style="color:#1f2328">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="3-manual-string-parsing">3. Manual String Parsing</h3>
+<p>Complex validators use optimized external functions for better performance.</p>
+<h3 id="3-manual-string-parsing">3. Manual String Parsing</h3>
 <ul>
 <li><strong>Character-by-character parsing</strong> instead of <code>strings.Split</code></li>
 <li><strong>Direct indexing</strong> instead of <code>strings.Contains</code></li>
@@ -349,20 +339,6 @@
 <li><strong>Stack-only operations</strong> for maximum cache efficiency</li>
 <li><strong>Minimal memory footprint</strong> in generated code</li>
 </ul>
-<h2 id="real-world-impact">Real-World Impact</h2>
-<h3 id="api-validation">API Validation</h3>
-<p>For APIs processing thousands of requests per second:</p>
-<ul>
-<li><strong>Required field validation</strong>: 44x faster = 44x more throughput</li>
-<li><strong>Email validation</strong>: 16.9x faster = 16.9x more throughput</li>
-<li><strong>Zero GC pressure</strong> from validation operations</li>
-</ul>
-<h3 id="high-performance-services">High-Performance Services</h3>
-<ul>
-<li><strong>Sub-nanosecond validation</strong> enables validation in hot paths</li>
-<li><strong>Predictable performance</strong> with zero allocations</li>
-<li><strong>CPU cache-friendly</strong> operations</li>
-</ul>
 <h2 id="running-benchmarks">Running Benchmarks</h2>
 <p>To run benchmarks yourself:</p>
 <div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
@@ -370,17 +346,23 @@
 <pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
 </span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/sivchari/govalid.git
-</span></span><span style="display:flex;"><span><span style="color:#6639ba">cd</span> govalid/test
+<pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#57606a"># Sync all benchmark documentation</span>
+</span></span><span style="display:flex;"><span>make sync-benchmarks
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a"># Run benchmarks manually</span>
+</span></span><span style="display:flex;"><span><span style="color:#6639ba">cd</span> <span style="color:#6639ba">test</span>
 </span></span><span style="display:flex;"><span>go <span style="color:#6639ba">test</span> ./benchmark/ -bench<span style="color:#0550ae">=</span>. -benchmem
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="conclusion">Conclusion</h2>
 <p>govalid delivers exceptional performance improvements:</p>
 <ul>
-<li><strong>4.8x to 44.2x faster</strong> than go-playground/validator</li>
+<li><strong>4.8x to 45x faster</strong> than go-playground/validator</li>
 <li><strong>Zero allocations</strong> across all validators</li>
 <li><strong>Sub-3ns performance</strong> for simple operations</li>
 <li><strong>Extended type support</strong> (maps, channels, enums)</li>
@@ -394,14 +376,14 @@
     <nav style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e9ecef;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             
-            <a href="//localhost:1313/examples/" class="btn btn-secondary">
-                ← Examples
+            <a href="//localhost:1313/validators/" class="btn btn-secondary">
+                ← Validators
             </a>
             
             
             
-            <a href="//localhost:1313/validators/" class="btn">
-                Validators →
+            <a href="//localhost:1313/examples/" class="btn">
+                Examples →
             </a>
             
         </div>
