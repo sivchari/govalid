@@ -243,9 +243,34 @@ func TestIsValidHostStart(t *testing.T) {
 	}
 }
 
-// FuzzIsValidURL performs fuzz testing on URL validation
+// FuzzIsValidURL performs fuzz testing on URL validation.
 func FuzzIsValidURL(f *testing.F) {
-	// Add seed corpus with various URL formats
+	addURLFuzzSeeds(f)
+
+	f.Fuzz(func(t *testing.T, url string) {
+		// The function should never panic, regardless of input
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("IsValidURL panicked on input %q: %v", url, r)
+			}
+		}()
+
+		result := IsValidURL(url)
+
+		// Basic invariants that should always hold
+		if result {
+			validateURLStructure(t, url)
+		}
+
+		// Test that the function is deterministic
+		result2 := IsValidURL(url)
+		if result != result2 {
+			t.Errorf("IsValidURL(%q) is not deterministic: got %v then %v", url, result, result2)
+		}
+	})
+}
+
+func addURLFuzzSeeds(f *testing.F) {
 	seeds := []string{
 		"https://example.com",
 		"http://example.com",
@@ -303,68 +328,77 @@ func FuzzIsValidURL(f *testing.F) {
 	for _, seed := range seeds {
 		f.Add(seed)
 	}
+}
 
-	f.Fuzz(func(t *testing.T, url string) {
-		// The function should never panic, regardless of input
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("IsValidURL panicked on input %q: %v", url, r)
-			}
-		}()
+func validateURLStructure(t *testing.T, url string) {
+	// Valid URLs must contain a colon for the scheme separator
+	if !validateURLHasColon(t, url) {
+		return
+	}
 
-		result := IsValidURL(url)
+	validateURLScheme(t, url)
+	validateURLCharacters(t, url)
+}
 
-		// Basic invariants that should always hold
-		if result {
-			// Valid URLs must contain a colon for the scheme separator
-			hasColon := false
-			for _, c := range url {
-				if c == ':' {
-					hasColon = true
-					break
-				}
-			}
-			if !hasColon {
-				t.Errorf("IsValidURL(%q) returned true but contains no colon", url)
+func validateURLHasColon(t *testing.T, url string) bool {
+	hasColon := false
+
+	for _, c := range url {
+		if c == ':' {
+			hasColon = true
+
+			break
+		}
+	}
+
+	if !hasColon {
+		t.Errorf("IsValidURL(%q) returned true but contains no colon", url)
+
+		return false
+	}
+
+	return true
+}
+
+func validateURLScheme(t *testing.T, url string) {
+	colonPos := -1
+
+	for i, c := range url {
+		if c == ':' {
+			colonPos = i
+
+			break
+		}
+	}
+
+	if colonPos > 0 {
+		scheme := url[:colonPos]
+		if len(scheme) == 0 {
+			t.Errorf("IsValidURL(%q) returned true but has empty scheme", url)
+
+			return
+		}
+		// First character must be a letter
+		if len(scheme) > 0 {
+			first := scheme[0]
+			if (first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z') {
+				return
 			}
 
-			// Must have a valid scheme (letters, digits, +, -, .)
-			colonPos := -1
-			for i, c := range url {
-				if c == ':' {
-					colonPos = i
-					break
-				}
-			}
-			if colonPos > 0 {
-				scheme := url[:colonPos]
-				if len(scheme) == 0 {
-					t.Errorf("IsValidURL(%q) returned true but has empty scheme", url)
-				}
-				// First character must be a letter
-				if len(scheme) > 0 {
-					first := scheme[0]
-					if !((first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z')) {
-						t.Errorf("IsValidURL(%q) returned true but scheme starts with invalid char %c", url, first)
-					}
-				}
-			}
+			t.Errorf("IsValidURL(%q) returned true but scheme starts with invalid char %c", url, first)
+		}
+	}
+}
 
-			// URLs should not contain control characters or spaces
-			for i, c := range url {
-				if c < 32 || c == 127 {
-					t.Errorf("IsValidURL(%q) returned true but contains control character %d at position %d", url, c, i)
-				}
-				if c == ' ' {
-					t.Errorf("IsValidURL(%q) returned true but contains space at position %d", url, i)
-				}
-			}
+func validateURLCharacters(t *testing.T, url string) {
+	// URLs should not contain control characters or spaces
+	for i, c := range url {
+		if c < 32 || c == 127 {
+			t.Errorf("IsValidURL(%q) returned true but contains control character %d at position %d", url, c, i)
 		}
 
-		// Test that the function is deterministic
-		result2 := IsValidURL(url)
-		if result != result2 {
-			t.Errorf("IsValidURL(%q) is not deterministic: got %v then %v", url, result, result2)
+		if c == ' ' {
+			t.Errorf("IsValidURL(%q) returned true but contains space at position %d", url, i)
 		}
-	})
+	}
 }
