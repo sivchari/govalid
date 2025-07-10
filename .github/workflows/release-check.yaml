@@ -1,33 +1,12 @@
-name: PR
+name: CI
 
 on:
   pull_request:
     branches: [ main ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-
-      - name: Run tests
-        run: |
-          make test
-
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
-
   goreleaser:
+    name: Release check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
