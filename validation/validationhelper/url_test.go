@@ -242,3 +242,129 @@ func TestIsValidHostStart(t *testing.T) {
 		})
 	}
 }
+
+// FuzzIsValidURL performs fuzz testing on URL validation
+func FuzzIsValidURL(f *testing.F) {
+	// Add seed corpus with various URL formats
+	seeds := []string{
+		"https://example.com",
+		"http://example.com",
+		"ftp://files.example.com",
+		"ws://socket.example.com",
+		"mailto:user@example.com",
+		"data:text/plain,Hello",
+		"file:/path/to/file",
+		"http://example.com:8080",
+		"https://example.com/path",
+		"https://example.com?q=test",
+		"http://[::1]",
+		"http://192.168.1.1",
+		"https://user:pass@example.com",
+		"https://example.com/path/to/resource?query=value#fragment",
+		"",
+		"example.com",
+		"httpexample.com",
+		"ht@tp://example.com",
+		"unknown://example.com",
+		"http://example .com",
+		"http:",
+		"http:/",
+		"http://",
+		"mailto:",
+		"data:",
+		"http://.example.com",
+		"http://example.com.",
+		"http://example.com:abc",
+		"http://example.com:-1",
+		"http://example.com:999999",
+		"http://example..com",
+		"https://",
+		"https://.",
+		"https://-example.com",
+		"https://example-.com",
+		"https://ex ample.com",
+		"https://example.com/path with spaces",
+		"https://example.com\npath",
+		"https://example.com\tpath",
+		"https://example.com/path\x00",
+		"https://[invalid-ipv6]",
+		"https://[::1::2]",
+		"https://999.999.999.999",
+		"https://256.1.1.1",
+		"file://",
+		"file:///",
+		"file://localhost/path",
+		"ldap://example.com",
+		"custom://test",
+		"javascript:alert('xss')",
+		"vbscript:msgbox('xss')",
+	}
+
+	for _, seed := range seeds {
+		f.Add(seed)
+	}
+
+	f.Fuzz(func(t *testing.T, url string) {
+		// The function should never panic, regardless of input
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("IsValidURL panicked on input %q: %v", url, r)
+			}
+		}()
+
+		result := IsValidURL(url)
+
+		// Basic invariants that should always hold
+		if result {
+			// Valid URLs must contain a colon for the scheme separator
+			hasColon := false
+			for _, c := range url {
+				if c == ':' {
+					hasColon = true
+					break
+				}
+			}
+			if !hasColon {
+				t.Errorf("IsValidURL(%q) returned true but contains no colon", url)
+			}
+
+			// Must have a valid scheme (letters, digits, +, -, .)
+			colonPos := -1
+			for i, c := range url {
+				if c == ':' {
+					colonPos = i
+					break
+				}
+			}
+			if colonPos > 0 {
+				scheme := url[:colonPos]
+				if len(scheme) == 0 {
+					t.Errorf("IsValidURL(%q) returned true but has empty scheme", url)
+				}
+				// First character must be a letter
+				if len(scheme) > 0 {
+					first := scheme[0]
+					if !((first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z')) {
+						t.Errorf("IsValidURL(%q) returned true but scheme starts with invalid char %c", url, first)
+					}
+				}
+			}
+
+			// URLs should not contain control characters or spaces
+			for i, c := range url {
+				if c < 32 || c == 127 {
+					t.Errorf("IsValidURL(%q) returned true but contains control character %d at position %d", url, c, i)
+				}
+				if c == ' ' {
+					t.Errorf("IsValidURL(%q) returned true but contains space at position %d", url, i)
+				}
+			}
+		}
+
+		// Test that the function is deterministic
+		result2 := IsValidURL(url)
+		if result != result2 {
+			t.Errorf("IsValidURL(%q) is not deterministic: got %v then %v", url, result, result2)
+		}
+	})
+}
