@@ -1,0 +1,34 @@
+{{ define "main" }}
+<article>
+    <header style="margin-bottom: 2rem;">
+        <h1 style="color: var(--primary-color); margin-bottom: 0.5rem;">{{ .Title }}</h1>
+        {{ if .Description }}
+        <p style="color: #666; font-size: 1.1rem; margin: 0;">{{ .Description }}</p>
+        {{ end }}
+    </header>
+    
+    <div class="content">
+        {{ .Content }}
+    </div>
+    
+    {{ if or .NextInSection .PrevInSection }}
+    <nav style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e9ecef;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            {{ if .PrevInSection }}
+            <a href="{{ .PrevInSection.Permalink }}" class="btn btn-secondary">
+                ← {{ .PrevInSection.Title }}
+            </a>
+            {{ else }}
+            <span></span>
+            {{ end }}
+            
+            {{ if .NextInSection }}
+            <a href="{{ .NextInSection.Permalink }}" class="btn">
+                {{ .NextInSection.Title }} →
+            </a>
+            {{ end }}
+        </div>
+    </nav>
+    {{ end }}
+</article>
+{{ end }}

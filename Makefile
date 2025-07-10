@@ -65,6 +65,46 @@ fuzz-dev: ## Run development fuzz tests (1 minute each)
 	@echo "Running development fuzz tests (1 minute each)..."
 	$(MAKE) fuzz FUZZ_TIME=1m
 
+# Documentation targets
+.PHONY: docs-serve
+docs-serve: ## Serve documentation site locally
+	@echo "Starting Hugo development server..."
+	@command -v hugo >/dev/null 2>&1 || { echo "Hugo is not installed. Please install Hugo first: https://gohugo.io/installation/"; exit 1; }
+	cd docs && hugo server -D
+
+.PHONY: docs-build
+docs-build: ## Build documentation site for production
+	@echo "Building documentation site..."
+	@command -v hugo >/dev/null 2>&1 || { echo "Hugo is not installed. Please install Hugo first: https://gohugo.io/installation/"; exit 1; }
+	cd docs && hugo --minify
+
+.PHONY: docs-clean
+docs-clean: ## Clean generated documentation files
+	@echo "Cleaning documentation build files..."
+	rm -rf docs/public docs/resources
+
+.PHONY: docs-install
+docs-install: ## Install Hugo (macOS only)
+	@echo "Installing Hugo..."
+	@if command -v brew >/dev/null 2>&1; then \
+		brew install hugo; \
+	else \
+		echo "Homebrew not found. Please install Hugo manually: https://gohugo.io/installation/"; \
+		exit 1; \
+	fi
+
+
+.PHONY: sync-benchmarks
+sync-benchmarks: ## Synchronize benchmark results across all documentation files
+	@echo "Synchronizing benchmark results..."
+	./scripts/sync-benchmarks.sh
+
+.PHONY: check-benchmark-sync
+check-benchmark-sync: ## Check if benchmark results are synchronized (CI-friendly)
+	@echo "Checking benchmark synchronization..."
+	./scripts/check-benchmark-sync.sh
+
+
 .PHONY: help
 help: ## Show this help message
 	@echo 'Usage: make [target] [FUZZ_TIME=duration]'
@@ -78,3 +118,7 @@ help: ## Show this help message
 	@echo '  make fuzz FUZZ_TIME=2m  # Run all fuzz tests for 2 minutes each'
 	@echo '  make test               # Run regular tests (excluding validation helper)'
 	@echo '  make lint               # Run linter'
+	@echo '  make docs-serve         # Serve documentation site locally'
+	@echo '  make docs-build         # Build documentation for production'
+	@echo '  make sync-benchmarks    # Sync benchmark results across all docs'
+	@echo '  make check-benchmark-sync # Check if benchmarks are synchronized'

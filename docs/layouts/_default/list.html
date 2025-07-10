@@ -1,0 +1,31 @@
+{{ define "main" }}
+<article>
+    <header style="margin-bottom: 2rem;">
+        <h1 style="color: var(--primary-color); margin-bottom: 0.5rem;">{{ .Title }}</h1>
+        {{ if .Description }}
+        <p style="color: #666; font-size: 1.1rem; margin: 0;">{{ .Description }}</p>
+        {{ end }}
+    </header>
+    
+    <div class="content">
+        {{ .Content }}
+    </div>
+    
+    {{ if .Pages }}
+    <section style="margin-top: 3rem;">
+        <h2>Pages</h2>
+        <div class="feature-grid">
+            {{ range .Pages }}
+            <div class="feature-card">
+                <h3><a href="{{ .Permalink }}" style="color: var(--primary-color); text-decoration: none;">{{ .Title }}</a></h3>
+                {{ if .Description }}
+                <p>{{ .Description }}</p>
+                {{ end }}
+                <a href="{{ .Permalink }}" class="btn">Read More</a>
+            </div>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+</article>
+{{ end }}

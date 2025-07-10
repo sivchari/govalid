@@ -1,0 +1,171 @@
+{{ define "main" }}
+<article>
+    <div class="content">
+        {{ .Content }}
+    </div>
+    
+    <!-- Feature highlights -->
+    <section style="margin-top: 3rem;">
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="icon">🚀</div>
+                <h3>Zero Allocations</h3>
+                <p>All validators perform zero heap allocations, making them perfect for high-performance applications.</p>
+                <div style="margin-top: 1rem;">
+                    <span class="performance-badge">0 B/op</span>
+                    <span class="performance-badge">0 allocs/op</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">⚡</div>
+                <h3>Blazing Fast</h3>
+                <p>4.8x to 44.2x faster than go-playground/validator with sub-nanosecond performance for simple operations.</p>
+                <div style="margin-top: 1rem;">
+                    <span class="performance-badge">1.96ns required</span>
+                    <span class="performance-badge">44.2x faster</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">🔒</div>
+                <h3>Type Safe</h3>
+                <p>Compile-time validation function generation ensures type safety and catches errors early.</p>
+                <div style="margin-top: 1rem;">
+                    <span class="performance-badge">Compile-time</span>
+                    <span class="performance-badge">Type safe</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">📝</div>
+                <h3>Simple Syntax</h3>
+                <p>Familiar marker-based syntax similar to other validation libraries, easy to learn and use.</p>
+                <div style="margin-top: 1rem;">
+                    <span class="performance-badge">// +govalid:required</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">🎯</div>
+                <h3>Comprehensive</h3>
+                <p>Support for all common validation patterns plus unique features like enum validation.</p>
+                <div style="margin-top: 1rem;">
+                    <span class="performance-badge">13 validators</span>
+                    <span class="performance-badge">Enum support</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">🔧</div>
+                <h3>Production Ready</h3>
+                <p>Battle-tested with extensive benchmarks and used in production environments.</p>
+                <div style="margin-top: 1rem;">
+                    <span class="performance-badge">Battle tested</span>
+                    <span class="performance-badge">Production ready</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Quick example -->
+    <section class="quick-start">
+        <h2>Quick Example</h2>
+        <p>See how easy it is to add validation to your Go structs:</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
+            <div>
+                <h4>1. Define your struct with markers</h4>
+                <pre><code class="language-go">type User struct {
+    // +govalid:required
+    // +govalid:minlength=2
+    Name string `json:"name"`
+    
+    // +govalid:email
+    Email string `json:"email"`
+    
+    // +govalid:gte=18
+    Age int `json:"age"`
+}</code></pre>
+            </div>
+            
+            <div>
+                <h4>2. Generate and use validation</h4>
+                <pre><code class="language-bash"># Generate validation code
+govalid .</code></pre>
+                
+                <pre><code class="language-go">// Use generated validation
+user := &User{
+    Name: "Alice",
+    Email: "alice@example.com",
+    Age: 25,
+}
+
+if err := ValidateUser(user); err != nil {
+    log.Fatal(err)
+}
+</code></pre>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Performance highlight -->
+    <section style="margin-top: 3rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 2rem; border-radius: 0.5rem;">
+        <h2 style="color: var(--primary-color); margin-top: 0;">Performance Comparison</h2>
+        <p>govalid consistently outperforms go-playground/validator across all validation types:</p>
+        
+        <table style="margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>Validator</th>
+                    <th>govalid</th>
+                    <th>go-playground/validator</th>
+                    <th>Improvement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Required</td>
+                    <td>1.96ns</td>
+                    <td>86.59ns</td>
+                    <td><strong>44.2x faster</strong></td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td>38.15ns</td>
+                    <td>644.1ns</td>
+                    <td><strong>16.9x faster</strong></td>
+                </tr>
+                <tr>
+                    <td>Numeric (GT/LT)</td>
+                    <td>~1.97ns</td>
+                    <td>~63ns</td>
+                    <td><strong>32x faster</strong></td>
+                </tr>
+                <tr>
+                    <td>String Length</td>
+                    <td>~14ns</td>
+                    <td>~75ns</td>
+                    <td><strong>5x faster</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <p style="margin-top: 1rem;">
+            <a href="/benchmarks/" class="btn">View Detailed Benchmarks</a>
+        </p>
+    </section>
+    
+    <!-- Call to action -->
+    <section style="text-align: center; margin-top: 3rem; padding: 2rem; background: white; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <h2 style="color: var(--primary-color); margin-top: 0;">Ready to Get Started?</h2>
+        <p>Install govalid and start validating your Go structs with zero allocations and maximum performance.</p>
+        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="/getting-started/" class="btn">Get Started</a>
+            <a href="/validators/" class="btn btn-secondary">View Validators</a>
+            <a href="/benchmarks/" class="btn btn-secondary">Benchmarks</a>
+            <a href="https://github.com/sivchari/govalid" class="btn btn-secondary">GitHub</a>
+        </div>
+    </section>
+</article>
+{{ end }}

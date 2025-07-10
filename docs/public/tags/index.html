@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tags - govalid</title>
+    <meta name="description" content="High-performance, type-safe validation library for Go with zero allocations">
+    
+    
+    <meta property="og:title" content="Tags - govalid">
+    <meta property="og:description" content="High-performance, type-safe validation library for Go with zero allocations">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="//localhost:1313/tags/">
+    
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tags - govalid">
+    <meta name="twitter:description" content="High-performance, type-safe validation library for Go with zero allocations">
+    
+    
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="/css/custom.css">
+    <link rel="stylesheet" href="/css/style.css">
+    
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    
+    
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            
+            <h1>govalid</h1>
+            <p>High-performance, type-safe validation library for Go with zero allocations</p>
+            
+        </div>
+    </header>
+    
+    <nav class="nav">
+        <div class="container">
+            <ul>
+                
+                <li><a href="/getting-started/">Getting Started</a></li>
+                
+                <li><a href="/validators/">Validators</a></li>
+                
+                <li><a href="/benchmarks/">Benchmarks</a></li>
+                
+                <li><a href="/examples/">Examples</a></li>
+                
+                <li><a href="https://github.com/sivchari/govalid">GitHub</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        
+<article>
+    <header style="margin-bottom: 2rem;">
+        <h1 style="color: var(--primary-color); margin-bottom: 0.5rem;">Tags</h1>
+        
+    </header>
+    
+    <div class="content">
+        
+    </div>
+    
+    
+</article>
+
+    </main>
+    
+    <footer style="background: #f8f9fa; padding: 2rem 0; margin-top: 4rem; border-top: 1px solid #e9ecef;">
+        <div class="container">
+            <p style="text-align: center; color: #666; margin: 0;">
+                &copy; 2025 sivchari. 
+                <a href="https://github.com/sivchari/govalid" style="color: #007d9c; text-decoration: none;">View on GitHub</a>
+            </p>
+        </div>
+    </footer>
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+        
+        
+        document.querySelectorAll('code.language-go').forEach((block) => {
+            const html = block.innerHTML;
+            
+            const enhanced = html.replace(
+                /(\/\/\s*\+govalid:[^<\n]+)/g,
+                '<span class="govalid-marker">$1</span>'
+            );
+            block.innerHTML = enhanced;
+        });
+        
+        
+        document.querySelectorAll('pre code').forEach((block) => {
+            const button = document.createElement('button');
+            button.className = 'copy-button';
+            button.textContent = 'Copy';
+            button.style.cssText = `
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background: #00add8;
+                color: white;
+                border: none;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                font-size: 0.8rem;
+                cursor: pointer;
+                opacity: 0;
+                transition: opacity 0.2s;
+                font-weight: 500;
+            `;
+            
+            block.parentNode.style.position = 'relative';
+            block.parentNode.appendChild(button);
+            
+            block.parentNode.addEventListener('mouseenter', () => {
+                button.style.opacity = '1';
+            });
+            
+            block.parentNode.addEventListener('mouseleave', () => {
+                button.style.opacity = '0';
+            });
+            
+            button.addEventListener('click', () => {
+                navigator.clipboard.writeText(block.textContent);
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>
