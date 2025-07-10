@@ -26,14 +26,14 @@ archives:
   - id: govalid
     formats: ['tar.gz']
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        formats: ['zip']
     files:
       - LICENSE
       - README.md
     ids:
       - govalid
-    format_overrides:
-      - goos: windows
-        format: zip
 
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
@@ -71,16 +71,14 @@ release:
     ---
     **Full Changelog**: https://github.com/sivchari/govalid/compare/{{ .PreviousTag }}...{{ .Tag }}
 
-brews:
+homebrew_casks:
   - name: govalid
     repository:
       owner: sivchari
       name: homebrew-tap
-    directory: Formula
     homepage: https://github.com/sivchari/govalid
     description: "A Go code generator for validation functions"
     license: MIT
-    install: |
-      bin.install "govalid"
-    test: |
-      system "#{bin}/govalid", "--help"
+    binary: govalid
+    conflicts:
+      - formula: govalid
