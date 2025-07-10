@@ -131,10 +131,10 @@ func TestHasInvalidChars(t *testing.T) {
 		{"multiple_spaces", "https://example .com /path", true},
 		{"empty_string", "", false},
 		{"only_space", " ", true},
-		{"tab_character", "https://example\t.com", true}, // tab is control character
+		{"tab_character", "https://example\t.com", true},     // tab is control character
 		{"newline_character", "https://example\n.com", true}, // newline is control character
-		{"null_character", "https://example\x00.com", true}, // null is control character
-		{"del_character", "https://example\x7f.com", true}, // DEL is control character
+		{"null_character", "https://example\x00.com", true},  // null is control character
+		{"del_character", "https://example\x7f.com", true},   // DEL is control character
 	}
 
 	for _, tt := range tests {

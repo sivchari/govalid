@@ -95,7 +95,7 @@ func isValidHexChar(c byte) bool {
 //
 //	^^^^^^^^ ^^^^ ^^^^ ^^^^ ^^^^^^^^^^^^
 //
-// Positions: 01234567 8    13   18   23
+// Positions: 01234567 8    13   18   23.
 func hasValidHyphens(s string) bool {
 	return s[8] == '-' && s[13] == '-' && s[18] == '-' && s[23] == '-'
 }

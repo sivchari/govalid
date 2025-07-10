@@ -222,12 +222,15 @@ func isValidDomainPart(domain string) bool {
 	// Must contain at least one dot (to have multiple labels)
 	// This ensures we have a proper domain like "example.com" not just "localhost"
 	hasDot := false
+
 	for _, c := range domain {
 		if c == '.' {
 			hasDot = true
+
 			break
 		}
 	}
+
 	if !hasDot {
 		return false
 	}
