@@ -1,5 +1,10 @@
 name: Weekly Fuzz Testing Report
 
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
 on:
   # Run bi-weekly fuzz report on 1st and 15th of each month at 9 AM UTC
   schedule:

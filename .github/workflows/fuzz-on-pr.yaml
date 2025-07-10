@@ -1,8 +1,13 @@
 name: Fuzz Testing on PR
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
 
 jobs:
   quick-fuzz-test:
@@ -13,6 +18,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
         
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -127,12 +134,19 @@ jobs:
             }
             
             // Post comment to PR
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+              console.log('Successfully posted PR comment');
+            } catch (error) {
+              console.error('Failed to post PR comment:', error.message);
+              console.log('Comment content:', comment);
+              throw error;
+            }
             
       - name: Fail if issues found
         if: env.FUZZ_ISSUES == 'true'

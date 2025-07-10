@@ -1,5 +1,10 @@
 name: Fuzz Testing
 
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
 on:
   # Run fuzz tests on schedule (every 3 days at 2 AM UTC)
   schedule:
