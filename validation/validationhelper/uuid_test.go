@@ -5,6 +5,11 @@ import (
 )
 
 func TestIsValidUUID(t *testing.T) {
+	t.Run("valid_uuids", testValidUUIDs)
+	t.Run("invalid_uuids", testInvalidUUIDs)
+}
+
+func testValidUUIDs(t *testing.T) {
 	tests := []struct {
 		name     string
 		uuid     string
@@ -41,7 +46,24 @@ func TestIsValidUUID(t *testing.T) {
 		{"all_f", "ffffffff-ffff-ffff-ffff-ffffffffffff", true},
 		{"numeric_only", "12345678-1234-1234-8234-123456789012", true},
 		{"letters_only", "abcdefab-abcd-1bcd-abcd-abcdefabcdef", true},
+	}
 
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := IsValidUUID(tt.uuid)
+			if result != tt.expected {
+				t.Errorf("IsValidUUID(%q) = %v, expected %v", tt.uuid, result, tt.expected)
+			}
+		})
+	}
+}
+
+func testInvalidUUIDs(t *testing.T) {
+	tests := []struct {
+		name     string
+		uuid     string
+		expected bool
+	}{
 		// Invalid UUIDs - Wrong length
 		{"empty_string", "", false},
 		{"too_short", "550e8400-e29b-41d4-a716-44665544000", false},
@@ -276,9 +298,34 @@ func TestIsValidUUIDVersionAndVariant(t *testing.T) {
 	}
 }
 
-// FuzzIsValidUUID performs fuzz testing on UUID validation
+// FuzzIsValidUUID performs fuzz testing on UUID validation.
 func FuzzIsValidUUID(f *testing.F) {
-	// Add seed corpus with various UUID formats
+	addUUIDFuzzSeeds(f)
+
+	f.Fuzz(func(t *testing.T, uuid string) {
+		// The function should never panic, regardless of input
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("IsValidUUID panicked on input %q: %v", uuid, r)
+			}
+		}()
+
+		result := IsValidUUID(uuid)
+
+		// Basic invariants that should always hold
+		if result {
+			validateUUIDStructure(t, uuid)
+		}
+
+		// Test that the function is deterministic
+		result2 := IsValidUUID(uuid)
+		if result != result2 {
+			t.Errorf("IsValidUUID(%q) is not deterministic: got %v then %v", uuid, result, result2)
+		}
+	})
+}
+
+func addUUIDFuzzSeeds(f *testing.F) {
 	seeds := []string{
 		"550e8400-e29b-41d4-a716-446655440000",
 		"f47ac10b-58cc-4372-a567-0e02b2c3d479",
@@ -308,80 +355,91 @@ func FuzzIsValidUUID(f *testing.F) {
 	for _, seed := range seeds {
 		f.Add(seed)
 	}
+}
 
-	f.Fuzz(func(t *testing.T, uuid string) {
-		// The function should never panic, regardless of input
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("IsValidUUID panicked on input %q: %v", uuid, r)
+func validateUUIDStructure(t *testing.T, uuid string) {
+	// Valid UUIDs must be exactly 36 characters
+	if len(uuid) != 36 {
+		t.Errorf("IsValidUUID(%q) returned true but length is %d, expected 36", uuid, len(uuid))
+
+		return
+	}
+
+	validateUUIDHyphens(t, uuid)
+	validateUUIDVersionAndVariant(t, uuid)
+	validateUUIDHexChars(t, uuid)
+}
+
+func validateUUIDHyphens(t *testing.T, uuid string) {
+	// Must have hyphens at positions 8, 13, 18, 23
+	if len(uuid) >= 24 {
+		expectedHyphenPositions := []int{8, 13, 18, 23}
+		for _, pos := range expectedHyphenPositions {
+			if uuid[pos] != '-' {
+				t.Errorf("IsValidUUID(%q) returned true but missing hyphen at position %d", uuid, pos)
 			}
-		}()
+		}
+	}
+}
 
-		result := IsValidUUID(uuid)
+func validateUUIDVersionAndVariant(t *testing.T, uuid string) {
+	// Special cases: allow nil UUID and max UUID
+	if uuid == "00000000-0000-0000-0000-000000000000" || uuid == "ffffffff-ffff-ffff-ffff-ffffffffffff" {
+		return
+	}
 
-		// Basic invariants that should always hold
-		if result {
-			// Valid UUIDs must be exactly 36 characters
-			if len(uuid) != 36 {
-				t.Errorf("IsValidUUID(%q) returned true but length is %d, expected 36", uuid, len(uuid))
-			}
+	validateUUIDVersion(t, uuid)
+	validateUUIDVariant(t, uuid)
+}
 
-			// Must have hyphens at positions 8, 13, 18, 23
-			if len(uuid) >= 24 {
-				expectedHyphenPositions := []int{8, 13, 18, 23}
-				for _, pos := range expectedHyphenPositions {
-					if uuid[pos] != '-' {
-						t.Errorf("IsValidUUID(%q) returned true but missing hyphen at position %d", uuid, pos)
-					}
-				}
-			}
+func validateUUIDVersion(t *testing.T, uuid string) {
+	// Version must be 1-5 (position 14)
+	if len(uuid) > 14 {
+		version := uuid[14]
+		if version < '1' || version > '5' {
+			t.Errorf("IsValidUUID(%q) returned true but version is %c, expected 1-5", uuid, version)
+		}
+	}
+}
 
-			// Special cases: allow nil UUID and max UUID
-			if uuid == "00000000-0000-0000-0000-000000000000" || uuid == "ffffffff-ffff-ffff-ffff-ffffffffffff" {
-				// These are valid special cases
-			} else {
-				// Version must be 1-5 (position 14)
-				if len(uuid) > 14 {
-					version := uuid[14]
-					if version < '1' || version > '5' {
-						t.Errorf("IsValidUUID(%q) returned true but version is %c, expected 1-5", uuid, version)
-					}
-				}
+func validateUUIDVariant(t *testing.T, uuid string) {
+	// Variant must be 8, 9, A, B (position 19)
+	if len(uuid) > 19 {
+		variant := uuid[19]
+		validVariants := []byte{'8', '9', 'A', 'a', 'B', 'b'}
+		isValidVariant := false
 
-				// Variant must be 8, 9, A, B (position 19)
-				if len(uuid) > 19 {
-					variant := uuid[19]
-					validVariants := []byte{'8', '9', 'A', 'a', 'B', 'b'}
-					isValidVariant := false
-					for _, v := range validVariants {
-						if variant == v {
-							isValidVariant = true
-							break
-						}
-					}
-					if !isValidVariant {
-						t.Errorf("IsValidUUID(%q) returned true but variant is %c, expected 8,9,A,B", uuid, variant)
-					}
-				}
-			}
+		for _, v := range validVariants {
+			if variant == v {
+				isValidVariant = true
 
-			// All non-hyphen characters must be valid hex
-			if len(uuid) == 36 {
-				for i, c := range uuid {
-					if i == 8 || i == 13 || i == 18 || i == 23 {
-						continue // skip hyphens
-					}
-					if !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
-						t.Errorf("IsValidUUID(%q) returned true but contains invalid hex char %c at position %d", uuid, c, i)
-					}
-				}
+				break
 			}
 		}
 
-		// Test that the function is deterministic
-		result2 := IsValidUUID(uuid)
-		if result != result2 {
-			t.Errorf("IsValidUUID(%q) is not deterministic: got %v then %v", uuid, result, result2)
+		if !isValidVariant {
+			t.Errorf("IsValidUUID(%q) returned true but variant is %c, expected 8,9,A,B", uuid, variant)
 		}
-	})
+	}
+}
+
+func validateUUIDHexChars(t *testing.T, uuid string) {
+	// All non-hyphen characters must be valid hex
+	if len(uuid) != 36 {
+		return
+	}
+
+	for i, c := range uuid {
+		if isHyphenPosition(i) {
+			continue // skip hyphens
+		}
+
+		if !isValidHexChar(byte(c)) {
+			t.Errorf("IsValidUUID(%q) returned true but contains invalid hex char %c at position %d", uuid, c, i)
+		}
+	}
+}
+
+func isHyphenPosition(i int) bool {
+	return i == 8 || i == 13 || i == 18 || i == 23
 }

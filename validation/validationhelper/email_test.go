@@ -5,12 +5,17 @@ import (
 )
 
 func TestIsValidEmail(t *testing.T) {
+	t.Run("valid_emails", testValidEmails)
+	t.Run("invalid_emails", testInvalidEmails)
+	t.Run("length_boundary_tests", testEmailLengthBoundaries)
+}
+
+func testValidEmails(t *testing.T) {
 	tests := []struct {
 		name     string
 		email    string
 		expected bool
 	}{
-		// Valid emails
 		{"simple_email", "user@example.com", true},
 		{"with_subdomain", "user@mail.example.com", true},
 		{"with_numbers", "user123@example456.com", true},
@@ -24,7 +29,24 @@ func TestIsValidEmail(t *testing.T) {
 		{"special_chars_local", "user!#$%&'*+-/=?^_`{|}~@example.com", true},
 		{"numeric_local", "123456@example.com", true},
 		{"numeric_domain", "user@123.456.com", true},
+	}
 
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := IsValidEmail(tt.email)
+			if result != tt.expected {
+				t.Errorf("IsValidEmail(%q) = %v, expected %v", tt.email, result, tt.expected)
+			}
+		})
+	}
+}
+
+func testInvalidEmails(t *testing.T) {
+	tests := []struct {
+		name     string
+		email    string
+		expected bool
+	}{
 		// Invalid emails - structure
 		{"empty_string", "", false},
 		{"no_at_symbol", "userexample.com", false},
@@ -55,8 +77,24 @@ func TestIsValidEmail(t *testing.T) {
 		{"too_long_label", "user@abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com", false},
 		{"empty_label", "user@example..com", false},
 		{"single_label", "user@example", false},
+	}
 
-		// Length boundary tests
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := IsValidEmail(tt.email)
+			if result != tt.expected {
+				t.Errorf("IsValidEmail(%q) = %v, expected %v", tt.email, result, tt.expected)
+			}
+		})
+	}
+}
+
+func testEmailLengthBoundaries(t *testing.T) {
+	tests := []struct {
+		name     string
+		email    string
+		expected bool
+	}{
 		{"max_valid_length", "a@" + generateString(248) + ".com", true}, // 254 total
 		{"too_long_email", "a@" + generateString(249) + ".com", false},  // 255 total
 		{"max_local_length", generateString(64) + "@example.com", true},
@@ -384,9 +422,34 @@ func TestIsValidDomainChar(t *testing.T) {
 	}
 }
 
-// FuzzIsValidEmail performs fuzz testing on email validation
+// FuzzIsValidEmail performs fuzz testing on email validation.
 func FuzzIsValidEmail(f *testing.F) {
-	// Add seed corpus with various email formats
+	addEmailFuzzSeeds(f)
+
+	f.Fuzz(func(t *testing.T, email string) {
+		// The function should never panic, regardless of input
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("IsValidEmail panicked on input %q: %v", email, r)
+			}
+		}()
+
+		result := IsValidEmail(email)
+
+		// Basic invariants that should always hold
+		if result {
+			validateEmailStructure(t, email)
+		}
+
+		// Test that the function is deterministic
+		result2 := IsValidEmail(email)
+		if result != result2 {
+			t.Errorf("IsValidEmail(%q) is not deterministic: got %v then %v", email, result, result2)
+		}
+	})
+}
+
+func addEmailFuzzSeeds(f *testing.F) {
 	seeds := []string{
 		"user@example.com",
 		"test.email@domain.org",
@@ -417,71 +480,66 @@ func FuzzIsValidEmail(f *testing.F) {
 	for _, seed := range seeds {
 		f.Add(seed)
 	}
-
-	f.Fuzz(func(t *testing.T, email string) {
-		// The function should never panic, regardless of input
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("IsValidEmail panicked on input %q: %v", email, r)
-			}
-		}()
-
-		result := IsValidEmail(email)
-
-		// Basic invariants that should always hold
-		if result {
-			// Valid emails must have basic structural requirements
-			if len(email) < 5 || len(email) > 254 {
-				t.Errorf("IsValidEmail(%q) returned true but length is invalid: %d", email, len(email))
-			}
-
-			// Must contain exactly one @ symbol
-			atCount := 0
-			for _, c := range email {
-				if c == '@' {
-					atCount++
-				}
-			}
-			if atCount != 1 {
-				t.Errorf("IsValidEmail(%q) returned true but @ count is %d", email, atCount)
-			}
-
-			// Must have at least one dot in domain part
-			atIndex := -1
-			for i, c := range email {
-				if c == '@' {
-					atIndex = i
-					break
-				}
-			}
-			if atIndex > 0 {
-				domain := email[atIndex+1:]
-				hasDot := false
-				for _, c := range domain {
-					if c == '.' {
-						hasDot = true
-						break
-					}
-				}
-				if !hasDot {
-					t.Errorf("IsValidEmail(%q) returned true but domain has no dot", email)
-				}
-			}
-		}
-
-		// Test that the function is deterministic
-		result2 := IsValidEmail(email)
-		if result != result2 {
-			t.Errorf("IsValidEmail(%q) is not deterministic: got %v then %v", email, result, result2)
-		}
-	})
 }
 
-// Helper function to generate strings of specific length
+func validateEmailStructure(t *testing.T, email string) {
+	// Valid emails must have basic structural requirements
+	if len(email) < 5 || len(email) > 254 {
+		t.Errorf("IsValidEmail(%q) returned true but length is invalid: %d", email, len(email))
+	}
+
+	// Must contain exactly one @ symbol
+	atCount := 0
+
+	for _, c := range email {
+		if c == '@' {
+			atCount++
+		}
+	}
+
+	if atCount != 1 {
+		t.Errorf("IsValidEmail(%q) returned true but @ count is %d", email, atCount)
+	}
+
+	// Must have at least one dot in domain part
+	validateEmailDomainDot(t, email)
+}
+
+func validateEmailDomainDot(t *testing.T, email string) {
+	atIndex := -1
+
+	for i, c := range email {
+		if c == '@' {
+			atIndex = i
+
+			break
+		}
+	}
+
+	if atIndex > 0 {
+		domain := email[atIndex+1:]
+		hasDot := false
+
+		for _, c := range domain {
+			if c == '.' {
+				hasDot = true
+
+				break
+			}
+		}
+
+		if !hasDot {
+			t.Errorf("IsValidEmail(%q) returned true but domain has no dot", email)
+		}
+	}
+}
+
+// Helper function to generate strings of specific length.
 func generateString(length int) string {
 	result := make([]byte, length)
 	for i := 0; i < length; i++ {
 		result[i] = byte('a' + (i % 26))
 	}
+
 	return string(result)
 }
