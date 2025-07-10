@@ -1,0 +1,86 @@
+version: 2
+
+project_name: govalid
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: govalid
+    main: ./cmd/govalid
+    binary: govalid
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+
+archives:
+  - id: govalid
+    formats: ['tar.gz']
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+    ids:
+      - govalid
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+
+changelog:
+  sort: asc
+
+release:
+  github:
+    owner: sivchari
+    name: govalid
+  draft: false
+  prerelease: auto
+  name_template: "{{ .ProjectName }} {{ .Version }}"
+  header: |
+    ## Changes
+
+    This release includes the following changes:
+  footer: |
+    ## Installation
+
+    ### Binary downloads
+    Download the appropriate binary for your platform from the assets below.
+
+    ### Go install
+    ```bash
+    go install github.com/sivchari/govalid/cmd/govalid@{{ .Tag }}
+    ```
+
+    ### Homebrew (macOS/Linux)
+    ```bash
+    brew install sivchari/tap/govalid
+    ```
+
+    ---
+    **Full Changelog**: https://github.com/sivchari/govalid/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+brews:
+  - name: govalid
+    repository:
+      owner: sivchari
+      name: homebrew-tap
+    directory: Formula
+    homepage: https://github.com/sivchari/govalid
+    description: "A Go code generator for validation functions"
+    license: MIT
+    install: |
+      bin.install "govalid"
+    test: |
+      system "#{bin}/govalid", "--help"
