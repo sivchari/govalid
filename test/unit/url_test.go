@@ -16,91 +16,91 @@ func TestURLValidation(t *testing.T) {
 		{
 			name: "valid_https_url",
 			data: test.URL{
-				WebsiteURL: "https://example.com",
+				URL: "https://example.com",
 			},
 			expectError: false,
 		},
 		{
 			name: "valid_http_url",
 			data: test.URL{
-				WebsiteURL: "http://example.com",
+				URL: "http://example.com",
 			},
 			expectError: false,
 		},
 		{
 			name: "valid_url_with_path",
 			data: test.URL{
-				WebsiteURL: "https://example.com/path/to/resource",
+				URL: "https://example.com/path/to/resource",
 			},
 			expectError: false,
 		},
 		{
 			name: "valid_url_with_query",
 			data: test.URL{
-				WebsiteURL: "https://example.com?key=value&foo=bar",
+				URL: "https://example.com?key=value&foo=bar",
 			},
 			expectError: false,
 		},
 		{
 			name: "valid_url_with_port",
 			data: test.URL{
-				WebsiteURL: "https://example.com:8080",
+				URL: "https://example.com:8080",
 			},
 			expectError: false,
 		},
 		{
 			name: "valid_ftp_url",
 			data: test.URL{
-				WebsiteURL: "ftp://files.example.com",
+				URL: "ftp://files.example.com",
 			},
 			expectError: false,
 		},
 		{
 			name: "invalid_no_scheme",
 			data: test.URL{
-				WebsiteURL: "example.com",
+				URL: "example.com",
 			},
 			expectError: true,
 		},
 		{
 			name: "invalid_no_host",
 			data: test.URL{
-				WebsiteURL: "https://",
+				URL: "https://",
 			},
 			expectError: true,
 		},
 		{
 			name: "invalid_empty_string",
 			data: test.URL{
-				WebsiteURL: "",
+				URL: "",
 			},
 			expectError: true,
 		},
 		{
 			name: "invalid_spaces",
 			data: test.URL{
-				WebsiteURL: "https://example .com",
+				URL: "https://example .com",
 			},
 			expectError: true,
 		},
 		{
 			name: "valid_mailto",
 			data: test.URL{
-				WebsiteURL: "mailto:test@example.com",
+				URL: "mailto:test@example.com",
 			},
 			expectError: false,
 		},
 		{
 			name: "valid_git_url",
 			data: test.URL{
-				WebsiteURL: "git://github.com/user/repo.git",
+				URL: "git://github.com/user/repo.git",
 			},
 			expectError: false,
 		},
 		{
 			name: "valid_ssh_url",
 			data: test.URL{
-				WebsiteURL: "ssh://user@server.com:22",
+				URL: "ssh://user@server.com:22",
 			},
 			expectError: false,
 		},
@@ -109,35 +109,35 @@ func TestURLValidation(t *testing.T) {
 		{
 			name: "invalid_mailto_empty",
 			data: test.URL{
-				WebsiteURL: "mailto:",
+				URL: "mailto:",
 			},
 			expectError: true,
 		},
 		{
 			name: "valid_mailto_simple",
 			data: test.URL{
-				WebsiteURL: "mailto:test@example.com",
+				URL: "mailto:test@example.com",
 			},
 			expectError: false,
 		},
 		{
 			name: "invalid_data_empty",
 			data: test.URL{
-				WebsiteURL: "data:",
+				URL: "data:",
 			},
 			expectError: true,
 		},
 		{
 			name: "valid_data_simple",
 			data: test.URL{
-				WebsiteURL: "data:text/plain,Hello",
+				URL: "data:text/plain,Hello",
 			},
 			expectError: false,
 		},
 		{
 			name: "valid_file_path",
 			data: test.URL{
-				WebsiteURL: "file:/path/to/file",
+				URL: "file:/path/to/file",
 			},
 			expectError: false,
 		},
@@ -146,35 +146,35 @@ func TestURLValidation(t *testing.T) {
 		{
 			name: "invalid_http_no_slashes",
 			data: test.URL{
-				WebsiteURL: "http:",
+				URL: "http:",
 			},
 			expectError: true,
 		},
 		{
 			name: "invalid_http_one_slash",
 			data: test.URL{
-				WebsiteURL: "http:/",
+				URL: "http:/",
 			},
 			expectError: true,
 		},
 		{
 			name: "invalid_http_two_slashes_no_host",
 			data: test.URL{
-				WebsiteURL: "http://",
+				URL: "http://",
 			},
 			expectError: true,
 		},
 		{
 			name: "valid_ipv6_brackets",
 			data: test.URL{
-				WebsiteURL: "http://[::1]",
+				URL: "http://[::1]",
 			},
 			expectError: false,
 		},
 		{
 			name: "valid_numeric_host",
 			data: test.URL{
-				WebsiteURL: "http://192.168.1.1",
+				URL: "http://192.168.1.1",
 			},
 			expectError: false,
 		},
@@ -183,14 +183,14 @@ func TestURLValidation(t *testing.T) {
 		{
 			name: "invalid_scheme_with_invalid_char",
 			data: test.URL{
-				WebsiteURL: "ht@tp://example.com",
+				URL: "ht@tp://example.com",
 			},
 			expectError: true,
 		},
 		{
 			name: "invalid_no_colon",
 			data: test.URL{
-				WebsiteURL: "httpexample.com",
+				URL: "httpexample.com",
 			},
 			expectError: true,
 		},
@@ -249,7 +249,7 @@ func TestURLValidationDifferences(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Test govalid
-			data := test.URL{WebsiteURL: tt.url}
+			data := test.URL{URL: tt.url}
 			govalidErr := test.ValidateURL(&data)
 			govalidValid := govalidErr == nil
 
