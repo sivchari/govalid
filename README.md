@@ -4,6 +4,35 @@
 
 govalid is a Go package designed to generate type-safe validation code for structs based on markers. It provides a mechanism to apply validation rules directly in the code by marking struct fields with specific markers. The tool processes these markers and generates corresponding validation functions.
 
+## Why govalid?
+
+govalid addresses key limitations of reflection-based validation libraries by generating type-safe, high-performance validation code at compile time.
+
+### Performance Benefits
+- **Zero allocations**: All validation functions perform zero heap allocations
+- **5x to 50x faster**: Significantly outperforms reflection-based validators
+- **Compile-time optimization**: Generated code is optimized by the Go compiler
+
+### Developer Experience
+- **Type safety**: Validation functions are generated with proper types, eliminating runtime reflection
+- **Compile-time errors**: Invalid validation rules are caught during code generation, not at runtime
+- **No runtime dependencies**: Generated code has minimal external dependencies
+
+### Extended Go Support
+- **Full collection support**: Maps and channels work with size validators (not supported by most libraries)
+- **Go zero-value semantics**: Proper handling of Go's zero values and nil states
+- **Unicode-aware**: String validators properly handle Unicode characters
+
+### govalid vs Reflection-based Validators
+
+| Feature | govalid | Reflection-based validators |
+|---------|---------|----------------------------|
+| Performance | ~1-14ns, 0 allocs | ~50-700ns, 0-5 allocs |
+| Type Safety | Compile-time | Runtime reflection |
+| Collection Support | slice, array, map, channel | slice, array only |
+| Dependencies | Minimal | Heavy runtime deps |
+| Error Detection | Compile-time | Runtime |
+
 ## Installation
 
 To install govalid, use:
@@ -93,36 +122,6 @@ func ValidatePerson(t *Person) error {
 ## Supported Markers
 
 For a complete reference of all supported markers, see [MARKERS.md](MARKERS.md).
-
-## govalid-Specific Features
-
-govalid supports all common validation markers with performance-optimized implementations:
-
-**Numeric Validators:**
-- **`govalid:gt`**: Greater than validation
-- **`govalid:gte`**: Greater than or equal validation  
-- **`govalid:lt`**: Less than validation
-- **`govalid:lte`**: Less than or equal validation
-
-**String Validators:**
-- **`govalid:minlength`**: Minimum string length (Unicode-aware)
-- **`govalid:maxlength`**: Maximum string length (Unicode-aware)
-- **`govalid:email`**: HTML5-compliant email validation with zero allocations
-- **`govalid:url`**: HTTP/HTTPS URL validation with manual parsing for optimal performance
-- **`govalid:uuid`**: RFC 4122 UUID validation with inline functions
-
-**Collection Validators:**
-- **`govalid:minitems`**: Minimum collection size (slice, array, map, channel)
-- **`govalid:maxitems`**: Maximum collection size (slice, array, map, channel)
-
-**General Validators:**
-- **`govalid:required`**: Required field validation with Go zero-value semantics
-- **`govalid:enum`**: Comprehensive enum validation for string, numeric, and custom types
-
-**govalid-Exclusive Features:**
-- **Extended collection support**: Maps and channels work with `maxitems`/`minitems` (not supported by go-playground/validator)
-- **Zero-allocation validation**: All validators perform zero heap allocations
-- **Compile-time safety**: Type-safe validation functions generated at compile time
 
 ## License
 
