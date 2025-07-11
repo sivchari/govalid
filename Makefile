@@ -29,11 +29,6 @@ test: ## Run all tests except validation helper (due to known issues)
 	go test ./... -shuffle on -v -race
 	go test -C test ./... -shuffle on -v -race
 
-.PHONY: test-all
-test-all: ## Run all tests including validation helper
-	go test ./...
-	go test -C test ./...
-
 # Fuzz test targets
 .PHONY: fuzz
 fuzz: fuzz-email fuzz-uuid fuzz-url ## Run all fuzz tests
