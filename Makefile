@@ -22,18 +22,17 @@ golangci-lint-fix: golangci-lint ## Run golangci-lint over the codebase and run 
 docs-dev: ## Start Hugo development server
 	cd docs && hugo server
 
-.PHONY: docs-build
-docs-build: ## Build documentation for production
-	cd docs && hugo --minify --baseURL="https://sivchari.github.io/govalid/"
 
 # Test targets
 .PHONY: test
 test: ## Run all tests except validation helper (due to known issues)
 	go test ./... -shuffle on -v -race
+	go test -C test ./... -shuffle on -v -race
 
 .PHONY: test-all
 test-all: ## Run all tests including validation helper
 	go test ./...
+	go test -C test ./...
 
 # Fuzz test targets
 .PHONY: fuzz
