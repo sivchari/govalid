@@ -1,0 +1,100 @@
+# Benchmark Configuration for govalid
+# This file defines which benchmarks to run and how to present results
+
+# Performance Comparison Validators
+# These validators exist in both govalid and go-playground/validator
+comparison_validators:
+  - name: "Required"
+    description: "Field presence validation"
+    govalid_benchmark: "BenchmarkGoValidRequired"
+    competitor_benchmark: "BenchmarkGoPlaygroundRequired"
+  
+  - name: "MaxLength" 
+    description: "String maximum length validation"
+    govalid_benchmark: "BenchmarkGoValidMaxLength"
+    competitor_benchmark: "BenchmarkGoPlaygroundMaxLength"
+    
+  - name: "MinLength"
+    description: "String minimum length validation" 
+    govalid_benchmark: "BenchmarkGoValidMinLength"
+    competitor_benchmark: "BenchmarkGoPlaygroundMinLength"
+    
+  - name: "GT"
+    description: "Numeric greater than validation"
+    govalid_benchmark: "BenchmarkGoValidGT"
+    competitor_benchmark: "BenchmarkGoPlaygroundGT"
+    
+  - name: "GTE"
+    description: "Numeric greater than or equal validation"
+    govalid_benchmark: "BenchmarkGoValidGTE"
+    competitor_benchmark: "BenchmarkGoPlaygroundGTE"
+    
+  - name: "LT"
+    description: "Numeric less than validation"
+    govalid_benchmark: "BenchmarkGoValidLT"
+    competitor_benchmark: "BenchmarkGoPlaygroundLT"
+    
+  - name: "LTE"
+    description: "Numeric less than or equal validation"
+    govalid_benchmark: "BenchmarkGoValidLTE"
+    competitor_benchmark: "BenchmarkGoPlaygroundLTE"
+    
+  - name: "Email"
+    description: "Email format validation"
+    govalid_benchmark: "BenchmarkGoValidEmail"
+    competitor_benchmark: "BenchmarkGoPlaygroundEmail"
+    
+  - name: "URL"
+    description: "URL format validation"
+    govalid_benchmark: "BenchmarkGoValidURL"
+    competitor_benchmark: "BenchmarkGoPlaygroundURL"
+    
+  - name: "UUID"
+    description: "UUID format validation"
+    govalid_benchmark: "BenchmarkGoValidUUID"
+    competitor_benchmark: "BenchmarkGoPlaygroundUUID"
+
+# govalid-Specific Validators
+# These validators are unique to govalid
+govalid_specific:
+  - name: "MaxItems"
+    description: "Array/slice maximum length validation"
+    benchmark: "BenchmarkGoValidMaxItems"
+    
+  - name: "MinItems"
+    description: "Array/slice minimum length validation"
+    benchmark: "BenchmarkGoValidMinItems"
+    
+  - name: "Enum"
+    description: "Enumeration value validation"
+    benchmark: "BenchmarkGoValidEnum"
+
+# Benchmark execution settings
+execution:
+  benchmark_time: "10s"
+  count: 3
+  timeout: "60m"
+  
+# Report settings
+reporting:
+  platform_info: true
+  go_version: true
+  date: true
+  raw_results: true
+  improvement_calculation: true
+  detailed_metrics: true
+  
+# Metrics to display and their explanations
+metrics:
+  - name: "ns/op"
+    description: "Nanoseconds per operation - lower is better"
+    unit: "time"
+    format: "%.1f"
+  - name: "B/op" 
+    description: "Bytes allocated per operation - lower is better"
+    unit: "memory"
+    format: "%d"
+  - name: "allocs/op"
+    description: "Number of allocations per operation - lower is better" 
+    unit: "allocations"
+    format: "%d"
