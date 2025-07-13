@@ -3,12 +3,14 @@ package test
 
 import (
 	"errors"
-	"github.com/sivchari/govalid/validation/validationhelper"
 )
 
 var (
 	// ErrNilCEL is returned when the CEL is nil.
 	ErrNilCEL = errors.New("input CEL is nil")
+
+	// ErrNameCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrNameCELValidation = errors.New("field Name failed CEL validation: size(value) > 0")
 
 	// ErrScoreCELValidation is the error returned when the CEL expression evaluation fails.
 	ErrScoreCELValidation = errors.New("field Score failed CEL validation: value > 0.0")
@@ -19,7 +21,11 @@ func ValidateCEL(t *CEL) error {
 		return ErrNilCEL
 	}
 
-	if !validationhelper.IsValidCEL("value > 0.0", t.Score, t) {
+	if !(len(t.Name) > 0) {
+		return ErrNameCELValidation
+	}
+
+	if !(t.Score > 0) {
 		return ErrScoreCELValidation
 	}
 

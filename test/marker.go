@@ -105,7 +105,7 @@ type CEL struct {
 	// +govalid:cel=value >= 18
 	Age int `json:"age"`
 
-	// +govalid:cel=value != ""
+	// +govalid:cel=size(value) > 0
 	Name string `json:"name"`
 
 	// +govalid:cel=value > 0.0
@@ -113,4 +113,18 @@ type CEL struct {
 
 	// +govalid:cel=value == true
 	IsActive bool `json:"is_active"`
+}
+
+type CELCrossField struct {
+	// Cross-field validation: Price must be less than MaxPrice
+	// +govalid:cel=value < this.MaxPrice
+	Price float64 `json:"price"`
+	
+	MaxPrice float64 `json:"max_price"`
+	
+	// Cross-field validation: Quantity * Price <= Budget
+	// +govalid:cel=value * this.Price <= this.Budget
+	Quantity int `json:"quantity"`
+	
+	Budget float64 `json:"budget"`
 }
