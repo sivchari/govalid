@@ -8,17 +8,9 @@ import (
 	"github.com/google/cel-go/common/types"
 )
 
-// celProgram represents a compiled CEL program for caching.
-type celProgram struct {
-	program cel.Program
-}
-
 // celCache caches compiled CEL programs to avoid recompilation.
-// This provides significant performance improvements for repeated validation.
-var (
-	celCache = make(map[string]*celProgram)
-	celMutex sync.RWMutex
-)
+// sync.Map is used for better performance in read-heavy scenarios.
+var celCache sync.Map
 
 // IsValidCEL evaluates a CEL expression for validation.
 // This function uses a simple approach without reflection, following govalid's design principles.
@@ -42,28 +34,25 @@ var (
 // advanced type checking, following govalid's zero-reflection philosophy.
 func IsValidCEL(expression string, value interface{}, structInstance interface{}) bool {
 	// Try to get cached program first
-	celMutex.RLock()
-	cached, exists := celCache[expression]
-	celMutex.RUnlock()
-
-	var program cel.Program
-	if exists {
-		program = cached.program
-	} else {
-		// Compile and cache the program
-		compiledProgram, err := compileCELExpression(expression)
-		if err != nil {
-			return false
-		}
-
-		// Cache the compiled program
-		celMutex.Lock()
-		celCache[expression] = &celProgram{program: compiledProgram}
-		celMutex.Unlock()
-
-		program = compiledProgram
+	if cached, ok := celCache.Load(expression); ok {
+		program := cached.(cel.Program)
+		return evaluateCELProgram(program, value, structInstance)
 	}
 
+	// Compile and cache the program
+	compiledProgram, err := compileCELExpression(expression)
+	if err != nil {
+		return false
+	}
+
+	// Store in cache for future use
+	celCache.Store(expression, compiledProgram)
+
+	return evaluateCELProgram(compiledProgram, value, structInstance)
+}
+
+// evaluateCELProgram evaluates a compiled CEL program with given values.
+func evaluateCELProgram(program cel.Program, value interface{}, structInstance interface{}) bool {
 	// Prepare evaluation variables
 	vars := map[string]interface{}{
 		"value": value,
