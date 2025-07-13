@@ -61,10 +61,10 @@ Since no other validation library provides equivalent functionality, these bench
 measure CEL performance characteristics independently:
 
 ```
-BenchmarkGoValidCELSimple-16                	 6146832	       194.6 ns/op	     352 B/op	       4 allocs/op
-BenchmarkGoValidCELCached-16                	 6431814	       191.1 ns/op	     352 B/op	       4 allocs/op
-BenchmarkGoValidCELConcurrent-16            	11944453	       103.1 ns/op	     352 B/op	       4 allocs/op
-BenchmarkGoValidCELCacheEffectiveness-16    	13418316	        89.34 ns/op	     352 B/op	       4 allocs/op
+BenchmarkGoValidCELSimple-16                	 6337585	       188.7 ns/op	     352 B/op	       4 allocs/op
+BenchmarkGoValidCELRepeated-16              	 6461467	       188.1 ns/op	     352 B/op	       4 allocs/op
+BenchmarkGoValidCELConcurrent-16            	11411173	       100.6 ns/op	     352 B/op	       4 allocs/op
+BenchmarkGoValidCELCacheEffectiveness-16    	13666666	        88.12 ns/op	     352 B/op	       4 allocs/op
 ```
 
 CEL provides unique capabilities:

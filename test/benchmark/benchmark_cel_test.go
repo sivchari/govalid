@@ -24,18 +24,14 @@ func BenchmarkGoValidCELSimple(b *testing.B) {
 	b.StopTimer()
 }
 
-// BenchmarkGoValidCELCached tests performance after CEL programs are cached
-func BenchmarkGoValidCELCached(b *testing.B) {
+// BenchmarkGoValidCELRepeated tests performance with repeated validations 
+// (naturally exercises cache effectiveness without artificial pre-warming)
+func BenchmarkGoValidCELRepeated(b *testing.B) {
 	instance := test.CEL{
 		Age:      25,
 		Name:     "John Doe",
 		Score:    85.5,
 		IsActive: true,
-	}
-	
-	// Pre-warm the cache
-	for i := 0; i < 100; i++ {
-		test.ValidateCEL(&instance)
 	}
 	
 	b.ResetTimer()
