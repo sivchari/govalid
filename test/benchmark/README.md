@@ -48,6 +48,10 @@ BenchmarkGoPlaygroundURL-16            	 4392483	       277.8 ns/op	     144 B/o
 BenchmarkGoValidatorURL-16             	  155212	      7776 ns/op	     146 B/op	       1 allocs/op
 BenchmarkOzzoValidationURL-16          	  155686	      7739 ns/op	     170 B/op	       2 allocs/op
 BenchmarkGookitValidateURL-16          	  132864	      9216 ns/op	   15641 B/op	      75 allocs/op
+BenchmarkGoValidCEL-16                 	 3891766	       308.0 ns/op	     433 B/op	       8 allocs/op
+BenchmarkGoPlaygroundCEL-16            	12318056	        97.89 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidCELComplex-16          	 3872397	       312.2 ns/op	     433 B/op	       8 allocs/op
+BenchmarkGoPlaygroundCELComplex-16     	 8526888	       139.7 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidUUID-16                	33677632	        36.21 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundUUID-16           	 4768158	       253.0 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidatorUUID-16            	 6204364	       193.1 ns/op	       0 B/op	       0 allocs/op
