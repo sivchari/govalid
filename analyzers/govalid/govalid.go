@@ -210,6 +210,8 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 			v = rules.ValidateUUID(pass, field, marker.Expressions)
 		case govalidmarkers.GoValidMarkerURL:
 			v = rules.ValidateURL(pass, field, marker.Expressions)
+		case govalidmarkers.GoValidMarkerCEL:
+			v = rules.ValidateCEL(pass, field, marker.Expressions)
 		default:
 			continue
 		}

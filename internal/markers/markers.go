@@ -53,6 +53,11 @@ var (
 	// GoValidMarkerURL is the marker for checking if a string is a valid URL in govalid.
 	// This marker is only available for string types and follows RFC 3986 URL specification.
 	GoValidMarkerURL = "govalid:url"
+
+	// GoValidMarkerCEL is the marker for CEL (Common Expression Language) validation in govalid.
+	// This marker supports complex validation expressions with access to 'value' (current field) and 'this' (struct instance).
+	// Available for all types and enables cross-field validation and complex business rules.
+	GoValidMarkerCEL = "govalid:cel"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -70,4 +75,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerEmail:     {},
 	GoValidMarkerUUID:      {},
 	GoValidMarkerURL:       {},
+	GoValidMarkerCEL:       {},
 }
