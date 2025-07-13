@@ -78,7 +78,7 @@ jobs:
           script: |
             const fs = require('fs');
             
-            let comment = `## 🔍 Fuzz Testing Results\n\n`;
+            let comment = `## Fuzzing Results\n\n`;
             
             const fuzzTests = ['FuzzIsValidEmail', 'FuzzIsValidUUID', 'FuzzIsValidURL'];
             let allPassed = true;
@@ -133,17 +133,60 @@ jobs:
               comment += `4. Push updates to re-run the tests`;
             }
             
-            // Post comment to PR
+            // Find existing comments and clean up old ones
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            // Find all bot comments related to fuzzing
+            const fuzzingComments = comments.filter(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('## Fuzzing Results')
+            );
+            
+            // Find latest fuzzing comment
+            const latestFuzzingComment = fuzzingComments
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+            
+            // Delete old fuzzing comments
+            for (const comment of fuzzingComments) {
+              if (comment.id !== latestFuzzingComment?.id) {
+                try {
+                  await github.rest.issues.deleteComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: comment.id
+                  });
+                  console.log(`Deleted old comment ${comment.id}`);
+                } catch (error) {
+                  console.log(`Failed to delete comment ${comment.id}: ${error.message}`);
+                }
+              }
+            }
+            
+            // Post or update comment
             try {
-              await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: comment
-              });
-              console.log('Successfully posted PR comment');
+              if (latestFuzzingComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: latestFuzzingComment.id,
+                  body: comment
+                });
+                console.log('Successfully updated existing fuzz comment');
+              } else {
+                await github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: comment
+                });
+                console.log('Successfully posted new fuzz comment');
+              }
             } catch (error) {
-              console.error('Failed to post PR comment:', error.message);
+              console.error('Failed to post/update fuzz comment:', error.message);
               console.log('Comment content:', comment);
               throw error;
             }
