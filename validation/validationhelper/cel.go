@@ -2,6 +2,7 @@
 package validationhelper
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/google/cel-go/cel"
@@ -18,7 +19,7 @@ var celCache sync.Map
 //
 // Parameters:
 //   - expression: The CEL expression string to evaluate
-//   - value: The current field value being validated  
+//   - value: The current field value being validated
 //   - structInstance: The entire struct instance (for cross-field validation)
 //
 // Returns:
@@ -30,12 +31,16 @@ var celCache sync.Map
 //	    return errors.New("score must be positive")
 //	}
 //
-// Note: This implementation prioritizes simplicity and performance over 
+// Note: This implementation prioritizes simplicity and performance over
 // advanced type checking, following govalid's zero-reflection philosophy.
 func IsValidCEL(expression string, value interface{}, structInstance interface{}) bool {
 	// Try to get cached program first
 	if cached, ok := celCache.Load(expression); ok {
-		program := cached.(cel.Program)
+		program, ok := cached.(cel.Program)
+		if !ok {
+			return false
+		}
+
 		return evaluateCELProgram(program, value, structInstance)
 	}
 
@@ -89,15 +94,20 @@ func compileCELExpression(expression string) (cel.Program, error) {
 		cel.Variable("this", cel.DynType),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create CEL environment: %w", err)
 	}
 
 	// Compile the expression
 	ast, issues := env.Compile(expression)
 	if issues != nil && issues.Err() != nil {
-		return nil, issues.Err()
+		return nil, fmt.Errorf("failed to compile CEL expression: %w", issues.Err())
 	}
 
 	// Create and return program
-	return env.Program(ast)
+	program, err := env.Program(ast)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create CEL program: %w", err)
+	}
+
+	return program, nil
 }
