@@ -180,19 +180,71 @@ $COMPARISON_TABLE
 
 ## Performance Categories
 
-### 🚀 Ultra-Fast (< 3ns)
-- **Required**: ~1.9ns - 45x faster
-- **GT/GTE/LT/LTE**: ~1.9ns - 32x faster
-- **Enum**: ~2.2ns - govalid exclusive
-- **MaxItems**: ~2.5ns - 32x faster
-- **MinItems**: ~2.8ns - 29x faster
-
-### ⚡ Fast (3-40ns)
-- **MinLength**: ~11ns - 6x faster
-- **MaxLength**: ~15ns - 5x faster
-- **UUID**: ~36ns - 7x faster
-- **URL**: ~41ns - 7x faster
-- **Email**: ~36ns - 17x faster
+$(
+# Extract performance data from benchmark results and categorize automatically
+echo "$BENCHMARK_OUTPUT" | awk '
+BEGIN {
+    ultra_fast = ""
+    fast = ""
+    govalid_exclusive = ""
+}
+{
+    if ($1 ~ /BenchmarkGoValid/ && $1 !~ /Enum/) {
+        validator = $1
+        gsub(/BenchmarkGoValid/, "", validator)
+        gsub(/-.*/, "", validator)
+        
+        govalid_time = $3
+        gsub(/ns\/op/, "", govalid_time)
+        
+        # Store govalid results
+        govalid_results[validator] = govalid_time
+    }
+    else if ($1 ~ /BenchmarkGoPlayground/) {
+        validator = $1
+        gsub(/BenchmarkGoPlayground/, "", validator)
+        gsub(/-.*/, "", validator)
+        
+        playground_time = $3
+        gsub(/ns\/op/, "", playground_time)
+        
+        if (validator in govalid_results) {
+            govalid_ns = govalid_results[validator]
+            
+            if (govalid_ns > 0 && playground_time > 0) {
+                improvement = int(playground_time / govalid_ns + 0.5)
+                
+                if (govalid_ns < 3) {
+                    ultra_fast = ultra_fast sprintf("- **%s**: ~%.1fns - %dx faster\\n", validator, govalid_ns, improvement)
+                } else if (govalid_ns < 40) {
+                    fast = fast sprintf("- **%s**: ~%.0fns - %dx faster\\n", validator, govalid_ns, improvement)
+                }
+            }
+        }
+    }
+    else if ($1 ~ /BenchmarkGoValidEnum/) {
+        govalid_time = $3
+        gsub(/ns\/op/, "", govalid_time)
+        govalid_exclusive = sprintf("- **Enum**: ~%.1fns - govalid exclusive\\n", govalid_time)
+    }
+}
+END {
+    if (ultra_fast != "") {
+        print "### 🚀 Ultra-Fast (< 3ns)"
+        printf "%s", ultra_fast
+        print ""
+    }
+    if (fast != "") {
+        print "### ⚡ Fast (3-40ns)" 
+        printf "%s", fast
+        print ""
+    }
+    if (govalid_exclusive != "") {
+        print "### 🎯 govalid Exclusive Features"
+        printf "%s", govalid_exclusive
+    }
+}'
+)
 
 ## Key Performance Insights
 
@@ -339,5 +391,6 @@ echo "  - docs/content/_index.md (performance table)"
 echo ""
 echo "🔍 All files now contain identical benchmark data from: $BENCH_DATE"
 echo ""
-echo "💡 To verify synchronization, run:"
-echo "  make check-benchmark-sync"
+echo "💡 Benchmarks are now managed by GitHub Actions"
+echo "  - PRs will automatically show benchmark comparisons"
+echo "  - Main branch updates README automatically"

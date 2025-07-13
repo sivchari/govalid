@@ -102,11 +102,6 @@ sync-benchmarks: ## Synchronize benchmark results across all documentation files
 	@echo "Synchronizing benchmark results..."
 	./scripts/sync-benchmarks.sh
 
-.PHONY: check-benchmark-sync
-check-benchmark-sync: ## Check if benchmark results are synchronized (CI-friendly)
-	@echo "Checking benchmark synchronization..."
-	./scripts/check-benchmark-sync.sh
-
 
 .PHONY: help
 help: ## Show this help message
@@ -124,4 +119,3 @@ help: ## Show this help message
 	@echo '  make docs-serve         # Serve documentation site locally'
 	@echo '  make docs-build         # Build documentation for production'
 	@echo '  make sync-benchmarks    # Sync benchmark results across all docs'
-	@echo '  make check-benchmark-sync # Check if benchmarks are synchronized'
