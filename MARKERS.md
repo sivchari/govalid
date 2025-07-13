@@ -356,3 +356,55 @@ govalid supports the following markers:
       return nil
   }
   ```
+
+## `govalid:cel`
+- **Description**: Validates fields using Google's Common Expression Language (CEL) for complex validation logic.
+- **Available Variables**: 
+  - `value`: The current field value being validated
+- **Example**:
+  ```go
+  type Config struct {
+      // Numeric validation
+      // +govalid:cel=value > 0.0 && value <= 100.0
+      Score float64 `json:"score"`
+      
+      // String length validation
+      // +govalid:cel=size(value) >= 3 && size(value) <= 50
+      Username string `json:"username"`
+      
+      // Pattern matching
+      // +govalid:cel=value.contains('@')
+      Email string `json:"email"`
+      
+      // List validation
+      // +govalid:cel=size(value) > 0 && size(value) <= 10
+      Tags []string `json:"tags"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateConfig(t *Config) error {
+      if t == nil {
+          return ErrNilConfig
+      }
+
+      if !validationhelper.IsValidCEL("value > 0.0 && value <= 100.0", t.Score, t) {
+          return ErrScoreCELValidation
+      }
+
+      if !validationhelper.IsValidCEL("size(value) >= 3 && size(value) <= 50", t.Username, t) {
+          return ErrUsernameCELValidation
+      }
+
+      if !validationhelper.IsValidCEL("value.contains('@')", t.Email, t) {
+          return ErrEmailCELValidation
+      }
+
+      if !validationhelper.IsValidCEL("size(value) > 0 && size(value) <= 10", t.Tags, t) {
+          return ErrTagsCELValidation
+      }
+
+      return nil
+  }
+  ```
+- **Note**: CEL validation follows govalid's zero-reflection philosophy. Cross-field validation (accessing other struct fields) is not supported.
