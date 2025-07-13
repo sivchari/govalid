@@ -100,3 +100,17 @@ type URL struct {
 	// +govalid:url
 	URL string `validate:"url" json:"url"`
 }
+
+type CEL struct {
+	// +govalid:cel=value >= 18
+	Age int `json:"age"`
+
+	// +govalid:cel=value != ""
+	Name string `json:"name"`
+
+	// +govalid:cel=value > 0.0
+	Score float64 `json:"score"`
+
+	// +govalid:cel=value == true
+	IsActive bool `json:"is_active"`
+}
