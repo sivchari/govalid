@@ -20,7 +20,7 @@ var celCache sync.Map
 // Parameters:
 //   - expression: The CEL expression string to evaluate
 //   - value: The current field value being validated
-//   - structInstance: The entire struct instance (for cross-field validation)
+//   - structInstance: The entire struct instance (reserved for future use)
 //
 // Returns:
 //   - bool: true if validation passes, false if validation fails
@@ -31,8 +31,9 @@ var celCache sync.Map
 //	    return errors.New("score must be positive")
 //	}
 //
-// Note: This implementation prioritizes simplicity and performance over
-// advanced type checking, following govalid's zero-reflection philosophy.
+// Note: This implementation prioritizes simplicity and performance,
+// following govalid's zero-reflection philosophy. Cross-field validation
+// is not supported without reflection.
 func IsValidCEL(expression string, value interface{}, structInstance interface{}) bool {
 	// Try to get cached program first
 	if cached, ok := celCache.Load(expression); ok {
@@ -59,6 +60,8 @@ func IsValidCEL(expression string, value interface{}, structInstance interface{}
 // evaluateCELProgram evaluates a compiled CEL program with given values.
 func evaluateCELProgram(program cel.Program, value interface{}, structInstance interface{}) bool {
 	// Prepare evaluation variables
+	// Note: Without reflection, we cannot support cross-field validation
+	// that accesses struct fields. Only 'value' based validation is supported.
 	vars := map[string]interface{}{
 		"value": value,
 		"this":  structInstance,
@@ -85,13 +88,15 @@ func evaluateCELProgram(program cel.Program, value interface{}, structInstance i
 // compileCELExpression compiles a CEL expression into a program.
 // This function is used internally for compilation and caching.
 func compileCELExpression(expression string) (cel.Program, error) {
-	// Create a simple CEL environment with dynamic typing
-	// This avoids reflection while maintaining CEL's expressiveness
+	// Create a CEL environment with struct field access support
 	env, err := cel.NewEnv(
 		cel.StdLib(),
-		// Use dynamic types to avoid reflection-based type analysis
+		// Enable dynamic type access for struct fields
 		cel.Variable("value", cel.DynType),
 		cel.Variable("this", cel.DynType),
+		// Enable field access and type conversions
+		cel.OptionalTypes(),
+		cel.EnableMacroCallTracking(),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create CEL environment: %w", err)
@@ -103,8 +108,8 @@ func compileCELExpression(expression string) (cel.Program, error) {
 		return nil, fmt.Errorf("failed to compile CEL expression: %w", issues.Err())
 	}
 
-	// Create and return program
-	program, err := env.Program(ast)
+	// Create and return program with optimizations
+	program, err := env.Program(ast, cel.EvalOptions(cel.OptOptimize))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create CEL program: %w", err)
 	}
