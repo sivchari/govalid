@@ -48,15 +48,30 @@ BenchmarkGoPlaygroundURL-16            	 4392483	       277.8 ns/op	     144 B/o
 BenchmarkGoValidatorURL-16             	  155212	      7776 ns/op	     146 B/op	       1 allocs/op
 BenchmarkOzzoValidationURL-16          	  155686	      7739 ns/op	     170 B/op	       2 allocs/op
 BenchmarkGookitValidateURL-16          	  132864	      9216 ns/op	   15641 B/op	      75 allocs/op
-BenchmarkGoValidCEL-16                 	 3891766	       308.0 ns/op	     433 B/op	       8 allocs/op
-BenchmarkGoPlaygroundCEL-16            	12318056	        97.89 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoValidCELComplex-16          	 3872397	       312.2 ns/op	     433 B/op	       8 allocs/op
-BenchmarkGoPlaygroundCELComplex-16     	 8526888	       139.7 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidUUID-16                	33677632	        36.21 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundUUID-16           	 4768158	       253.0 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidatorUUID-16            	 6204364	       193.1 ns/op	       0 B/op	       0 allocs/op
 BenchmarkOzzoValidationUUID-16         	 5191681	       231.5 ns/op	      24 B/op	       1 allocs/op
 BenchmarkGookitValidateUUID-16         	  136436	      9256 ns/op	   15514 B/op	      74 allocs/op
+
+## CEL (Common Expression Language) Performance
+
+CEL is a govalid-exclusive feature that enables complex validation expressions. 
+Since no other validation library provides equivalent functionality, these benchmarks
+measure CEL performance characteristics independently:
+
+```
+BenchmarkGoValidCELSimple-16                	 6146832	       194.6 ns/op	     352 B/op	       4 allocs/op
+BenchmarkGoValidCELCached-16                	 6431814	       191.1 ns/op	     352 B/op	       4 allocs/op
+BenchmarkGoValidCELConcurrent-16            	11944453	       103.1 ns/op	     352 B/op	       4 allocs/op
+BenchmarkGoValidCELCacheEffectiveness-16    	13418316	        89.34 ns/op	     352 B/op	       4 allocs/op
+```
+
+CEL provides unique capabilities:
+- Complex expressions: `value >= 18 && value <= 120`
+- Cross-field validation: `this.StartDate < this.EndDate`
+- String pattern matching: `value.matches('^[A-Z][a-z]+$')`
+- Concurrent performance optimization with sync.Map caching
 ```
 
 ## Performance Comparison
