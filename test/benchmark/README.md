@@ -57,22 +57,33 @@ BenchmarkGookitValidateUUID-16         	  136436	      9256 ns/op	   15514 B/op	
 ## CEL (Common Expression Language) Performance
 
 CEL is a govalid-exclusive feature that enables complex validation expressions. 
-Since no other validation library provides equivalent functionality, these benchmarks
-measure CEL performance characteristics independently:
+The latest implementation converts CEL expressions to Go code at compile time, eliminating runtime overhead.
 
+### New CEL Implementation (Code Generation)
+```
+BenchmarkGoValidCELBasic-16                	604115029	         1.950 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidCELCrossField-16           	630123858	         1.919 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidCELStringLength-16         	637913314	         1.881 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidCELNumericComparison-16    	629966868	         1.945 ns/op	       0 B/op	       0 allocs/op
+```
+
+### Previous CEL Implementation (Runtime Evaluation)
 ```
 BenchmarkGoValidCELSimple-16                	 6337585	       188.7 ns/op	     352 B/op	       4 allocs/op
-BenchmarkGoValidCELRepeated-16              	 6461467	       188.1 ns/op	     352 B/op	       4 allocs/op
-BenchmarkGoValidCELConcurrent-16            	11411173	       100.6 ns/op	     352 B/op	       4 allocs/op
 BenchmarkGoValidCELCacheEffectiveness-16    	13666666	        88.12 ns/op	     352 B/op	       4 allocs/op
 ```
 
+### CEL Performance Improvement
+- **96.8% faster**: 1.95ns vs 88.12ns (best previous result)
+- **100% allocation reduction**: 0 allocs vs 4 allocs + 352 B/op
+- **Sub-2ns execution**: All CEL validations execute in under 2 nanoseconds
+
 CEL provides unique capabilities:
-- Complex expressions: `value >= 18 && value <= 120`
-- Cross-field validation: `this.StartDate < this.EndDate`
-- String pattern matching: `value.matches('^[A-Z][a-z]+$')`
-- Concurrent performance optimization with sync.Map caching
-```
+- **Complex expressions**: `value >= 18 && value <= 120` → `t.Age >= 18 && t.Age <= 120`
+- **Cross-field validation**: `value < this.MaxPrice` → `t.Price < t.MaxPrice`
+- **String operations**: `size(value) > 0` → `len(t.Name) > 0`
+- **Arithmetic operations**: `value * this.Price <= this.Budget`
+- **Zero runtime overhead**: Converted to native Go expressions at compile time
 
 ## Performance Comparison
 
@@ -91,8 +102,17 @@ CEL provides unique capabilities:
 | URL | 41.68ns | 277.8 | **6.7x faster** | 0 allocs/op | 1 allocs + 144 B/op |
 | UUID | 36.21ns | 253.0 | **7.0x faster** | 0 allocs/op | 0 allocs/op |
 | Enum | 2.242ns | N/A (govalid exclusive) | **govalid exclusive** | 0 allocs/op | N/A |
+| CEL Basic | 1.950ns | N/A (govalid exclusive) | **govalid exclusive** | 0 allocs/op | N/A |
+| CEL Cross-field | 1.919ns | N/A (govalid exclusive) | **govalid exclusive** | 0 allocs/op | N/A |
 
 ## govalid-Exclusive Features
+
+### CEL (Common Expression Language)
+- **Complex expressions**: Support for arbitrary validation logic with sub-2ns execution
+- **Cross-field validation**: Access other fields with `this.FieldName` syntax
+- **Arithmetic operations**: Mathematical expressions like `value * this.Price <= this.Budget`
+- **String functions**: Built-in functions like `size()` for length checking
+- **Compile-time conversion**: CEL expressions converted to native Go code at generation time
 
 ### Enum Validation
 - **Enum**: Comprehensive enum validation for string, numeric, and custom types (~2.17ns)
