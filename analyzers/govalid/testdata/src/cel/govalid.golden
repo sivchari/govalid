@@ -3,15 +3,118 @@ package cel
 
 import (
 	"errors"
-	"github.com/sivchari/govalid/validation/validationhelper"
+	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var (
 	// ErrNilCEL is returned when the CEL is nil.
 	ErrNilCEL = errors.New("input CEL is nil")
 
+	// ErrAgeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrAgeCELValidation = errors.New("field Age failed CEL validation: value >= 18")
+
 	// ErrScoreCELValidation is the error returned when the CEL expression evaluation fails.
 	ErrScoreCELValidation = errors.New("field Score failed CEL validation: value > 0.0")
+
+	// ErrMaxScoreCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrMaxScoreCELValidation = errors.New("field MaxScore failed CEL validation: value <= 100")
+
+	// ErrLimitCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrLimitCELValidation = errors.New("field Limit failed CEL validation: value < 1000")
+
+	// ErrAnswerCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrAnswerCELValidation = errors.New("field Answer failed CEL validation: value == 42")
+
+	// ErrNonZeroCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrNonZeroCELValidation = errors.New("field NonZero failed CEL validation: value != 0")
+
+	// ErrNameCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrNameCELValidation = errors.New("field Name failed CEL validation: size(value) > 0")
+
+	// ErrUsernameCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrUsernameCELValidation = errors.New("field Username failed CEL validation: size(value) >= 3 && size(value) <= 50")
+
+	// ErrPrefixedNameCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrPrefixedNameCELValidation = errors.New("field PrefixedName failed CEL validation: value.startsWith('prefix_')")
+
+	// ErrEmailCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrEmailCELValidation = errors.New("field Email failed CEL validation: value.endsWith('.com')")
+
+	// ErrEmailAddressCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrEmailAddressCELValidation = errors.New("field EmailAddress failed CEL validation: value.contains('@')")
+
+	// ErrIsActiveCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrIsActiveCELValidation = errors.New("field IsActive failed CEL validation: value == true")
+
+	// ErrMustBeTrueCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrMustBeTrueCELValidation = errors.New("field MustBeTrue failed CEL validation: value != false")
+
+	// ErrValidAgeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrValidAgeCELValidation = errors.New("field ValidAge failed CEL validation: value >= 0 && value <= 120")
+
+	// ErrPercentageCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrPercentageCELValidation = errors.New("field Percentage failed CEL validation: value > 0.0 && value <= 100.0")
+
+	// ErrPasswordCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrPasswordCELValidation = errors.New("field Password failed CEL validation: size(value) >= 8 && size(value) <= 256")
+
+	// ErrMinAgeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrMinAgeCELValidation = errors.New("field MinAge failed CEL validation: value >= this.Age")
+
+	// ErrCurrentScoreCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCurrentScoreCELValidation = errors.New("field CurrentScore failed CEL validation: value <= this.MaxScore")
+
+	// ErrLongNameCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrLongNameCELValidation = errors.New("field LongName failed CEL validation: size(value) >= size(this.Name)")
+
+	// ErrMiddleValueCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrMiddleValueCELValidation = errors.New("field MiddleValue failed CEL validation: value > this.Age && value < this.Limit")
+
+	// ErrDoubleAgeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrDoubleAgeCELValidation = errors.New("field DoubleAge failed CEL validation: value >= this.Age * 2")
+
+	// ErrHalfScoreCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrHalfScoreCELValidation = errors.New("field HalfScore failed CEL validation: value <= this.MaxScore / 2")
+
+	// ErrSumValueCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrSumValueCELValidation = errors.New("field SumValue failed CEL validation: value == this.Age + this.NonZero")
+
+	// ErrSpecialAgeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrSpecialAgeCELValidation = errors.New("field SpecialAge failed CEL validation: (value >= 18 && value <= 65) || value == 100")
+
+	// ErrConditionalValueCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrConditionalValueCELValidation = errors.New("field ConditionalValue failed CEL validation: value > 0 || (value == 0 && this.IsActive)")
+
+	// ErrProperNameCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrProperNameCELValidation = errors.New("field ProperName failed CEL validation: value.matches('^[A-Z][a-z]+$')")
+
+	// ErrItemsCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrItemsCELValidation = errors.New("field Items failed CEL validation: size(value) >= 1 && size(value) <= 10")
+
+	// ErrNonEmptySliceCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrNonEmptySliceCELValidation = errors.New("field NonEmptySlice failed CEL validation: size(value) > 0")
+
+	// ErrPositiveValueCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrPositiveValueCELValidation = errors.New("field PositiveValue failed CEL validation: value > 0 ? value : 0")
+
+	// ErrHasAdminRoleCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrHasAdminRoleCELValidation = errors.New("field HasAdminRole failed CEL validation: 'admin' in value")
+
+	// ErrAgeFromStringCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrAgeFromStringCELValidation = errors.New("field AgeFromString failed CEL validation: int(value) >= 18")
+
+	// ErrStatusCodeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrStatusCodeCELValidation = errors.New("field StatusCode failed CEL validation: string(value) in ['active', 'inactive', 'pending']")
+
+	// ErrBirthDateCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrBirthDateCELValidation = errors.New("field BirthDate failed CEL validation: value > timestamp('2000-01-01T00:00:00Z')")
+
+	// ErrProcessingTimeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrProcessingTimeCELValidation = errors.New("field ProcessingTime failed CEL validation: value > duration('1h')")
 )
 
 func ValidateCEL(t *CEL) error {
@@ -19,8 +122,159 @@ func ValidateCEL(t *CEL) error {
 		return ErrNilCEL
 	}
 
-	if !validationhelper.IsValidCEL("value > 0.0", t.Score, t) {
+	if !(t.Age >= 18) {
+		return ErrAgeCELValidation
+	}
+
+	if !(t.Score > 0) {
 		return ErrScoreCELValidation
+	}
+
+	if !(t.MaxScore <= 100) {
+		return ErrMaxScoreCELValidation
+	}
+
+	if !(t.Limit < 1000) {
+		return ErrLimitCELValidation
+	}
+
+	if !(t.Answer == 42) {
+		return ErrAnswerCELValidation
+	}
+
+	if !(t.NonZero != 0) {
+		return ErrNonZeroCELValidation
+	}
+
+	if !(len(t.Name) > 0) {
+		return ErrNameCELValidation
+	}
+
+	if !((len(t.Username) >= 3) && (len(t.Username) <= 50)) {
+		return ErrUsernameCELValidation
+	}
+
+	if !(strings.HasPrefix(t.PrefixedName, "prefix_")) {
+		return ErrPrefixedNameCELValidation
+	}
+
+	if !(strings.HasSuffix(t.Email, ".com")) {
+		return ErrEmailCELValidation
+	}
+
+	if !(strings.Contains(t.EmailAddress, "@")) {
+		return ErrEmailAddressCELValidation
+	}
+
+	if !(t.IsActive == true) {
+		return ErrIsActiveCELValidation
+	}
+
+	if !(t.MustBeTrue != false) {
+		return ErrMustBeTrueCELValidation
+	}
+
+	if !((t.ValidAge >= 0) && (t.ValidAge <= 120)) {
+		return ErrValidAgeCELValidation
+	}
+
+	if !((t.Percentage > 0) && (t.Percentage <= 100)) {
+		return ErrPercentageCELValidation
+	}
+
+	if !((len(t.Password) >= 8) && (len(t.Password) <= 256)) {
+		return ErrPasswordCELValidation
+	}
+
+	if !(t.MinAge >= t.Age) {
+		return ErrMinAgeCELValidation
+	}
+
+	if !(t.CurrentScore <= t.MaxScore) {
+		return ErrCurrentScoreCELValidation
+	}
+
+	if !(len(t.LongName) >= len(t.Name)) {
+		return ErrLongNameCELValidation
+	}
+
+	if !((t.MiddleValue > t.Age) && (t.MiddleValue < t.Limit)) {
+		return ErrMiddleValueCELValidation
+	}
+
+	if !(t.DoubleAge >= t.Age*2) {
+		return ErrDoubleAgeCELValidation
+	}
+
+	if !(t.HalfScore <= t.MaxScore/2) {
+		return ErrHalfScoreCELValidation
+	}
+
+	if !(t.SumValue == t.Age+t.NonZero) {
+		return ErrSumValueCELValidation
+	}
+
+	if !(((t.SpecialAge >= 18) && (t.SpecialAge <= 65)) || (t.SpecialAge == 100)) {
+		return ErrSpecialAgeCELValidation
+	}
+
+	if !((t.ConditionalValue > 0) || ((t.ConditionalValue == 0) && (t.IsActive))) {
+		return ErrConditionalValueCELValidation
+	}
+
+	if !(regexp.MustCompile("^[A-Z][a-z]+$").MatchString(t.ProperName)) {
+		return ErrProperNameCELValidation
+	}
+
+	if !((len(t.Items) >= 1) && (len(t.Items) <= 10)) {
+		return ErrItemsCELValidation
+	}
+
+	if !(len(t.NonEmptySlice) > 0) {
+		return ErrNonEmptySliceCELValidation
+	}
+
+	if !(func() interface{} {
+		if t.PositiveValue > 0 {
+			return t.PositiveValue
+		}
+		return 0
+	}()) {
+		return ErrPositiveValueCELValidation
+	}
+
+	if !(func() bool {
+		for _, item := range t.HasAdminRole {
+			if item == "admin" {
+				return true
+			}
+		}
+		return false
+	}()) {
+		return ErrHasAdminRoleCELValidation
+	}
+
+	if !(func() int { v, _ := strconv.Atoi(t.AgeFromString); return v }() >= 18) {
+		return ErrAgeFromStringCELValidation
+	}
+
+	if !(func() bool {
+		for _, item := range []interface{}{"active", "inactive", "pending"} {
+			if item == fmt.Sprintf("%v", t.StatusCode) {
+				return true
+			}
+		}
+		return false
+	}()) {
+		return ErrStatusCodeCELValidation
+	}
+
+	if !(t.BirthDate > func() time.Time { t, _ := time.Parse(time.RFC3339, "2000-01-01T00:00:00Z"); return t }()) {
+		return ErrBirthDateCELValidation
+	}
+
+	if !(t.ProcessingTime > func() time.Duration { d, _ := time.ParseDuration("1h"); return d }()) {
+		return ErrProcessingTimeCELValidation
 	}
 
 	return nil

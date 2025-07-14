@@ -9,16 +9,26 @@ var (
 	// ErrNilCEL is returned when the CEL is nil.
 	ErrNilCEL = errors.New("input CEL is nil")
 
+	// ErrAgeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrAgeCELValidation = errors.New("field Age failed CEL validation: value >= 18")
+
 	// ErrNameCELValidation is the error returned when the CEL expression evaluation fails.
 	ErrNameCELValidation = errors.New("field Name failed CEL validation: size(value) > 0")
 
 	// ErrScoreCELValidation is the error returned when the CEL expression evaluation fails.
 	ErrScoreCELValidation = errors.New("field Score failed CEL validation: value > 0.0")
+
+	// ErrIsActiveCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrIsActiveCELValidation = errors.New("field IsActive failed CEL validation: value == true")
 )
 
 func ValidateCEL(t *CEL) error {
 	if t == nil {
 		return ErrNilCEL
+	}
+
+	if !(t.Age >= 18) {
+		return ErrAgeCELValidation
 	}
 
 	if !(len(t.Name) > 0) {
@@ -27,6 +37,10 @@ func ValidateCEL(t *CEL) error {
 
 	if !(t.Score > 0) {
 		return ErrScoreCELValidation
+	}
+
+	if !(t.IsActive == true) {
+		return ErrIsActiveCELValidation
 	}
 
 	return nil
