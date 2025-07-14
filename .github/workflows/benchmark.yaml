@@ -43,10 +43,11 @@ jobs:
           go mod download
           go install -mod=mod github.com/sivchari/govalid/cmd/govalid
 
-      - name: Install yq for YAML parsing
+      - name: Install yq for YAML parsing and benchstat
         run: |
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
+          go install golang.org/x/perf/cmd/benchstat@latest
 
       - name: Generate test code
         run: |
@@ -57,14 +58,22 @@ jobs:
         run: |
           cd test/benchmark
           
-          # Read benchmark settings from config
-          BENCHMARK_TIME=$(yq e '.execution.benchmark_time' ../../benchmark.yaml)
-          COUNT=$(yq e '.execution.count' ../../benchmark.yaml)
-          TIMEOUT=$(yq e '.execution.timeout' ../../benchmark.yaml)
+          # Use shorter benchmark time for CI (3s instead of 10s)
+          BENCHMARK_TIME="3s"
+          COUNT="5"
+          TIMEOUT="30m"
           
-          go test -bench=. -benchmem -benchtime=${BENCHMARK_TIME} -count=${COUNT} -timeout=${TIMEOUT} | tee ../../benchmark-results.txt
+          # Run benchmarks and separate by library
+          echo "Running govalid benchmarks..."
+          go test -bench=BenchmarkGoValid -benchmem -benchtime=${BENCHMARK_TIME} -count=${COUNT} -timeout=${TIMEOUT} > ../../govalid-results.txt
+          
+          echo "Running go-playground benchmarks..."
+          go test -bench=BenchmarkGoPlayground -benchmem -benchtime=${BENCHMARK_TIME} -count=${COUNT} -timeout=${TIMEOUT} > ../../playground-results.txt
+          
+          # Combine all results for raw output
+          cat ../../govalid-results.txt ../../playground-results.txt > ../../benchmark-results.txt
 
-      - name: Parse benchmark results
+      - name: Parse benchmark results with benchstat
         id: parse
         run: |
           # Create a summary of benchmark results
@@ -87,11 +96,11 @@ jobs:
           echo "**Why this matters:** Faster execution with fewer allocations means better performance and lower memory pressure in production applications." >> benchmark-summary.md
           echo "" >> benchmark-summary.md
           
-          # Extract key benchmark comparisons using configuration  
+          # Use benchstat for statistical comparison
           echo "### 🚀 Performance Comparison vs go-playground/validator" >> benchmark-summary.md
           echo "" >> benchmark-summary.md
-          echo "| Validator | Description | govalid (ns/op) | go-playground (ns/op) | Speed Improvement | govalid (B/op) | go-playground (B/op) | Memory Improvement | govalid (allocs/op) | go-playground (allocs/op) | Allocation Improvement |" >> benchmark-summary.md
-          echo "|-----------|-------------|-----------------|----------------------|-------------------|----------------|----------------------|--------------------|---------------------|---------------------------|------------------------|" >> benchmark-summary.md
+          echo "*Statistical analysis using benchstat for reliable performance comparison*" >> benchmark-summary.md
+          echo "" >> benchmark-summary.md
           
           # Process comparison validators from config
           yq e '.comparison_validators[] | [.name, .description, .govalid_benchmark, .competitor_benchmark] | @csv' benchmark.yaml | while IFS=',' read -r name description govalid_bench competitor_bench; do
@@ -101,57 +110,17 @@ jobs:
             govalid_bench=$(echo "$govalid_bench" | sed 's/"//g')
             competitor_bench=$(echo "$competitor_bench" | sed 's/"//g')
             
-            govalid_line=$(grep "$govalid_bench-" benchmark-results.txt | tail -1)
-            playground_line=$(grep "$competitor_bench-" benchmark-results.txt | tail -1)
+            # Extract specific benchmark results for benchstat comparison
+            grep "^$govalid_bench-" govalid-results.txt > govalid-${name,,}.txt 2>/dev/null || true
+            grep "^$competitor_bench-" playground-results.txt > playground-${name,,}.txt 2>/dev/null || true
             
-            if [ -n "$govalid_line" ] && [ -n "$playground_line" ]; then
-              # Extract all metrics for govalid (with -benchmem output format)
-              # Format: BenchmarkName-N    iterations    time_ns/op    bytes_B/op    allocs_allocs/op
-              govalid_ns=$(echo "$govalid_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /ns\/op$/) {print $(i-1) $i; break}}')
-              govalid_bytes=$(echo "$govalid_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /B\/op$/) {print $(i-1) $i; break}}')
-              govalid_allocs=$(echo "$govalid_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /allocs\/op$/) {print $(i-1) $i; break}}')
-              
-              # Extract all metrics for go-playground
-              playground_ns=$(echo "$playground_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /ns\/op$/) {print $(i-1) $i; break}}')
-              playground_bytes=$(echo "$playground_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /B\/op$/) {print $(i-1) $i; break}}')
-              playground_allocs=$(echo "$playground_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /allocs\/op$/) {print $(i-1) $i; break}}')
-              
-              # Calculate improvements
-              govalid_ns_num=$(echo "$govalid_ns" | sed 's/ns\/op//')
-              playground_ns_num=$(echo "$playground_ns" | sed 's/ns\/op//')
-              govalid_bytes_num=$(echo "$govalid_bytes" | sed 's/B\/op//')
-              playground_bytes_num=$(echo "$playground_bytes" | sed 's/B\/op//')
-              govalid_allocs_num=$(echo "$govalid_allocs" | sed 's/allocs\/op//')
-              playground_allocs_num=$(echo "$playground_allocs" | sed 's/allocs\/op//')
-              
-              # Calculate improvement factors
-              if [ $(echo "$govalid_ns_num > 0" | bc 2>/dev/null || echo "0") -eq 1 ]; then
-                speed_improvement=$(echo "scale=1; $playground_ns_num / $govalid_ns_num" | bc 2>/dev/null || echo "N/A")
-              else
-                speed_improvement="N/A"
-              fi
-              
-              if [ $(echo "$govalid_bytes_num > 0" | bc 2>/dev/null || echo "0") -eq 1 ]; then
-                memory_improvement=$(echo "scale=1; $playground_bytes_num / $govalid_bytes_num" | bc 2>/dev/null || echo "N/A")
-              else
-                if [ "$playground_bytes_num" = "0" ] && [ "$govalid_bytes_num" = "0" ]; then
-                  memory_improvement="Equal (0)"
-                else
-                  memory_improvement="∞x better"
-                fi
-              fi
-              
-              if [ $(echo "$govalid_allocs_num > 0" | bc 2>/dev/null || echo "0") -eq 1 ]; then
-                alloc_improvement=$(echo "scale=1; $playground_allocs_num / $govalid_allocs_num" | bc 2>/dev/null || echo "N/A")
-              else
-                if [ "$playground_allocs_num" = "0" ] && [ "$govalid_allocs_num" = "0" ]; then
-                  alloc_improvement="Equal (0)"
-                else
-                  alloc_improvement="∞x better"
-                fi
-              fi
-              
-              echo "| $name | $description | ${govalid_ns} | ${playground_ns} | ${speed_improvement}x | ${govalid_bytes} | ${playground_bytes} | ${memory_improvement}x | ${govalid_allocs} | ${playground_allocs} | ${alloc_improvement}x |" >> benchmark-summary.md
+            if [ -s "govalid-${name,,}.txt" ] && [ -s "playground-${name,,}.txt" ]; then
+              echo "#### $name - $description" >> benchmark-summary.md
+              echo "" >> benchmark-summary.md
+              echo '```' >> benchmark-summary.md
+              benchstat "playground-${name,,}.txt" "govalid-${name,,}.txt" >> benchmark-summary.md 2>/dev/null || echo "Benchstat comparison failed for $name" >> benchmark-summary.md
+              echo '```' >> benchmark-summary.md
+              echo "" >> benchmark-summary.md
             fi
           done
           
@@ -161,8 +130,6 @@ jobs:
           echo "" >> benchmark-summary.md
           echo "*These validators are unique to govalid and not available in go-playground/validator*" >> benchmark-summary.md
           echo "" >> benchmark-summary.md
-          echo "| Validator | Description | ns/op | B/op | allocs/op |" >> benchmark-summary.md
-          echo "|-----------|-------------|-------|------|-----------|" >> benchmark-summary.md
           
           # Process govalid-specific validators from config
           yq e '.govalid_specific[] | [.name, .description, .benchmark] | @csv' benchmark.yaml | while IFS=',' read -r name description benchmark; do
@@ -171,13 +138,16 @@ jobs:
             description=$(echo "$description" | sed 's/"//g')
             benchmark=$(echo "$benchmark" | sed 's/"//g')
             
-            govalid_line=$(grep "$benchmark-" benchmark-results.txt | tail -1)
-            if [ -n "$govalid_line" ]; then
-              # Extract metrics using pattern matching for -benchmem output
-              govalid_ns=$(echo "$govalid_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /ns\/op$/) {print $(i-1) $i; break}}')
-              govalid_bytes=$(echo "$govalid_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /B\/op$/) {print $(i-1) $i; break}}')
-              govalid_allocs=$(echo "$govalid_line" | awk '{for(i=1;i<=NF;i++) if($i ~ /allocs\/op$/) {print $(i-1) $i; break}}')
-              echo "| $name | $description | ${govalid_ns} | ${govalid_bytes} | ${govalid_allocs} |" >> benchmark-summary.md
+            # Extract specific benchmark results for benchstat
+            grep "^$benchmark-" govalid-results.txt > govalid-specific-${name,,}.txt 2>/dev/null || true
+            
+            if [ -s "govalid-specific-${name,,}.txt" ]; then
+              echo "#### $name - $description" >> benchmark-summary.md
+              echo "" >> benchmark-summary.md
+              echo '```' >> benchmark-summary.md
+              benchstat "govalid-specific-${name,,}.txt" >> benchmark-summary.md 2>/dev/null || echo "Benchstat analysis failed for $name" >> benchmark-summary.md
+              echo '```' >> benchmark-summary.md
+              echo "" >> benchmark-summary.md
             fi
           done
           
@@ -281,7 +251,7 @@ jobs:
           PLATFORM="$(uname -s) $(uname -r) $(uname -m)"
           GO_VERSION=$(go version | awk '{print $3}')
           
-          # Create updated README content for test/benchmark
+          # Create updated README content for test/benchmark with benchstat format
           cat > test/benchmark/README.md << EOF
           # Benchmark Results
           
@@ -303,37 +273,81 @@ jobs:
           **Platform:** ${PLATFORM}
           **Go version:** ${GO_VERSION}
           
-          ## Raw Benchmark Data
+          *Statistical analysis using benchstat for reliable performance comparison*
           
-          \`\`\`
+          ## Performance Comparison vs go-playground/validator
+          
           EOF
           
-          # Append raw benchmark results
+          # Generate benchstat comparisons for documentation
+          yq e '.comparison_validators[] | [.name, .description, .govalid_benchmark, .competitor_benchmark] | @csv' benchmark.yaml | while IFS=',' read -r name description govalid_bench competitor_bench; do
+            # Remove quotes from CSV output
+            name=$(echo "$name" | sed 's/"//g')
+            description=$(echo "$description" | sed 's/"//g')
+            govalid_bench=$(echo "$govalid_bench" | sed 's/"//g')
+            competitor_bench=$(echo "$competitor_bench" | sed 's/"//g')
+            
+            # Extract specific benchmark results for benchstat comparison
+            grep "^$govalid_bench-" govalid-results.txt > govalid-${name,,}.txt 2>/dev/null || true
+            grep "^$competitor_bench-" playground-results.txt > playground-${name,,}.txt 2>/dev/null || true
+            
+            if [ -s "govalid-${name,,}.txt" ] && [ -s "playground-${name,,}.txt" ]; then
+              echo "### $name - $description" >> test/benchmark/README.md
+              echo "" >> test/benchmark/README.md
+              echo '```' >> test/benchmark/README.md
+              benchstat "playground-${name,,}.txt" "govalid-${name,,}.txt" >> test/benchmark/README.md 2>/dev/null || echo "Benchstat comparison failed for $name" >> test/benchmark/README.md
+              echo '```' >> test/benchmark/README.md
+              echo "" >> test/benchmark/README.md
+            fi
+          done
+          
+          # Add govalid-specific validators section
+          echo "## govalid-Specific Validators" >> test/benchmark/README.md
+          echo "" >> test/benchmark/README.md
+          echo "*These validators are unique to govalid and not available in go-playground/validator*" >> test/benchmark/README.md
+          echo "" >> test/benchmark/README.md
+          
+          yq e '.govalid_specific[] | [.name, .description, .benchmark] | @csv' benchmark.yaml | while IFS=',' read -r name description benchmark; do
+            # Remove quotes from CSV output
+            name=$(echo "$name" | sed 's/"//g')
+            description=$(echo "$description" | sed 's/"//g')
+            benchmark=$(echo "$benchmark" | sed 's/"//g')
+            
+            # Extract specific benchmark results for benchstat
+            grep "^$benchmark-" govalid-results.txt > govalid-specific-${name,,}.txt 2>/dev/null || true
+            
+            if [ -s "govalid-specific-${name,,}.txt" ]; then
+              echo "### $name - $description" >> test/benchmark/README.md
+              echo "" >> test/benchmark/README.md
+              echo '```' >> test/benchmark/README.md
+              benchstat "govalid-specific-${name,,}.txt" >> test/benchmark/README.md 2>/dev/null || echo "Benchstat analysis failed for $name" >> test/benchmark/README.md
+              echo '```' >> test/benchmark/README.md
+              echo "" >> test/benchmark/README.md
+            fi
+          done
+          
+          # Add raw benchmark data section
+          echo "## Raw Benchmark Data" >> test/benchmark/README.md
+          echo "" >> test/benchmark/README.md
+          echo "\`\`\`" >> test/benchmark/README.md
           cat benchmark-results.txt >> test/benchmark/README.md
+          echo "\`\`\`" >> test/benchmark/README.md
+          echo "" >> test/benchmark/README.md
           
-          # Close the code block and add footer
-          cat >> test/benchmark/README.md << EOF
-          \`\`\`
-          
-          ## Performance Summary
-          
-          EOF
-          
-          # Add the performance comparison table and govalid-specific markers
-          # Extract both sections from benchmark-summary.md
-          awk '/### Performance Comparison/,/### govalid-Specific Markers/ {
-            if (/### govalid-Specific Markers/) exit
-            print
-          }' benchmark-summary.md | tail -n +4 >> test/benchmark/README.md
-          
-          # Add govalid-specific markers section if it exists
-          if grep -q "### govalid-Specific Markers" benchmark-summary.md; then
-            echo "" >> test/benchmark/README.md
-            awk '/### govalid-Specific Markers/,/<details>/ {
-              if (/<details>/) exit
-              print
-            }' benchmark-summary.md >> test/benchmark/README.md
-          fi
+          # Add performance summary
+          echo "## Performance Summary" >> test/benchmark/README.md
+          echo "" >> test/benchmark/README.md
+          echo "**Key Advantages of govalid:**" >> test/benchmark/README.md
+          echo "- **Zero Allocations**: Most validators achieve 0 B/op and 0 allocs/op" >> test/benchmark/README.md
+          echo "- **Compile-time Generation**: Code is generated at build time, eliminating runtime reflection" >> test/benchmark/README.md
+          echo "- **Optimal Performance**: Nanosecond-level execution times for most validations" >> test/benchmark/README.md
+          echo "- **Memory Efficiency**: No heap allocations during validation in most cases" >> test/benchmark/README.md
+          echo "- **Statistical Reliability**: Results verified using benchstat for accurate performance measurement" >> test/benchmark/README.md
+          echo "" >> test/benchmark/README.md
+          echo "**When to use govalid vs alternatives:**" >> test/benchmark/README.md
+          echo "- Choose govalid for high-performance applications where validation speed matters" >> test/benchmark/README.md
+          echo "- Ideal for microservices, APIs, and data processing pipelines" >> test/benchmark/README.md
+          echo "- Perfect for applications with strict memory allocation budgets" >> test/benchmark/README.md
           
           # Run sync-benchmarks to update docs
           if [ -f scripts/sync-benchmarks.sh ]; then
