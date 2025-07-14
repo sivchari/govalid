@@ -109,23 +109,27 @@ cd .. && go test ./analyzers/govalid/ -v
 # 4. Run unit tests
 cd test && go test ./unit/ -v
 
-# 5. Run benchmarks (optional - will run automatically on PR)
+# 5. Run benchmarks
 go test ./benchmark/ -bench=Benchmark.*{MarkerName} -benchmem
 
-# 6. Run lint checks and fix any issues
+# 6. Update benchmark README
+# Edit test/benchmark/README.md with results
+
+# 7. Run lint checks and fix any issues
 cd .. && make golangci-lint
 
-# 7. Create PR - benchmarks will run automatically
-# - Benchmark results posted as PR comment
-# - Performance comparison with base branch
-# - No manual README updates needed
+# 8. Re-run benchmarks after any optimization changes
+# If code changes were made to fix lint issues or optimize performance:
+cd test && go test ./benchmark/ -bench=Benchmark.*{MarkerName} -benchmem
+
+# 9. Update benchmark README again if performance changed
+# Edit test/benchmark/README.md with updated results
 ```
 
 ### 5. Documentation Updates
-- Update main README.md with marker explanation (manual)
-- Benchmark documentation updates automatically on merge
+- Update main README.md with marker explanation
+- Update benchmark/README.md with performance results
 - Document any behavior differences from go-playground/validator
-- See `BENCHMARK_GUIDE.md` for adding new validators to benchmarks
 
 ## 🔧 Key Technical Patterns
 
@@ -293,28 +297,22 @@ make golangci-lint
 
 # If lint issues found:
 # 1. Fix lint issues (may involve code refactoring)
-# 2. Benchmarks will run automatically on PR/merge
-# 3. Verify tests still pass
+# 2. Re-run benchmarks to check for performance changes
+go test ./benchmark/ -bench=Benchmark.*{MarkerName} -benchmem
+
+# 3. Update benchmark README if numbers changed
+# 4. Verify tests still pass
 go test ./unit/ -v
 
-# 4. Re-run lint to ensure fixes are correct
+# 5. Re-run lint to ensure fixes are correct
 make golangci-lint
 ```
 
-### Automated Performance Monitoring
-- **PR Creation**: Benchmarks run automatically, results posted as comments
-- **Performance Comparison**: Automatic comparison with base branch using benchstat
-- **Main Branch Merge**: README and documentation updated automatically
-- **No Manual Intervention**: All benchmark documentation is auto-generated
-
-### Manual Performance Checks (Optional)
-```bash
-# Run benchmarks locally for development
-cd test && go test ./benchmark/ -bench=Benchmark.*{MarkerName} -benchmem
-
-# Sync documentation manually (rarely needed)
-make sync-benchmarks
-```
+### Performance Monitoring
+- **Before optimization**: Record baseline performance
+- **After lint fixes**: Check for performance impact (usually positive due to better compiler optimization)
+- **Document improvements**: Update README with new performance numbers
+- **Verify against competitors**: Ensure go-playground/validator comparison is still accurate
 
 ## 📝 Commit Message Pattern
 ```
