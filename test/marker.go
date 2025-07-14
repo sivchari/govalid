@@ -124,7 +124,7 @@ type CELCrossField struct {
 	
 	// Cross-field validation: Quantity * Price <= Budget
 	// +govalid:cel=value * this.Price <= this.Budget
-	Quantity int `json:"quantity"`
+	Quantity float64 `json:"quantity"`
 	
 	Budget float64 `json:"budget"`
 }
