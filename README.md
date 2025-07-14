@@ -10,7 +10,7 @@ govalid addresses key limitations of reflection-based validation libraries by ge
 
 ### Performance Benefits
 - **Zero allocations**: All validation functions perform zero heap allocations
-- **5x to 50x faster**: Significantly outperforms reflection-based validators
+- **Up to 45x faster**: Significantly outperforms reflection-based validators
 - **Compile-time optimization**: Generated code is optimized by the Go compiler
 
 ### Developer Experience

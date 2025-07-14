@@ -1,12 +1,12 @@
 ---
 title: "Benchmarks"
-description: "Performance comparison between govalid and go-playground/validator"
+description: "Performance comparison between govalid and reflection-based validators"
 weight: 30
 ---
 
 # Performance Benchmarks
 
-govalid is designed for maximum performance with zero allocations. Here are the latest benchmark results comparing govalid with go-playground/validator.
+govalid is designed for maximum performance with zero allocations. Here are the latest benchmark results comparing govalid with reflection-based validators.
 
 ## Latest Results
 
@@ -63,6 +63,8 @@ BenchmarkGookitValidateUUID-16         	  136436	      9256 ns/op	   15514 B/op	
 
 ## Performance Comparison
 
+### vs go-playground/validator
+
 | Validator | govalid (ns/op) | go-playground/validator (ns/op) | Improvement | govalid Allocs | Competitor Allocs |
 |-----------|-----------------|--------------------------------|-------------|----------------|-------------------|
 | Email | 36.80ns | 630.4 | **17.1x faster** | 0 allocs/op | 5 allocs + 89 B/op |
@@ -79,21 +81,38 @@ BenchmarkGookitValidateUUID-16         	  136436	      9256 ns/op	   15514 B/op	
 | UUID | 36.21ns | 253.0 | **7.0x faster** | 0 allocs/op | 0 allocs/op |
 | Enum | 2.242ns | N/A (govalid exclusive) | **govalid exclusive** | 0 allocs/op | N/A |
 
-## Performance Categories
+### vs go-validator/validator
 
-### 🚀 Ultra-Fast (< 3ns)
-- **Required**: ~1.9ns - 45x faster
-- **GT/GTE/LT/LTE**: ~1.9ns - 32x faster
-- **Enum**: ~2.2ns - govalid exclusive
-- **MaxItems**: ~2.5ns - 32x faster
-- **MinItems**: ~2.8ns - 29x faster
+| Validator | govalid (ns/op) | go-validator/validator (ns/op) | Improvement | govalid Allocs | Competitor Allocs |
+|-----------|-----------------|-------------------------------|-------------|----------------|-------------------|
+| Email | 36.80ns | 584.1 | **15.9x faster** | 0 allocs/op | 0 allocs/op |
+| GT | 1.825ns | 53.57 | **29.4x faster** | 0 allocs/op | 0 allocs/op |
+| MaxLength | 15.58ns | 155.7 | **10.0x faster** | 0 allocs/op | 2 allocs + 32 B/op |
+| MinLength | 11.46ns | 159.6 | **13.9x faster** | 0 allocs/op | 2 allocs + 32 B/op |
+| Required | 1.914ns | 1.929 | **1.0x faster** | 0 allocs/op | 0 allocs/op |
+| URL | 41.68ns | 7776 | **186.5x faster** | 0 allocs/op | 1 allocs + 146 B/op |
+| UUID | 36.21ns | 193.1 | **5.3x faster** | 0 allocs/op | 0 allocs/op |
 
-### ⚡ Fast (3-40ns)
-- **MinLength**: ~11ns - 6x faster
-- **MaxLength**: ~15ns - 5x faster
-- **UUID**: ~36ns - 7x faster
-- **URL**: ~41ns - 7x faster
-- **Email**: ~36ns - 17x faster
+### vs ozzo-validation
+
+| Validator | govalid (ns/op) | ozzo-validation (ns/op) | Improvement | govalid Allocs | Competitor Allocs |
+|-----------|-----------------|------------------------|-------------|----------------|-------------------|
+| Email | 36.80ns | 39.35 | **1.1x faster** | 0 allocs/op | 1 allocs + 24 B/op |
+| MaxLength | 15.58ns | 159.3 | **10.2x faster** | 0 allocs/op | 4 allocs + 432 B/op |
+| Required | 1.914ns | 33.69 | **17.6x faster** | 0 allocs/op | 1 allocs + 24 B/op |
+| URL | 41.68ns | 7739 | **185.6x faster** | 0 allocs/op | 2 allocs + 170 B/op |
+| UUID | 36.21ns | 231.5 | **6.4x faster** | 0 allocs/op | 1 allocs + 24 B/op |
+
+### vs gookit/validate
+
+| Validator | govalid (ns/op) | gookit/validate (ns/op) | Improvement | govalid Allocs | Competitor Allocs |
+|-----------|-----------------|------------------------|-------------|----------------|-------------------|
+| Email | 36.80ns | 9559 | **259.8x faster** | 0 allocs/op | 74 allocs + 15952 B/op |
+| MaxLength | 15.58ns | 9125 | **585.5x faster** | 0 allocs/op | 80 allocs + 15632 B/op |
+| Required | 1.914ns | 8698 | **4543.1x faster** | 0 allocs/op | 72 allocs + 15472 B/op |
+| URL | 41.68ns | 9216 | **221.1x faster** | 0 allocs/op | 75 allocs + 15641 B/op |
+| UUID | 36.21ns | 9256 | **255.6x faster** | 0 allocs/op | 74 allocs + 15514 B/op |
+
 
 ## Key Performance Insights
 
@@ -167,9 +186,16 @@ go test ./benchmark/ -bench=. -benchmem
 
 ## Conclusion
 
-govalid delivers exceptional performance improvements:
-- **4.8x to 45x faster** than go-playground/validator
-- **Zero allocations** across all validators
+govalid delivers exceptional performance improvements across all reflection-based validators:
+
+### Performance Improvements by Library
+- **vs go-playground/validator**: 4.8x to 44.8x faster
+- **vs go-validator/validator**: 1.0x to 186.5x faster  
+- **vs ozzo-validation**: 1.1x to 185.6x faster
+- **vs gookit/validate**: 221.1x to 4543.1x faster
+
+### Additional Benefits
+- **Zero allocations** across all validators (vs 0-80 allocs for competitors)
 - **Sub-3ns performance** for simple operations
 - **Extended type support** (maps, channels, enums)
 - **Production-ready** with comprehensive test coverage
