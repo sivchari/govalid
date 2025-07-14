@@ -29,7 +29,7 @@ func BenchmarkGoValidCELCrossField(b *testing.B) {
 	instance := test.CELCrossField{
 		Price:    99.99,
 		MaxPrice: 150.0,
-		Quantity: 2,
+		Quantity: 2.0,
 		Budget:   500.0,
 	}
 	
