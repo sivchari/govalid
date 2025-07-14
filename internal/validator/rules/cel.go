@@ -27,6 +27,7 @@ const (
 	trueFallback      = "true"
 	placeholderList   = "[]interface{}{}"
 	placeholderStruct = "struct{}{}"
+	ternaryOperator   = "_?_:_"
 )
 
 func (c *celValidator) Validate() string {
@@ -77,9 +78,9 @@ func (c *celValidator) Imports() []string {
 	imports := []string{}
 
 	// Add imports based on the CEL expression content
-	if strings.Contains(c.expression, "contains(") || 
-	   strings.Contains(c.expression, "startsWith(") ||
-	   strings.Contains(c.expression, "endsWith(") {
+	if strings.Contains(c.expression, "contains(") ||
+		strings.Contains(c.expression, "startsWith(") ||
+		strings.Contains(c.expression, "endsWith(") {
 		imports = append(imports, "strings")
 	}
 
@@ -88,17 +89,17 @@ func (c *celValidator) Imports() []string {
 	}
 
 	if strings.Contains(c.expression, "int(") ||
-	   strings.Contains(c.expression, "double(") {
+		strings.Contains(c.expression, "double(") {
 		imports = append(imports, "strconv")
 	}
 
 	if strings.Contains(c.expression, "string(") ||
-	   strings.Contains(c.expression, "double(") {
+		strings.Contains(c.expression, "double(") {
 		imports = append(imports, "fmt")
 	}
 
 	if strings.Contains(c.expression, "timestamp(") ||
-	   strings.Contains(c.expression, "duration(") {
+		strings.Contains(c.expression, "duration(") {
 		imports = append(imports, "time")
 	}
 
@@ -217,7 +218,7 @@ func (c *celValidator) convertCallToGo(callExpr *exprpb.Expr_Call, fieldName str
 	}
 
 	// Try built-in functions
-	if result := c.convertBuiltinFunction(function, args, fieldName); result != "" {
+	if result := c.convertBuiltinFunction(function, fieldName, args); result != "" {
 		return result
 	}
 
@@ -228,7 +229,7 @@ func (c *celValidator) convertCallToGo(callExpr *exprpb.Expr_Call, fieldName str
 // convertOperator converts CEL operators to Go operators.
 func (c *celValidator) convertOperator(function string, args []*exprpb.Expr, fieldName string) string {
 	// Handle ternary operator (condition ? true_value : false_value)
-	if function == "_?_:_" && len(args) == 3 {
+	if function == ternaryOperator && len(args) == 3 {
 		condition := c.convertASTToGo(args[0], fieldName)
 		trueValue := c.convertASTToGo(args[1], fieldName)
 		falseValue := c.convertASTToGo(args[2], fieldName)
@@ -240,7 +241,7 @@ func (c *celValidator) convertOperator(function string, args []*exprpb.Expr, fie
 	if function == "@in" && len(args) == 2 {
 		element := c.convertASTToGo(args[0], fieldName)
 		collection := c.convertASTToGo(args[1], fieldName)
-		
+
 		// Generate a contains check for slices
 		return fmt.Sprintf("func() bool { for _, item := range %s { if item == %s { return true } }; return false }()", collection, element)
 	}
@@ -315,70 +316,135 @@ func (c *celValidator) convertArithmeticOperator(function, left, right string) s
 }
 
 // convertBuiltinFunction converts CEL built-in functions to Go equivalents.
-func (c *celValidator) convertBuiltinFunction(function string, args []*exprpb.Expr, fieldName string) string {
+func (c *celValidator) convertBuiltinFunction(function, fieldName string, args []*exprpb.Expr) string {
 	switch function {
 	case "size":
-		if len(args) == 1 {
-			arg := c.convertASTToGo(args[0], fieldName)
-
-			return fmt.Sprintf("len(%s)", arg)
-		}
+		return c.convertSizeFunction(fieldName, args)
 	case "contains":
-		if len(args) == 2 {
-			str := c.convertASTToGo(args[0], fieldName)
-			substr := c.convertASTToGo(args[1], fieldName)
-
-			return fmt.Sprintf("strings.Contains(%s, %s)", str, substr)
-		}
+		return c.convertContainsFunction(fieldName, args)
 	case "matches":
-		if len(args) == 2 {
-			str := c.convertASTToGo(args[0], fieldName)
-			pattern := c.convertASTToGo(args[1], fieldName)
-
-			return fmt.Sprintf("regexp.MustCompile(%s).MatchString(%s)", pattern, str)
-		}
+		return c.convertMatchesFunction(fieldName, args)
 	case "startsWith":
-		if len(args) == 2 {
-			str := c.convertASTToGo(args[0], fieldName)
-			prefix := c.convertASTToGo(args[1], fieldName)
-			
-			return fmt.Sprintf("strings.HasPrefix(%s, %s)", str, prefix)
-		}
+		return c.convertStartsWithFunction(fieldName, args)
 	case "endsWith":
-		if len(args) == 2 {
-			str := c.convertASTToGo(args[0], fieldName)
-			suffix := c.convertASTToGo(args[1], fieldName)
-			
-			return fmt.Sprintf("strings.HasSuffix(%s, %s)", str, suffix)
-		}
+		return c.convertEndsWithFunction(fieldName, args)
 	case "int":
-		if len(args) == 1 {
-			arg := c.convertASTToGo(args[0], fieldName)
-			return fmt.Sprintf("func() int { v, _ := strconv.Atoi(%s); return v }()", arg)
-		}
+		return c.convertIntFunction(fieldName, args)
 	case "string":
-		if len(args) == 1 {
-			arg := c.convertASTToGo(args[0], fieldName)
-			return fmt.Sprintf("fmt.Sprintf(\"%%v\", %s)", arg)
-		}
+		return c.convertStringFunction(fieldName, args)
 	case "double":
-		if len(args) == 1 {
-			arg := c.convertASTToGo(args[0], fieldName)
-			return fmt.Sprintf("func() float64 { v, _ := strconv.ParseFloat(fmt.Sprintf(\"%%v\", %s), 64); return v }()", arg)
-		}
+		return c.convertDoubleFunction(fieldName, args)
 	case "timestamp":
-		if len(args) == 1 {
-			arg := c.convertASTToGo(args[0], fieldName)
-			return fmt.Sprintf("func() time.Time { t, _ := time.Parse(time.RFC3339, %s); return t }()", arg)
-		}
+		return c.convertTimestampFunction(fieldName, args)
 	case "duration":
-		if len(args) == 1 {
-			arg := c.convertASTToGo(args[0], fieldName)
-			return fmt.Sprintf("func() time.Duration { d, _ := time.ParseDuration(%s); return d }()", arg)
-		}
+		return c.convertDurationFunction(fieldName, args)
 	}
 
 	return ""
+}
+
+func (c *celValidator) convertSizeFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 1 {
+		return ""
+	}
+
+	arg := c.convertASTToGo(args[0], fieldName)
+
+	return fmt.Sprintf("len(%s)", arg)
+}
+
+func (c *celValidator) convertContainsFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 2 {
+		return ""
+	}
+
+	str := c.convertASTToGo(args[0], fieldName)
+	substr := c.convertASTToGo(args[1], fieldName)
+
+	return fmt.Sprintf("strings.Contains(%s, %s)", str, substr)
+}
+
+func (c *celValidator) convertMatchesFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 2 {
+		return ""
+	}
+
+	str := c.convertASTToGo(args[0], fieldName)
+	pattern := c.convertASTToGo(args[1], fieldName)
+
+	return fmt.Sprintf("regexp.MustCompile(%s).MatchString(%s)", pattern, str)
+}
+
+func (c *celValidator) convertStartsWithFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 2 {
+		return ""
+	}
+
+	str := c.convertASTToGo(args[0], fieldName)
+	prefix := c.convertASTToGo(args[1], fieldName)
+
+	return fmt.Sprintf("strings.HasPrefix(%s, %s)", str, prefix)
+}
+
+func (c *celValidator) convertEndsWithFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 2 {
+		return ""
+	}
+
+	str := c.convertASTToGo(args[0], fieldName)
+	suffix := c.convertASTToGo(args[1], fieldName)
+
+	return fmt.Sprintf("strings.HasSuffix(%s, %s)", str, suffix)
+}
+
+func (c *celValidator) convertIntFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 1 {
+		return ""
+	}
+
+	arg := c.convertASTToGo(args[0], fieldName)
+
+	return fmt.Sprintf("func() int { v, _ := strconv.Atoi(%s); return v }()", arg)
+}
+
+func (c *celValidator) convertStringFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 1 {
+		return ""
+	}
+
+	arg := c.convertASTToGo(args[0], fieldName)
+
+	return fmt.Sprintf("fmt.Sprintf(\"%%v\", %s)", arg)
+}
+
+func (c *celValidator) convertDoubleFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 1 {
+		return ""
+	}
+
+	arg := c.convertASTToGo(args[0], fieldName)
+
+	return fmt.Sprintf("func() float64 { v, _ := strconv.ParseFloat(fmt.Sprintf(\"%%v\", %s), 64); return v }()", arg)
+}
+
+func (c *celValidator) convertTimestampFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 1 {
+		return ""
+	}
+
+	arg := c.convertASTToGo(args[0], fieldName)
+
+	return fmt.Sprintf("func() time.Time { t, _ := time.Parse(time.RFC3339, %s); return t }()", arg)
+}
+
+func (c *celValidator) convertDurationFunction(fieldName string, args []*exprpb.Expr) string {
+	if len(args) != 1 {
+		return ""
+	}
+
+	arg := c.convertASTToGo(args[0], fieldName)
+
+	return fmt.Sprintf("func() time.Duration { d, _ := time.ParseDuration(%s); return d }()", arg)
 }
 
 // convertConstToGo converts CEL constants to Go literals.
@@ -408,30 +474,34 @@ func (c *celValidator) convertConstToGo(constExpr *exprpb.Constant) string {
 // convertMethodCall converts method calls with a target (e.g., value.startsWith('prefix_')).
 func (c *celValidator) convertMethodCall(method string, target *exprpb.Expr, args []*exprpb.Expr, fieldName string) string {
 	targetStr := c.convertASTToGo(target, fieldName)
-	
+
 	switch method {
 	case "startsWith":
 		if len(args) == 1 {
 			prefix := c.convertASTToGo(args[0], fieldName)
+
 			return fmt.Sprintf("strings.HasPrefix(%s, %s)", targetStr, prefix)
 		}
 	case "endsWith":
 		if len(args) == 1 {
 			suffix := c.convertASTToGo(args[0], fieldName)
+
 			return fmt.Sprintf("strings.HasSuffix(%s, %s)", targetStr, suffix)
 		}
 	case "contains":
 		if len(args) == 1 {
 			substr := c.convertASTToGo(args[0], fieldName)
+
 			return fmt.Sprintf("strings.Contains(%s, %s)", targetStr, substr)
 		}
 	case "matches":
 		if len(args) == 1 {
 			pattern := c.convertASTToGo(args[0], fieldName)
+
 			return fmt.Sprintf("regexp.MustCompile(%s).MatchString(%s)", pattern, targetStr)
 		}
 	}
-	
+
 	// Fallback for unknown method calls
 	return trueFallback
 }
@@ -442,7 +512,7 @@ func (c *celValidator) convertListExpr(listExpr *exprpb.Expr_CreateList, fieldNa
 	for i, element := range listExpr.Elements {
 		elements[i] = c.convertASTToGo(element, fieldName)
 	}
-	
+
 	return fmt.Sprintf("[]interface{}{%s}", strings.Join(elements, ", "))
 }
 
@@ -453,26 +523,26 @@ func (c *celValidator) validateStandardCEL(celExpr string) error {
 		// String methods not in CEL standard
 		".split(", ".trim(", ".replace(", ".substring(",
 		".toLowerCase(", ".toUpperCase(",
-		
-		// Math functions not in CEL standard  
+
+		// Math functions not in CEL standard
 		"math.abs(", "math.min(", "math.max(", "math.floor(", "math.ceil(",
-		
+
 		// Advanced syntax not in CEL standard
 		"?.", "?:", "try(", "..", "range(",
-		
+
 		// List/Map methods not in CEL standard
 		".reverse(", ".sort(", ".unique(", ".keys(", ".values(",
-		
+
 		// String interpolation syntax not in standard CEL
 		"${",
 	}
-	
+
 	for _, pattern := range nonStandardPatterns {
 		if strings.Contains(celExpr, pattern) {
 			return fmt.Errorf("expression contains non-standard CEL feature: %s", pattern)
 		}
 	}
-	
+
 	// Check for slice notation like [1:3] which is non-standard
 	if strings.Contains(celExpr, ":") && strings.Contains(celExpr, "[") && strings.Contains(celExpr, "]") {
 		// Look for pattern like [number:number] which indicates slice notation
@@ -481,7 +551,7 @@ func (c *celValidator) validateStandardCEL(celExpr string) error {
 			return fmt.Errorf("expression contains non-standard slice notation")
 		}
 	}
-	
+
 	return nil
 }
 
@@ -490,7 +560,7 @@ func (c *celValidator) convertComprehensionExpr(comprExpr *exprpb.Expr_Comprehen
 	// Get the iteration variable and collection
 	iterVar := comprExpr.IterVar
 	iterRange := c.convertASTToGo(comprExpr.IterRange, fieldName)
-	
+
 	// Determine the type of comprehension based on the structure
 	return c.generateComprehensionGo(comprExpr, iterVar, iterRange, fieldName)
 }
@@ -500,20 +570,21 @@ func (c *celValidator) generateComprehensionGo(comprExpr *exprpb.Expr_Comprehens
 	// Get the loop condition and step to determine comprehension type
 	accuInit := c.convertASTToGo(comprExpr.AccuInit, fieldName)
 	loopStep := c.convertASTToGo(comprExpr.LoopStep, fieldName)
-	
+
 	// Determine comprehension type based on initial accumulator
 	switch {
 	case accuInit == "true":
 		// items.all(item, condition) - starts with true, AND operation
 		return c.generateAllComprehension(comprExpr, iterVar, iterRange, fieldName)
 	case accuInit == "false":
-		// items.exists(item, condition) - starts with false, OR operation  
+		// items.exists(item, condition) - starts with false, OR operation
 		return c.generateExistsComprehension(comprExpr, iterVar, iterRange, fieldName)
 	case strings.Contains(accuInit, "[]interface{}"):
 		// items.filter(item, condition) or items.map(item, transform) - starts with empty list
 		if strings.Contains(loopStep, "func() int { if") {
 			return c.generateFilterComprehension(comprExpr, iterVar, iterRange, fieldName)
 		}
+
 		return c.generateMapComprehension(comprExpr, iterVar, iterRange, fieldName)
 	default:
 		// Could be exists_one or other complex comprehension
@@ -524,18 +595,18 @@ func (c *celValidator) generateComprehensionGo(comprExpr *exprpb.Expr_Comprehens
 // generateAllComprehension generates Go code for items.all(item, condition).
 func (c *celValidator) generateAllComprehension(comprExpr *exprpb.Expr_Comprehension, iterVar, iterRange, fieldName string) string {
 	// Extract the actual condition from loop step (it's the right side of &&)
-	condition := c.extractConditionFromAndStep(comprExpr.LoopStep, iterVar, fieldName)
-	
-	return fmt.Sprintf("func() bool { for _, %s := range %s { if !(%s) { return false } }; return true }()", 
+	condition := c.extractConditionFromAndStep(comprExpr.LoopStep, fieldName)
+
+	return fmt.Sprintf("func() bool { for _, %s := range %s { if !(%s) { return false } }; return true }()",
 		iterVar, iterRange, condition)
 }
 
 // generateExistsComprehension generates Go code for items.exists(item, condition).
 func (c *celValidator) generateExistsComprehension(comprExpr *exprpb.Expr_Comprehension, iterVar, iterRange, fieldName string) string {
 	// Extract the actual condition from loop step (it's the right side of ||)
-	condition := c.extractConditionFromOrStep(comprExpr.LoopStep, iterVar, fieldName)
-	
-	return fmt.Sprintf("func() bool { for _, %s := range %s { if %s { return true } }; return false }()", 
+	condition := c.extractConditionFromOrStep(comprExpr.LoopStep, fieldName)
+
+	return fmt.Sprintf("func() bool { for _, %s := range %s { if %s { return true } }; return false }()",
 		iterVar, iterRange, condition)
 }
 
@@ -543,8 +614,8 @@ func (c *celValidator) generateExistsComprehension(comprExpr *exprpb.Expr_Compre
 func (c *celValidator) generateFilterComprehension(comprExpr *exprpb.Expr_Comprehension, iterVar, iterRange, fieldName string) string {
 	// Extract the condition from the ternary operation in loop step
 	condition := c.extractConditionFromTernary(comprExpr.LoopStep, iterVar, fieldName)
-	
-	return fmt.Sprintf("func() []interface{} { var result []interface{}; for _, %s := range %s { if %s { result = append(result, %s) } }; return result }()", 
+
+	return fmt.Sprintf("func() []interface{} { var result []interface{}; for _, %s := range %s { if %s { result = append(result, %s) } }; return result }()",
 		iterVar, iterRange, condition, iterVar)
 }
 
@@ -552,8 +623,8 @@ func (c *celValidator) generateFilterComprehension(comprExpr *exprpb.Expr_Compre
 func (c *celValidator) generateMapComprehension(comprExpr *exprpb.Expr_Comprehension, iterVar, iterRange, fieldName string) string {
 	// Extract the transformation from loop step
 	transform := c.extractTransformFromLoopStep(comprExpr.LoopStep, iterVar, fieldName)
-	
-	return fmt.Sprintf("func() []interface{} { var result []interface{}; for _, %s := range %s { result = append(result, %s) }; return result }()", 
+
+	return fmt.Sprintf("func() []interface{} { var result []interface{}; for _, %s := range %s { result = append(result, %s) }; return result }()",
 		iterVar, iterRange, transform)
 }
 
@@ -561,35 +632,9 @@ func (c *celValidator) generateMapComprehension(comprExpr *exprpb.Expr_Comprehen
 func (c *celValidator) generateExistsOneComprehension(comprExpr *exprpb.Expr_Comprehension, iterVar, iterRange, fieldName string) string {
 	// For exists_one, the condition is embedded in a ternary within loop step
 	condition := c.extractConditionFromExistsOneTernary(comprExpr.LoopStep, iterVar, fieldName)
-	
-	return fmt.Sprintf("func() bool { count := 0; for _, %s := range %s { if %s { count++; if count > 1 { return false } } }; return count == 1 }()", 
-		iterVar, iterRange, condition)
-}
 
-// Helper functions to extract conditions and transforms from loop steps
-func (c *celValidator) extractConditionFromLoopStep(loopStep *exprpb.Expr, iterVar, fieldName string) string {
-	// For comprehensions, we need to extract the actual condition from the loop step
-	// The loop step usually contains the condition that operates on the iterator variable
-	
-	// If it's a call expression, check if it's a logical operation
-	if callExpr := loopStep.GetCallExpr(); callExpr != nil {
-		function := callExpr.Function
-		args := callExpr.Args
-		
-		// For logical operations like && or ||, we want the right side (the actual condition)
-		if (function == "_&&_" || function == "_||_") && len(args) >= 2 {
-			// The second argument is usually the condition we care about
-			return c.convertASTToGo(args[1], fieldName)
-		}
-		
-		// For ternary operations, extract the condition
-		if function == "_?_:_" && len(args) >= 1 {
-			return c.convertASTToGo(args[0], fieldName)
-		}
-	}
-	
-	// Fallback to converting the entire expression
-	return c.convertASTToGo(loopStep, fieldName)
+	return fmt.Sprintf("func() bool { count := 0; for _, %s := range %s { if %s { count++; if count > 1 { return false } } }; return count == 1 }()",
+		iterVar, iterRange, condition)
 }
 
 func (c *celValidator) extractConditionFromTernary(loopStep *exprpb.Expr, iterVar, fieldName string) string {
@@ -597,24 +642,25 @@ func (c *celValidator) extractConditionFromTernary(loopStep *exprpb.Expr, iterVa
 	if callExpr := loopStep.GetCallExpr(); callExpr != nil {
 		function := callExpr.Function
 		args := callExpr.Args
-		
+
 		// For ternary operations _?_:_, the first arg is the condition
-		if function == "_?_:_" && len(args) >= 1 {
+		if function == ternaryOperator && len(args) >= 1 {
 			return c.convertASTToGo(args[0], fieldName)
 		}
 	}
-	
+
 	// For function literal with ternary, parse the structure differently
 	loopStepStr := c.convertASTToGo(loopStep, fieldName)
 	if strings.Contains(loopStepStr, "if ") && strings.Contains(loopStepStr, " { return") {
 		// Extract condition from "func() int { if condition { return ... }; return @result }()"
 		start := strings.Index(loopStepStr, "if ") + 3
 		end := strings.Index(loopStepStr[start:], " { return")
+
 		if start < len(loopStepStr) && end > 0 {
 			return strings.TrimSpace(loopStepStr[start : start+end])
 		}
 	}
-	
+
 	// Fallback condition
 	return fmt.Sprintf("%s != nil", iterVar)
 }
@@ -624,7 +670,7 @@ func (c *celValidator) extractTransformFromLoopStep(loopStep *exprpb.Expr, iterV
 	if callExpr := loopStep.GetCallExpr(); callExpr != nil {
 		function := callExpr.Function
 		args := callExpr.Args
-		
+
 		// For list append operations in map, look for the value being appended
 		if function == "_+_" && len(args) >= 2 {
 			// Usually the second argument is the transform
@@ -633,65 +679,66 @@ func (c *celValidator) extractTransformFromLoopStep(loopStep *exprpb.Expr, iterV
 			}
 		}
 	}
-	
+
 	// Parse from string representation for map operations like "@result + []interface{}{len(item)}"
 	loopStepStr := c.convertASTToGo(loopStep, fieldName)
 	if strings.Contains(loopStepStr, "+ []interface{}{") {
 		start := strings.Index(loopStepStr, "+ []interface{}{") + len("+ []interface{}{")
 		end := strings.LastIndex(loopStepStr, "}")
+
 		if start < len(loopStepStr) && end > start {
 			return strings.TrimSpace(loopStepStr[start:end])
 		}
 	}
-	
+
 	// Fallback transformation - convert item to itself
 	return iterVar
 }
 
-// extractConditionFromAndStep extracts the condition from the right side of && operation
-func (c *celValidator) extractConditionFromAndStep(loopStep *exprpb.Expr, iterVar, fieldName string) string {
+// extractConditionFromAndStep extracts the condition from the right side of && operation.
+func (c *celValidator) extractConditionFromAndStep(loopStep *exprpb.Expr, fieldName string) string {
 	if callExpr := loopStep.GetCallExpr(); callExpr != nil {
 		function := callExpr.Function
 		args := callExpr.Args
-		
+
 		// For && operation, we want the right side (the actual condition)
 		if function == "_&&_" && len(args) >= 2 {
 			return c.convertASTToGo(args[1], fieldName)
 		}
 	}
-	
+
 	// Fallback - return the whole expression
 	return c.convertASTToGo(loopStep, fieldName)
 }
 
-// extractConditionFromOrStep extracts the condition from the right side of || operation
-func (c *celValidator) extractConditionFromOrStep(loopStep *exprpb.Expr, iterVar, fieldName string) string {
+// extractConditionFromOrStep extracts the condition from the right side of || operation.
+func (c *celValidator) extractConditionFromOrStep(loopStep *exprpb.Expr, fieldName string) string {
 	if callExpr := loopStep.GetCallExpr(); callExpr != nil {
 		function := callExpr.Function
 		args := callExpr.Args
-		
+
 		// For || operation, we want the right side (the actual condition)
 		if function == "_||_" && len(args) >= 2 {
 			return c.convertASTToGo(args[1], fieldName)
 		}
 	}
-	
+
 	// Fallback - return the whole expression
 	return c.convertASTToGo(loopStep, fieldName)
 }
 
-// extractConditionFromExistsOneTernary extracts condition from ternary in exists_one
+// extractConditionFromExistsOneTernary extracts condition from ternary in exists_one.
 func (c *celValidator) extractConditionFromExistsOneTernary(loopStep *exprpb.Expr, iterVar, fieldName string) string {
 	if callExpr := loopStep.GetCallExpr(); callExpr != nil {
 		function := callExpr.Function
 		args := callExpr.Args
-		
+
 		// For ternary operation, the condition is the first argument
-		if function == "_?_:_" && len(args) >= 1 {
+		if function == ternaryOperator && len(args) >= 1 {
 			return c.convertASTToGo(args[0], fieldName)
 		}
 	}
-	
+
 	// Fallback
 	return fmt.Sprintf("%s != nil", iterVar)
 }
