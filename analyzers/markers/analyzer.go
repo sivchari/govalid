@@ -135,17 +135,14 @@ func extractMarker(content string) (string, map[string]string) {
 		return content, nil
 	}
 
-	if strings.Count(content, "=") == 1 {
-		splits := strings.SplitN(content, "=", 2)
-		if len(splits) != 2 {
-			return "", nil
-		}
-
-		expressions := map[string]string{}
-		expressions[splits[0]] = splits[1]
-
-		return splits[0], expressions
+	// Split on the first = only, allowing expressions to contain = characters
+	splits := strings.SplitN(content, "=", 2)
+	if len(splits) != 2 {
+		return "", nil
 	}
 
-	return "", nil
+	expressions := map[string]string{}
+	expressions[splits[0]] = splits[1]
+
+	return splits[0], expressions
 }
