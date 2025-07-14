@@ -19,7 +19,7 @@ govalid is a Go package designed to generate type-safe validation code for struc
 
 - **🚀 Zero Allocations**: All validators perform zero heap allocations
 - **🔒 Type Safety**: Compile-time validation function generation
-- **⚡ High Performance**: 5x to 50x faster than go-playground/validator
+- **⚡ High Performance**: Up to 45x faster than reflection-based validators
 - **📝 Marker-Based**: Simple comment-based validation rules
 - **🔧 Code Generation**: Generates optimized validation functions
 - **🎯 Comprehensive**: Support for all common validation patterns
