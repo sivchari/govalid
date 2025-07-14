@@ -234,7 +234,8 @@ func (c *celValidator) convertOperator(function string, args []*exprpb.Expr, fie
 		trueValue := c.convertASTToGo(args[1], fieldName)
 		falseValue := c.convertASTToGo(args[2], fieldName)
 		// Return the ternary result - it will be used in comparison context
-		return fmt.Sprintf("func() interface{} { if %s { return %s }; return %s }()", condition, trueValue, falseValue)
+		// Since this is used in validation context, we need to handle it properly
+		return fmt.Sprintf("func() int { if %s { return %s }; return %s }() > 0", condition, trueValue, falseValue)
 	}
 
 	// Handle 'in' operator

@@ -100,7 +100,8 @@ type CEL struct {
 	NonEmptySlice []int
 
 	// New advanced features - temporarily commented out due to type issues
-	// PositiveValue int
+	// +govalid:cel=value > 0
+	PositiveValue int
 
 	// +govalid:cel='admin' in value
 	HasAdminRole []string

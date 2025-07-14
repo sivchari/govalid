@@ -99,7 +99,7 @@ var (
 	ErrNonEmptySliceCELValidation = errors.New("field NonEmptySlice failed CEL validation: size(value) > 0")
 
 	// ErrPositiveValueCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrPositiveValueCELValidation = errors.New("field PositiveValue failed CEL validation: value > 0 ? value : 0")
+	ErrPositiveValueCELValidation = errors.New("field PositiveValue failed CEL validation: value > 0")
 
 	// ErrHasAdminRoleCELValidation is the error returned when the CEL expression evaluation fails.
 	ErrHasAdminRoleCELValidation = errors.New("field HasAdminRole failed CEL validation: 'admin' in value")
@@ -110,11 +110,29 @@ var (
 	// ErrStatusCodeCELValidation is the error returned when the CEL expression evaluation fails.
 	ErrStatusCodeCELValidation = errors.New("field StatusCode failed CEL validation: string(value) in ['active', 'inactive', 'pending']")
 
-	// ErrBirthDateCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrBirthDateCELValidation = errors.New("field BirthDate failed CEL validation: value > timestamp('2000-01-01T00:00:00Z')")
-
 	// ErrProcessingTimeCELValidation is the error returned when the CEL expression evaluation fails.
 	ErrProcessingTimeCELValidation = errors.New("field ProcessingTime failed CEL validation: value > duration('1h')")
+
+	// ErrAllNonEmptyCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrAllNonEmptyCELValidation = errors.New("field AllNonEmpty failed CEL validation: value.all(item, size(item) > 0)")
+
+	// ErrHasTargetCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrHasTargetCELValidation = errors.New("field HasTarget failed CEL validation: value.exists(item, item == 'target')")
+
+	// ErrHasUniqueItemCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrHasUniqueItemCELValidation = errors.New("field HasUniqueItem failed CEL validation: value.exists_one(item, item == 'unique')")
+
+	// ErrAllPrefixedCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrAllPrefixedCELValidation = errors.New("field AllPrefixed failed CEL validation: value.all(item, item.startsWith('prefix'))")
+
+	// ErrHasEmailFormatCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrHasEmailFormatCELValidation = errors.New("field HasEmailFormat failed CEL validation: value.exists(item, item.contains('@'))")
+
+	// ErrFilteredItemsCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrFilteredItemsCELValidation = errors.New("field FilteredItems failed CEL validation: size(value.filter(item, item.startsWith('prefix'))) > 0")
+
+	// ErrMappedSizesCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrMappedSizesCELValidation = errors.New("field MappedSizes failed CEL validation: size(value.map(item, size(item))) == size(value)")
 )
 
 func ValidateCEL(t *CEL) error {
@@ -234,12 +252,7 @@ func ValidateCEL(t *CEL) error {
 		return ErrNonEmptySliceCELValidation
 	}
 
-	if !(func() interface{} {
-		if t.PositiveValue > 0 {
-			return t.PositiveValue
-		}
-		return 0
-	}()) {
+	if !(t.PositiveValue > 0) {
 		return ErrPositiveValueCELValidation
 	}
 
@@ -269,12 +282,89 @@ func ValidateCEL(t *CEL) error {
 		return ErrStatusCodeCELValidation
 	}
 
-	if !(t.BirthDate > func() time.Time { t, _ := time.Parse(time.RFC3339, "2000-01-01T00:00:00Z"); return t }()) {
-		return ErrBirthDateCELValidation
-	}
-
 	if !(t.ProcessingTime > func() time.Duration { d, _ := time.ParseDuration("1h"); return d }()) {
 		return ErrProcessingTimeCELValidation
+	}
+
+	if !(func() bool {
+		for _, item := range t.AllNonEmpty {
+			if !(len(item) > 0) {
+				return false
+			}
+		}
+		return true
+	}()) {
+		return ErrAllNonEmptyCELValidation
+	}
+
+	if !(func() bool {
+		for _, item := range t.HasTarget {
+			if item == "target" {
+				return true
+			}
+		}
+		return false
+	}()) {
+		return ErrHasTargetCELValidation
+	}
+
+	if !(func() bool {
+		count := 0
+		for _, item := range t.HasUniqueItem {
+			if item == "unique" {
+				count++
+				if count > 1 {
+					return false
+				}
+			}
+		}
+		return count == 1
+	}()) {
+		return ErrHasUniqueItemCELValidation
+	}
+
+	if !(func() bool {
+		for _, item := range t.AllPrefixed {
+			if !(strings.HasPrefix(item, "prefix")) {
+				return false
+			}
+		}
+		return true
+	}()) {
+		return ErrAllPrefixedCELValidation
+	}
+
+	if !(func() bool {
+		for _, item := range t.HasEmailFormat {
+			if strings.Contains(item, "@") {
+				return true
+			}
+		}
+		return false
+	}()) {
+		return ErrHasEmailFormatCELValidation
+	}
+
+	if !(len(func() []interface{} {
+		var result []interface{}
+		for _, item := range t.FilteredItems {
+			if strings.HasPrefix(item, "prefix") {
+				result = append(result, item)
+			}
+		}
+		return result
+	}()) > 0) {
+		return ErrFilteredItemsCELValidation
+	}
+
+	if !(len(func() []interface{} {
+		var result []interface{}
+		for _, item := range t.MappedSizes {
+			result = append(result, len(item))
+		}
+		return result
+	}()) == len(t.MappedSizes)) {
+		return ErrMappedSizesCELValidation
 	}
 
 	return nil
