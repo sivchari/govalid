@@ -78,9 +78,7 @@ func (c *celValidator) Imports() []string {
 	imports := []string{}
 
 	// Add imports based on the CEL expression content
-	if strings.Contains(c.expression, "contains(") ||
-		strings.Contains(c.expression, "startsWith(") ||
-		strings.Contains(c.expression, "endsWith(") {
+	if c.needsStringsImport() {
 		imports = append(imports, "strings")
 	}
 
@@ -88,18 +86,15 @@ func (c *celValidator) Imports() []string {
 		imports = append(imports, "regexp")
 	}
 
-	if strings.Contains(c.expression, "int(") ||
-		strings.Contains(c.expression, "double(") {
+	if c.needsStrconvImport() {
 		imports = append(imports, "strconv")
 	}
 
-	if strings.Contains(c.expression, "string(") ||
-		strings.Contains(c.expression, "double(") {
+	if c.needsFmtImport() {
 		imports = append(imports, "fmt")
 	}
 
-	if strings.Contains(c.expression, "timestamp(") ||
-		strings.Contains(c.expression, "duration(") {
+	if c.needsTimeImport() {
 		imports = append(imports, "time")
 	}
 
@@ -109,6 +104,27 @@ func (c *celValidator) Imports() []string {
 	}
 
 	return imports
+}
+
+func (c *celValidator) needsStringsImport() bool {
+	return strings.Contains(c.expression, "contains(") ||
+		strings.Contains(c.expression, "startsWith(") ||
+		strings.Contains(c.expression, "endsWith(")
+}
+
+func (c *celValidator) needsStrconvImport() bool {
+	return strings.Contains(c.expression, "int(") ||
+		strings.Contains(c.expression, "double(")
+}
+
+func (c *celValidator) needsFmtImport() bool {
+	return strings.Contains(c.expression, "string(") ||
+		strings.Contains(c.expression, "double(")
+}
+
+func (c *celValidator) needsTimeImport() bool {
+	return strings.Contains(c.expression, "timestamp(") ||
+		strings.Contains(c.expression, "duration(")
 }
 
 // ValidateCEL creates a new celValidator for fields with CEL marker.
@@ -235,54 +251,12 @@ func (c *celValidator) convertCallToGo(callExpr *exprpb.Expr_Call, fieldName str
 func (c *celValidator) convertOperator(function string, args []*exprpb.Expr, fieldName string) string {
 	// Handle ternary operator (condition ? true_value : false_value)
 	if function == ternaryOperator && len(args) == 3 {
-		condition := c.convertASTToGo(args[0], fieldName)
-		trueValue := c.convertASTToGo(args[1], fieldName)
-		falseValue := c.convertASTToGo(args[2], fieldName)
-		// Return the ternary result - it will be used in comparison context
-		// Since this is used in validation context, we need to handle it properly
-		return fmt.Sprintf("func() int { if %s { return %s }; return %s }() > 0", condition, trueValue, falseValue)
+		return c.convertTernaryOperator(args, fieldName)
 	}
 
 	// Handle 'in' operator
 	if function == "@in" && len(args) == 2 {
-		element := c.convertASTToGo(args[0], fieldName)
-		collection := c.convertASTToGo(args[1], fieldName)
-
-		// Optimize for string literal slices using slices.Contains
-		if strings.HasPrefix(collection, "[]interface{}{") && strings.HasSuffix(collection, "}") {
-			// Extract elements from []interface{}{"a", "b", "c"}
-			content := strings.TrimPrefix(collection, "[]interface{}{")
-			content = strings.TrimSuffix(content, "}")
-			
-			// Check if all elements are string literals
-			if strings.Contains(content, "\"") {
-				// Convert to string slice for optimization
-				stringSlice := fmt.Sprintf("[]string{%s}", content)
-				
-				// If element is fmt.Sprintf("%v", field), optimize for string fields
-				if strings.Contains(element, "fmt.Sprintf(\"%%v\", ") {
-					// Extract the field name from fmt.Sprintf("%v", t.Field)
-					fieldStart := strings.Index(element, "t.")
-					if fieldStart != -1 {
-						fieldEnd := strings.Index(element[fieldStart:], ")")
-						if fieldEnd != -1 {
-							fieldName := element[fieldStart : fieldStart+fieldEnd]
-							// For string fields, we can compare directly
-							return fmt.Sprintf("slices.Contains(%s, %s)", stringSlice, fieldName)
-						}
-					}
-				}
-				return fmt.Sprintf("slices.Contains(%s, %s)", stringSlice, element)
-			}
-		}
-		
-		// Optimize for field contains literal string: field contains "literal"
-		if strings.HasPrefix(collection, "t.") && strings.HasPrefix(element, "\"") && strings.HasSuffix(element, "\"") {
-			return fmt.Sprintf("slices.Contains(%s, %s)", collection, element)
-		}
-		
-		// Generate a contains check for slices
-		return fmt.Sprintf("func() bool { for _, item := range %s { if item == %s { return true } }; return false }()", collection, element)
+		return c.convertInOperator(args, fieldName)
 	}
 
 	if len(args) != 2 {
@@ -304,6 +278,73 @@ func (c *celValidator) convertOperator(function string, args []*exprpb.Expr, fie
 
 	// Try arithmetic operators
 	return c.convertArithmeticOperator(function, left, right)
+}
+
+func (c *celValidator) convertTernaryOperator(args []*exprpb.Expr, fieldName string) string {
+	condition := c.convertASTToGo(args[0], fieldName)
+	trueValue := c.convertASTToGo(args[1], fieldName)
+	falseValue := c.convertASTToGo(args[2], fieldName)
+	// Return the ternary result - it will be used in comparison context
+	// Since this is used in validation context, we need to handle it properly
+	return fmt.Sprintf("func() int { if %s { return %s }; return %s }() > 0", condition, trueValue, falseValue)
+}
+
+func (c *celValidator) convertInOperator(args []*exprpb.Expr, fieldName string) string {
+	element := c.convertASTToGo(args[0], fieldName)
+	collection := c.convertASTToGo(args[1], fieldName)
+
+	// Optimize for string literal slices using slices.Contains
+	if strings.HasPrefix(collection, "[]interface{}{") && strings.HasSuffix(collection, "}") {
+		if optimized := c.optimizeStringSliceContains(collection, element); optimized != "" {
+			return optimized
+		}
+	}
+
+	// Optimize for field contains literal string: field contains "literal"
+	if strings.HasPrefix(collection, "t.") && strings.HasPrefix(element, "\"") && strings.HasSuffix(element, "\"") {
+		return fmt.Sprintf("slices.Contains(%s, %s)", collection, element)
+	}
+
+	// Generate a contains check for slices
+	return fmt.Sprintf("func() bool { for _, item := range %s { if item == %s { return true } }; return false }()", collection, element)
+}
+
+func (c *celValidator) optimizeStringSliceContains(collection, element string) string {
+	// Extract elements from []interface{}{"a", "b", "c"}
+	content := strings.TrimPrefix(collection, "[]interface{}{")
+	content = strings.TrimSuffix(content, "}")
+
+	// Check if all elements are string literals
+	if !strings.Contains(content, "\"") {
+		return ""
+	}
+
+	// Convert to string slice for optimization
+	stringSlice := fmt.Sprintf("[]string{%s}", content)
+
+	// If element is fmt.Sprintf("%v", field), optimize for string fields
+	if strings.Contains(element, "fmt.Sprintf(\"%%v\", ") {
+		if fieldName := c.extractFieldFromFmtSprintf(element); fieldName != "" {
+			return fmt.Sprintf("slices.Contains(%s, %s)", stringSlice, fieldName)
+		}
+	}
+
+	return fmt.Sprintf("slices.Contains(%s, %s)", stringSlice, element)
+}
+
+func (c *celValidator) extractFieldFromFmtSprintf(element string) string {
+	// Extract the field name from fmt.Sprintf("%v", t.Field)
+	fieldStart := strings.Index(element, "t.")
+	if fieldStart == -1 {
+		return ""
+	}
+
+	fieldEnd := strings.Index(element[fieldStart:], ")")
+	if fieldEnd == -1 {
+		return ""
+	}
+
+	return element[fieldStart : fieldStart+fieldEnd]
 }
 
 // convertLogicalOperator converts logical operators.
