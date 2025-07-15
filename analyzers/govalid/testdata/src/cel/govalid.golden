@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -256,33 +257,31 @@ func ValidateCEL(t *CEL) error {
 		return ErrPositiveValueCELValidation
 	}
 
-	if !(func() bool {
-		for _, item := range t.HasAdminRole {
-			if item == "admin" {
-				return true
-			}
-		}
-		return false
-	}()) {
+	if !(slices.Contains(t.HasAdminRole, "admin")) {
 		return ErrHasAdminRoleCELValidation
 	}
 
-	if !(func() int { v, _ := strconv.Atoi(t.AgeFromString); return v }() >= 18) {
+	if !(func() int {
+		v, err := strconv.Atoi(t.AgeFromString)
+		if err != nil {
+			return 0
+		}
+		return v
+	}() >= 18) {
 		return ErrAgeFromStringCELValidation
 	}
 
-	if !(func() bool {
-		for _, item := range []interface{}{"active", "inactive", "pending"} {
-			if item == fmt.Sprintf("%v", t.StatusCode) {
-				return true
-			}
-		}
-		return false
-	}()) {
+	if !(slices.Contains([]string{"active", "inactive", "pending"}, fmt.Sprintf("%v", t.StatusCode))) {
 		return ErrStatusCodeCELValidation
 	}
 
-	if !(t.ProcessingTime > func() time.Duration { d, _ := time.ParseDuration("1h"); return d }()) {
+	if !(t.ProcessingTime > func() time.Duration {
+		d, err := time.ParseDuration("1h")
+		if err != nil {
+			return 0
+		}
+		return d
+	}()) {
 		return ErrProcessingTimeCELValidation
 	}
 

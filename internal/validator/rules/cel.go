@@ -103,6 +103,11 @@ func (c *celValidator) Imports() []string {
 		imports = append(imports, "time")
 	}
 
+	// Add slices import for optimized contains operations
+	if strings.Contains(c.expression, " in ") {
+		imports = append(imports, "slices")
+	}
+
 	return imports
 }
 
@@ -243,6 +248,39 @@ func (c *celValidator) convertOperator(function string, args []*exprpb.Expr, fie
 		element := c.convertASTToGo(args[0], fieldName)
 		collection := c.convertASTToGo(args[1], fieldName)
 
+		// Optimize for string literal slices using slices.Contains
+		if strings.HasPrefix(collection, "[]interface{}{") && strings.HasSuffix(collection, "}") {
+			// Extract elements from []interface{}{"a", "b", "c"}
+			content := strings.TrimPrefix(collection, "[]interface{}{")
+			content = strings.TrimSuffix(content, "}")
+			
+			// Check if all elements are string literals
+			if strings.Contains(content, "\"") {
+				// Convert to string slice for optimization
+				stringSlice := fmt.Sprintf("[]string{%s}", content)
+				
+				// If element is fmt.Sprintf("%v", field), optimize for string fields
+				if strings.Contains(element, "fmt.Sprintf(\"%%v\", ") {
+					// Extract the field name from fmt.Sprintf("%v", t.Field)
+					fieldStart := strings.Index(element, "t.")
+					if fieldStart != -1 {
+						fieldEnd := strings.Index(element[fieldStart:], ")")
+						if fieldEnd != -1 {
+							fieldName := element[fieldStart : fieldStart+fieldEnd]
+							// For string fields, we can compare directly
+							return fmt.Sprintf("slices.Contains(%s, %s)", stringSlice, fieldName)
+						}
+					}
+				}
+				return fmt.Sprintf("slices.Contains(%s, %s)", stringSlice, element)
+			}
+		}
+		
+		// Optimize for field contains literal string: field contains "literal"
+		if strings.HasPrefix(collection, "t.") && strings.HasPrefix(element, "\"") && strings.HasSuffix(element, "\"") {
+			return fmt.Sprintf("slices.Contains(%s, %s)", collection, element)
+		}
+		
 		// Generate a contains check for slices
 		return fmt.Sprintf("func() bool { for _, item := range %s { if item == %s { return true } }; return false }()", collection, element)
 	}
@@ -405,7 +443,7 @@ func (c *celValidator) convertIntFunction(fieldName string, args []*exprpb.Expr)
 
 	arg := c.convertASTToGo(args[0], fieldName)
 
-	return fmt.Sprintf("func() int { v, _ := strconv.Atoi(%s); return v }()", arg)
+	return fmt.Sprintf("func() int { v, err := strconv.Atoi(%s); if err != nil { return 0 }; return v }()", arg)
 }
 
 func (c *celValidator) convertStringFunction(fieldName string, args []*exprpb.Expr) string {
@@ -425,7 +463,7 @@ func (c *celValidator) convertDoubleFunction(fieldName string, args []*exprpb.Ex
 
 	arg := c.convertASTToGo(args[0], fieldName)
 
-	return fmt.Sprintf("func() float64 { v, _ := strconv.ParseFloat(fmt.Sprintf(\"%%v\", %s), 64); return v }()", arg)
+	return fmt.Sprintf("func() float64 { v, err := strconv.ParseFloat(fmt.Sprintf(\"%%v\", %s), 64); if err != nil { return 0.0 }; return v }()", arg)
 }
 
 func (c *celValidator) convertTimestampFunction(fieldName string, args []*exprpb.Expr) string {
@@ -435,7 +473,7 @@ func (c *celValidator) convertTimestampFunction(fieldName string, args []*exprpb
 
 	arg := c.convertASTToGo(args[0], fieldName)
 
-	return fmt.Sprintf("func() time.Time { t, _ := time.Parse(time.RFC3339, %s); return t }()", arg)
+	return fmt.Sprintf("func() time.Time { t, err := time.Parse(time.RFC3339, %s); if err != nil { return time.Time{} }; return t }()", arg)
 }
 
 func (c *celValidator) convertDurationFunction(fieldName string, args []*exprpb.Expr) string {
@@ -445,7 +483,7 @@ func (c *celValidator) convertDurationFunction(fieldName string, args []*exprpb.
 
 	arg := c.convertASTToGo(args[0], fieldName)
 
-	return fmt.Sprintf("func() time.Duration { d, _ := time.ParseDuration(%s); return d }()", arg)
+	return fmt.Sprintf("func() time.Duration { d, err := time.ParseDuration(%s); if err != nil { return 0 }; return d }()", arg)
 }
 
 // convertConstToGo converts CEL constants to Go literals.
