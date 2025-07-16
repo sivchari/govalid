@@ -11,7 +11,7 @@ echo "🔄 Synchronizing benchmark results across documentation..."
 echo "📊 Running fresh benchmarks..."
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT/test"
-BENCHMARK_OUTPUT=$(go test ./benchmark/ -bench=. -benchmem -count 10 | grep "^Benchmark" || echo "# Benchmark execution failed")
+BENCHMARK_OUTPUT=$(go test ./benchmark/ -bench=. -benchmem -benchtime=1s | grep "^Benchmark" || echo "# Benchmark execution failed")
 
 # Get current date and system info
 BENCH_DATE=$(date +"%Y-%m-%d")

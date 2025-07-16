@@ -68,6 +68,7 @@ go install ./...
 // +govalid:required
 type Person struct {
     Name  string `json:"name"`
+    // +govalid:email
     Email string `json:"email"`
 }
 ```
@@ -80,11 +81,11 @@ govalid generate
 ### 3. Use Generated Validators
 ```go
 func main() {
-    p := &Person{Name: "John", Email: ""}
+    p := &Person{Name: "John", Email: "invalid-email"}
     
     if err := ValidatePerson(p); err != nil {
         log.Printf("Validation failed: %v", err)
-        // Output: Validation failed: EmailRequiredValidation
+        // Output: Validation failed: field Email must be a valid email address
     }
 }
 ```
@@ -108,9 +109,11 @@ type Person struct {
 Use Common Expression Language for complex validation:
 
 ```go
-// +govalid:cel=this.Age >= 18 && this.Age <= 120
 type User struct {
+    // +govalid:cel=value >= 18 && value <= 120
     Age int
+    // +govalid:cel=value >= this.Age
+    RetirementAge int
 }
 ```
 
