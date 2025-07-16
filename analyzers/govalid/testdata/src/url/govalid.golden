@@ -10,20 +10,20 @@ var (
 	// ErrNilURL is returned when the URL is nil.
 	ErrNilURL = errors.New("input URL is nil")
 
-	// ErrWebsiteURLURLValidation is the error returned when the field is not a valid URL.
-	ErrWebsiteURLURLValidation = errors.New("field WebsiteURL must be a valid URL")
+	// ErrURLWebsiteURLURLValidation is the error returned when the field is not a valid URL.
+	ErrURLWebsiteURLURLValidation = errors.New("field URLWebsiteURL must be a valid URL")
 
-	// ErrHomepageURLURLValidation is the error returned when the field is not a valid URL.
-	ErrHomepageURLURLValidation = errors.New("field HomepageURL must be a valid URL")
+	// ErrURLHomepageURLURLValidation is the error returned when the field is not a valid URL.
+	ErrURLHomepageURLURLValidation = errors.New("field URLHomepageURL must be a valid URL")
 
-	// ErrApiURLURLValidation is the error returned when the field is not a valid URL.
-	ErrApiURLURLValidation = errors.New("field ApiURL must be a valid URL")
+	// ErrURLApiURLURLValidation is the error returned when the field is not a valid URL.
+	ErrURLApiURLURLValidation = errors.New("field URLApiURL must be a valid URL")
 
-	// ErrProfileURLURLValidation is the error returned when the field is not a valid URL.
-	ErrProfileURLURLValidation = errors.New("field ProfileURL must be a valid URL")
+	// ErrURLProfileURLURLValidation is the error returned when the field is not a valid URL.
+	ErrURLProfileURLURLValidation = errors.New("field URLProfileURL must be a valid URL")
 
-	// ErrDownloadURLURLValidation is the error returned when the field is not a valid URL.
-	ErrDownloadURLURLValidation = errors.New("field DownloadURL must be a valid URL")
+	// ErrURLDownloadURLURLValidation is the error returned when the field is not a valid URL.
+	ErrURLDownloadURLURLValidation = errors.New("field URLDownloadURL must be a valid URL")
 )
 
 func ValidateURL(t *URL) error {
@@ -32,23 +32,23 @@ func ValidateURL(t *URL) error {
 	}
 
 	if !validationhelper.IsValidURL(t.WebsiteURL) {
-		return ErrWebsiteURLURLValidation
+		return ErrURLWebsiteURLURLValidation
 	}
 
 	if !validationhelper.IsValidURL(t.HomepageURL) {
-		return ErrHomepageURLURLValidation
+		return ErrURLHomepageURLURLValidation
 	}
 
 	if !validationhelper.IsValidURL(t.ApiURL) {
-		return ErrApiURLURLValidation
+		return ErrURLApiURLURLValidation
 	}
 
 	if !validationhelper.IsValidURL(t.ProfileURL) {
-		return ErrProfileURLURLValidation
+		return ErrURLProfileURLURLValidation
 	}
 
 	if !validationhelper.IsValidURL(t.DownloadURL) {
-		return ErrDownloadURLURLValidation
+		return ErrURLDownloadURLURLValidation
 	}
 
 	return nil

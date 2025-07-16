@@ -9,14 +9,14 @@ var (
 	// ErrNilLTE is returned when the LTE is nil.
 	ErrNilLTE = errors.New("input LTE is nil")
 
-	// ErrAgeLTEValidation is the error returned when the value of the field is greater than 100.
-	ErrAgeLTEValidation = errors.New("field Age must be less than or equal to 100")
+	// ErrLTEAgeLTEValidation is the error returned when the value of the field is greater than 100.
+	ErrLTEAgeLTEValidation = errors.New("field LTEAge must be less than or equal to 100")
 
-	// ErrScoreLTEValidation is the error returned when the value of the field is greater than 10.5.
-	ErrScoreLTEValidation = errors.New("field Score must be less than or equal to 10.5")
+	// ErrLTEScoreLTEValidation is the error returned when the value of the field is greater than 10.5.
+	ErrLTEScoreLTEValidation = errors.New("field LTEScore must be less than or equal to 10.5")
 
-	// ErrValueLTEValidation is the error returned when the value of the field is greater than 50.
-	ErrValueLTEValidation = errors.New("field Value must be less than or equal to 50")
+	// ErrLTEValueLTEValidation is the error returned when the value of the field is greater than 50.
+	ErrLTEValueLTEValidation = errors.New("field LTEValue must be less than or equal to 50")
 )
 
 func ValidateLTE(t *LTE) error {
@@ -25,18 +25,18 @@ func ValidateLTE(t *LTE) error {
 	}
 
 	if !(t.Age <= 100) {
-		return ErrAgeLTEValidation
+		return ErrLTEAgeLTEValidation
 	}
 
 	if !(t.Score <= 10.5) {
-		return ErrScoreLTEValidation
+		return ErrLTEScoreLTEValidation
 	}
 
 	{
 		t := t.Struct
 
 		if !(t.Value <= 50) {
-			return ErrValueLTEValidation
+			return ErrLTEValueLTEValidation
 		}
 
 	}

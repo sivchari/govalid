@@ -10,11 +10,11 @@ var (
 	// ErrNilMinLength is returned when the MinLength is nil.
 	ErrNilMinLength = errors.New("input MinLength is nil")
 
-	// ErrStringMinLengthValidation is the error returned when the length of the field is less than the minimum of 5.
-	ErrStringMinLengthValidation = errors.New("field String must have a minimum length of 5")
+	// ErrMinLengthStringMinLengthValidation is the error returned when the length of the field is less than the minimum of 5.
+	ErrMinLengthStringMinLengthValidation = errors.New("field MinLengthString must have a minimum length of 5")
 
-	// ErrNameMinLengthValidation is the error returned when the length of the field is less than the minimum of 3.
-	ErrNameMinLengthValidation = errors.New("field Name must have a minimum length of 3")
+	// ErrMinLengthNameMinLengthValidation is the error returned when the length of the field is less than the minimum of 3.
+	ErrMinLengthNameMinLengthValidation = errors.New("field MinLengthName must have a minimum length of 3")
 )
 
 func ValidateMinLength(t *MinLength) error {
@@ -23,14 +23,14 @@ func ValidateMinLength(t *MinLength) error {
 	}
 
 	if utf8.RuneCountInString(t.String) < 5 {
-		return ErrStringMinLengthValidation
+		return ErrMinLengthStringMinLengthValidation
 	}
 
 	{
 		t := t.Struct
 
 		if utf8.RuneCountInString(t.Name) < 3 {
-			return ErrNameMinLengthValidation
+			return ErrMinLengthNameMinLengthValidation
 		}
 
 	}

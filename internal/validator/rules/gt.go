@@ -13,9 +13,10 @@ import (
 )
 
 type gtValidator struct {
-	pass    *codegen.Pass
-	field   *ast.Field
-	gtValue string
+	pass       *codegen.Pass
+	field      *ast.Field
+	gtValue    string
+	structName string
 }
 
 var _ validator.Validator = (*gtValidator)(nil)
@@ -31,19 +32,20 @@ func (m *gtValidator) FieldName() string {
 }
 
 func (m *gtValidator) Err() string {
-	if validator.GeneratorMemory[fmt.Sprintf(gtKey, m.FieldName())] {
+	key := fmt.Sprintf(gtKey, m.structName+m.FieldName())
+	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(gtKey, m.FieldName())] = true
+	validator.GeneratorMemory[key] = true
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@GTValidation is the error returned when the value of the field is less than the %s.
-	Err@GTValidation = errors.New("field @ must be greater than %s")`, "@", m.FieldName()), m.gtValue, m.gtValue)
+	Err@GTValidation = errors.New("field @ must be greater than %s")`, "@", m.structName+m.FieldName()), m.gtValue, m.gtValue)
 }
 
 func (m *gtValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@GTValidation", "@", m.FieldName())
+	return strings.ReplaceAll("Err@GTValidation", "@", m.structName+m.FieldName())
 }
 
 func (m *gtValidator) Imports() []string {
@@ -51,7 +53,7 @@ func (m *gtValidator) Imports() []string {
 }
 
 // ValidateGT creates a new gtValidator if the field type is numeric and the max marker is present.
-func ValidateGT(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateGT(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 
@@ -65,8 +67,9 @@ func ValidateGT(pass *codegen.Pass, field *ast.Field, expressions map[string]str
 	}
 
 	return &gtValidator{
-		pass:    pass,
-		field:   field,
-		gtValue: gtValue,
+		pass:       pass,
+		field:      field,
+		gtValue:    gtValue,
+		structName: structName,
 	}
 }

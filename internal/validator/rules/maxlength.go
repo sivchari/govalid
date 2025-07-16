@@ -16,6 +16,7 @@ type maxLengthValidator struct {
 	pass           *codegen.Pass
 	field          *ast.Field
 	maxLengthValue string
+	structName     string
 }
 
 var _ validator.Validator = (*maxLengthValidator)(nil)
@@ -31,19 +32,20 @@ func (m *maxLengthValidator) FieldName() string {
 }
 
 func (m *maxLengthValidator) Err() string {
-	if validator.GeneratorMemory[fmt.Sprintf(maxLengthKey, m.FieldName())] {
+	key := fmt.Sprintf(maxLengthKey, m.structName+m.FieldName())
+	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(maxLengthKey, m.FieldName())] = true
+	validator.GeneratorMemory[key] = true
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@MaxLengthValidation is the error returned when the length of the field exceeds the maximum of %s.
-	Err@MaxLengthValidation = errors.New("field @ must have a maximum length of %s")`, "@", m.FieldName()), m.maxLengthValue, m.maxLengthValue)
+	Err@MaxLengthValidation = errors.New("field @ must have a maximum length of %s")`, "@", m.structName+m.FieldName()), m.maxLengthValue, m.maxLengthValue)
 }
 
 func (m *maxLengthValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@MaxLengthValidation", "@", m.FieldName())
+	return strings.ReplaceAll("Err@MaxLengthValidation", "@", m.structName+m.FieldName())
 }
 
 func (m *maxLengthValidator) Imports() []string {
@@ -51,7 +53,7 @@ func (m *maxLengthValidator) Imports() []string {
 }
 
 // ValidateMaxLength creates a new maxLengthValidator if the field type is string and the maxlength marker is present.
-func ValidateMaxLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateMaxLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 
@@ -68,5 +70,6 @@ func ValidateMaxLength(pass *codegen.Pass, field *ast.Field, expressions map[str
 		pass:           pass,
 		field:          field,
 		maxLengthValue: maxLengthValue,
+		structName:     structName,
 	}
 }

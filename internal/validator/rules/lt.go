@@ -13,9 +13,10 @@ import (
 )
 
 type ltValidator struct {
-	pass    *codegen.Pass
-	field   *ast.Field
-	ltValue string
+	pass       *codegen.Pass
+	field      *ast.Field
+	ltValue    string
+	structName string
 }
 
 var _ validator.Validator = (*ltValidator)(nil)
@@ -31,19 +32,20 @@ func (m *ltValidator) FieldName() string {
 }
 
 func (m *ltValidator) Err() string {
-	if validator.GeneratorMemory[fmt.Sprintf(ltKey, m.FieldName())] {
+	key := fmt.Sprintf(ltKey, m.structName+m.FieldName())
+	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(ltKey, m.FieldName())] = true
+	validator.GeneratorMemory[key] = true
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@LTValidation is the error returned when the value of the field is greater than the %s.
-	Err@LTValidation = errors.New("field @ must be less than %s")`, "@", m.FieldName()), m.ltValue, m.ltValue)
+	Err@LTValidation = errors.New("field @ must be less than %s")`, "@", m.structName+m.FieldName()), m.ltValue, m.ltValue)
 }
 
 func (m *ltValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@LTValidation", "@", m.FieldName())
+	return strings.ReplaceAll("Err@LTValidation", "@", m.structName+m.FieldName())
 }
 
 func (m *ltValidator) Imports() []string {
@@ -51,7 +53,7 @@ func (m *ltValidator) Imports() []string {
 }
 
 // ValidateLT creates a new ltValidator if the field type is numeric and the min marker is present.
-func ValidateLT(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateLT(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 
@@ -65,8 +67,9 @@ func ValidateLT(pass *codegen.Pass, field *ast.Field, expressions map[string]str
 	}
 
 	return &ltValidator{
-		pass:    pass,
-		field:   field,
-		ltValue: ltValue,
+		pass:       pass,
+		field:      field,
+		ltValue:    ltValue,
+		structName: structName,
 	}
 }

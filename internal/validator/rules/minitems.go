@@ -16,6 +16,7 @@ type minItemsValidator struct {
 	pass          *codegen.Pass
 	field         *ast.Field
 	minItemsValue string
+	structName    string
 }
 
 var _ validator.Validator = (*minItemsValidator)(nil)
@@ -31,19 +32,20 @@ func (m *minItemsValidator) FieldName() string {
 }
 
 func (m *minItemsValidator) Err() string {
-	if validator.GeneratorMemory[fmt.Sprintf(minItemsKey, m.FieldName())] {
+	key := fmt.Sprintf(minItemsKey, m.structName+m.FieldName())
+	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(minItemsKey, m.FieldName())] = true
+	validator.GeneratorMemory[key] = true
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@MinItemsValidation is the error returned when the length of the field is less than the minimum of %s.
-	Err@MinItemsValidation = errors.New("field @ must have a minimum of %s items")`, "@", m.FieldName()), m.minItemsValue, m.minItemsValue)
+	Err@MinItemsValidation = errors.New("field @ must have a minimum of %s items")`, "@", m.structName+m.FieldName()), m.minItemsValue, m.minItemsValue)
 }
 
 func (m *minItemsValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@MinItemsValidation", "@", m.FieldName())
+	return strings.ReplaceAll("Err@MinItemsValidation", "@", m.structName+m.FieldName())
 }
 
 func (m *minItemsValidator) Imports() []string {
@@ -51,7 +53,7 @@ func (m *minItemsValidator) Imports() []string {
 }
 
 // ValidateMinItems creates a new minItemsValidator if the field type supports len() and the minitems marker is present.
-func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a type that supports len() (exclude strings - use minlength instead)
@@ -71,5 +73,6 @@ func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[stri
 		pass:          pass,
 		field:         field,
 		minItemsValue: minItemsValue,
+		structName:    structName,
 	}
 }

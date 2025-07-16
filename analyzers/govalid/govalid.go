@@ -89,7 +89,7 @@ func (g *generator) run(pass *codegen.Pass) error {
 			return
 		}
 
-		metadata := analyzeMarker(pass, markersInspect, structType, "")
+		metadata := analyzeMarker(pass, markersInspect, structType, "", ts.Name.Name)
 		if len(metadata) == 0 {
 			return
 		}
@@ -120,7 +120,7 @@ type AnalyzedMetadata struct {
 	ParentVariable string
 }
 
-func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structType *ast.StructType, parent string) []*AnalyzedMetadata {
+func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structType *ast.StructType, parent string, structName string) []*AnalyzedMetadata {
 	analyzed := make([]*AnalyzedMetadata, 0)
 
 	for _, field := range structType.Fields.List {
@@ -132,7 +132,7 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 		// Traverse nested structs
 		structType, ok := field.Type.(*ast.StructType)
 		if !ok {
-			validators = makeValidator(pass, markers, field)
+			validators = makeValidator(pass, markers, field, structName)
 			if len(validators) == 0 {
 				continue
 			}
@@ -153,7 +153,7 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 					Name string `json:"name"`
 				}
 			*/
-			validators = append(validators, makeValidator(pass, markers, field)...)
+			validators = append(validators, makeValidator(pass, markers, field, structName)...)
 		}
 
 		// Add the parent variable name to the analyzed metadata
@@ -170,14 +170,14 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 		})
 
 		// Recursively analyze nested structs
-		analyzed = append(analyzed, analyzeMarker(pass, markersInspect, structType, parentVariable)...)
+		analyzed = append(analyzed, analyzeMarker(pass, markersInspect, structType, parentVariable, structName)...)
 	}
 
 	return analyzed
 }
 
 //nolint:cyclop
-func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Field) []validator.Validator {
+func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Field, structName string) []validator.Validator {
 	validators := make([]validator.Validator, 0)
 
 	for _, marker := range markers {
@@ -185,33 +185,33 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 
 		switch marker.Identifier {
 		case govalidmarkers.GoValidMarkerRequired:
-			v = rules.ValidateRequired(pass, field)
+			v = rules.ValidateRequired(pass, field, structName)
 		case govalidmarkers.GoValidMarkerLT:
-			v = rules.ValidateLT(pass, field, marker.Expressions)
+			v = rules.ValidateLT(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerGT:
-			v = rules.ValidateGT(pass, field, marker.Expressions)
+			v = rules.ValidateGT(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerMaxLength:
-			v = rules.ValidateMaxLength(pass, field, marker.Expressions)
+			v = rules.ValidateMaxLength(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerMaxItems:
-			v = rules.ValidateMaxItems(pass, field, marker.Expressions)
+			v = rules.ValidateMaxItems(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerMinItems:
-			v = rules.ValidateMinItems(pass, field, marker.Expressions)
+			v = rules.ValidateMinItems(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerMinLength:
-			v = rules.ValidateMinLength(pass, field, marker.Expressions)
+			v = rules.ValidateMinLength(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerGTE:
-			v = rules.ValidateGTE(pass, field, marker.Expressions)
+			v = rules.ValidateGTE(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerLTE:
-			v = rules.ValidateLTE(pass, field, marker.Expressions)
+			v = rules.ValidateLTE(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerEnum:
-			v = rules.ValidateEnum(pass, field, marker.Expressions)
+			v = rules.ValidateEnum(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerEmail:
-			v = rules.ValidateEmail(pass, field, marker.Expressions)
+			v = rules.ValidateEmail(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerUUID:
-			v = rules.ValidateUUID(pass, field, marker.Expressions)
+			v = rules.ValidateUUID(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerURL:
-			v = rules.ValidateURL(pass, field, marker.Expressions)
+			v = rules.ValidateURL(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerCEL:
-			v = rules.ValidateCEL(pass, field, marker.Expressions)
+			v = rules.ValidateCEL(pass, field, marker.Expressions, structName)
 		default:
 			continue
 		}

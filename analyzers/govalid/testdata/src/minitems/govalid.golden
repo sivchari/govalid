@@ -9,20 +9,20 @@ var (
 	// ErrNilMinItems is returned when the MinItems is nil.
 	ErrNilMinItems = errors.New("input MinItems is nil")
 
-	// ErrSliceMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
-	ErrSliceMinItemsValidation = errors.New("field Slice must have a minimum of 2 items")
+	// ErrMinItemsSliceMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
+	ErrMinItemsSliceMinItemsValidation = errors.New("field MinItemsSlice must have a minimum of 2 items")
 
-	// ErrArrayMinItemsValidation is the error returned when the length of the field is less than the minimum of 3.
-	ErrArrayMinItemsValidation = errors.New("field Array must have a minimum of 3 items")
+	// ErrMinItemsArrayMinItemsValidation is the error returned when the length of the field is less than the minimum of 3.
+	ErrMinItemsArrayMinItemsValidation = errors.New("field MinItemsArray must have a minimum of 3 items")
 
-	// ErrMapFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
-	ErrMapFieldMinItemsValidation = errors.New("field MapField must have a minimum of 1 items")
+	// ErrMinItemsMapFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
+	ErrMinItemsMapFieldMinItemsValidation = errors.New("field MinItemsMapField must have a minimum of 1 items")
 
-	// ErrChanFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
-	ErrChanFieldMinItemsValidation = errors.New("field ChanField must have a minimum of 2 items")
+	// ErrMinItemsChanFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
+	ErrMinItemsChanFieldMinItemsValidation = errors.New("field MinItemsChanField must have a minimum of 2 items")
 
-	// ErrItemsMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
-	ErrItemsMinItemsValidation = errors.New("field Items must have a minimum of 1 items")
+	// ErrMinItemsItemsMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
+	ErrMinItemsItemsMinItemsValidation = errors.New("field MinItemsItems must have a minimum of 1 items")
 )
 
 func ValidateMinItems(t *MinItems) error {
@@ -31,26 +31,26 @@ func ValidateMinItems(t *MinItems) error {
 	}
 
 	if len(t.Slice) < 2 {
-		return ErrSliceMinItemsValidation
+		return ErrMinItemsSliceMinItemsValidation
 	}
 
 	if len(t.Array) < 3 {
-		return ErrArrayMinItemsValidation
+		return ErrMinItemsArrayMinItemsValidation
 	}
 
 	if len(t.MapField) < 1 {
-		return ErrMapFieldMinItemsValidation
+		return ErrMinItemsMapFieldMinItemsValidation
 	}
 
 	if len(t.ChanField) < 2 {
-		return ErrChanFieldMinItemsValidation
+		return ErrMinItemsChanFieldMinItemsValidation
 	}
 
 	{
 		t := t.Struct
 
 		if len(t.Items) < 1 {
-			return ErrItemsMinItemsValidation
+			return ErrMinItemsItemsMinItemsValidation
 		}
 
 	}

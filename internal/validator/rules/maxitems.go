@@ -16,6 +16,7 @@ type maxItemsValidator struct {
 	pass          *codegen.Pass
 	field         *ast.Field
 	maxItemsValue string
+	structName    string
 }
 
 var _ validator.Validator = (*maxItemsValidator)(nil)
@@ -31,19 +32,20 @@ func (m *maxItemsValidator) FieldName() string {
 }
 
 func (m *maxItemsValidator) Err() string {
-	if validator.GeneratorMemory[fmt.Sprintf(maxItemsKey, m.FieldName())] {
+	key := fmt.Sprintf(maxItemsKey, m.structName+m.FieldName())
+	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(maxItemsKey, m.FieldName())] = true
+	validator.GeneratorMemory[key] = true
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@MaxItemsValidation is the error returned when the length of the field exceeds the maximum of %s.
-	Err@MaxItemsValidation = errors.New("field @ must have a maximum of %s items")`, "@", m.FieldName()), m.maxItemsValue, m.maxItemsValue)
+	Err@MaxItemsValidation = errors.New("field @ must have a maximum of %s items")`, "@", m.structName+m.FieldName()), m.maxItemsValue, m.maxItemsValue)
 }
 
 func (m *maxItemsValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@MaxItemsValidation", "@", m.FieldName())
+	return strings.ReplaceAll("Err@MaxItemsValidation", "@", m.structName+m.FieldName())
 }
 
 func (m *maxItemsValidator) Imports() []string {
@@ -51,7 +53,7 @@ func (m *maxItemsValidator) Imports() []string {
 }
 
 // ValidateMaxItems creates a new maxItemsValidator if the field type supports len() and the maxitems marker is present.
-func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a type that supports len() (exclude strings - use maxlength instead)
@@ -71,5 +73,6 @@ func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[stri
 		pass:          pass,
 		field:         field,
 		maxItemsValue: maxItemsValue,
+		structName:    structName,
 	}
 }

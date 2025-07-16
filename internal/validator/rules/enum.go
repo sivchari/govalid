@@ -19,6 +19,7 @@ type enumValidator struct {
 	isString   bool
 	isNumeric  bool
 	isCustom   bool
+	structName string
 }
 
 var _ validator.Validator = (*enumValidator)(nil)
@@ -48,21 +49,22 @@ func (e *enumValidator) FieldName() string {
 }
 
 func (e *enumValidator) Err() string {
-	if validator.GeneratorMemory[fmt.Sprintf(enumKey, e.FieldName())] {
+	key := fmt.Sprintf(enumKey, e.structName+e.FieldName())
+	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(enumKey, e.FieldName())] = true
+	validator.GeneratorMemory[key] = true
 
 	enumList := strings.Join(e.enumValues, ", ")
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@EnumValidation is the error returned when the value is not in the allowed enum values [%s].
-	Err@EnumValidation = errors.New("field @ must be one of [%s]")`, "@", e.FieldName()), enumList, enumList)
+	Err@EnumValidation = errors.New("field @ must be one of [%s]")`, "@", e.structName+e.FieldName()), enumList, enumList)
 }
 
 func (e *enumValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@EnumValidation", "@", e.FieldName())
+	return strings.ReplaceAll("Err@EnumValidation", "@", e.structName+e.FieldName())
 }
 
 func (e *enumValidator) Imports() []string {
@@ -70,7 +72,7 @@ func (e *enumValidator) Imports() []string {
 }
 
 // ValidateEnum creates a new enumValidator for string, numeric, and custom types.
-func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	enumValue, ok := expressions[markers.GoValidMarkerEnum]
@@ -92,6 +94,7 @@ func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]s
 		pass:       pass,
 		field:      field,
 		enumValues: enumValues,
+		structName: structName,
 	}
 
 	// Determine the type and set appropriate flags

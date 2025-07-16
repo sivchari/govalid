@@ -13,9 +13,10 @@ import (
 )
 
 type gteValidator struct {
-	pass     *codegen.Pass
-	field    *ast.Field
-	gteValue string
+	pass       *codegen.Pass
+	field      *ast.Field
+	gteValue   string
+	structName string
 }
 
 var _ validator.Validator = (*gteValidator)(nil)
@@ -31,19 +32,20 @@ func (m *gteValidator) FieldName() string {
 }
 
 func (m *gteValidator) Err() string {
-	if validator.GeneratorMemory[fmt.Sprintf(gteKey, m.FieldName())] {
+	key := fmt.Sprintf(gteKey, m.structName+m.FieldName())
+	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(gteKey, m.FieldName())] = true
+	validator.GeneratorMemory[key] = true
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@GTEValidation is the error returned when the value of the field is less than %s.
-	Err@GTEValidation = errors.New("field @ must be greater than or equal to %s")`, "@", m.FieldName()), m.gteValue, m.gteValue)
+	Err@GTEValidation = errors.New("field @ must be greater than or equal to %s")`, "@", m.structName+m.FieldName()), m.gteValue, m.gteValue)
 }
 
 func (m *gteValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@GTEValidation", "@", m.FieldName())
+	return strings.ReplaceAll("Err@GTEValidation", "@", m.structName+m.FieldName())
 }
 
 func (m *gteValidator) Imports() []string {
@@ -51,7 +53,7 @@ func (m *gteValidator) Imports() []string {
 }
 
 // ValidateGTE creates a new gteValidator if the field type is numeric and the gte marker is present.
-func ValidateGTE(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateGTE(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 
@@ -65,8 +67,9 @@ func ValidateGTE(pass *codegen.Pass, field *ast.Field, expressions map[string]st
 	}
 
 	return &gteValidator{
-		pass:     pass,
-		field:    field,
-		gteValue: gteValue,
+		pass:       pass,
+		field:      field,
+		gteValue:   gteValue,
+		structName: structName,
 	}
 }

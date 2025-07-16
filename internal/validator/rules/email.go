@@ -12,8 +12,9 @@ import (
 )
 
 type emailValidator struct {
-	pass  *codegen.Pass
-	field *ast.Field
+	pass       *codegen.Pass
+	field      *ast.Field
+	structName string
 }
 
 var _ validator.Validator = (*emailValidator)(nil)
@@ -36,21 +37,22 @@ func (e *emailValidator) Err() string {
 	var result strings.Builder
 
 	// No need to generate inline function - using external helper
-	if validator.GeneratorMemory[fmt.Sprintf(emailKey, fieldName)] {
+	key := fmt.Sprintf(emailKey, e.structName+fieldName)
+	if validator.GeneratorMemory[key] {
 		return result.String()
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(emailKey, fieldName)] = true
+	validator.GeneratorMemory[key] = true
 
 	result.WriteString(strings.ReplaceAll(`
 	// Err@EmailValidation is the error returned when the field is not a valid email address.
-	Err@EmailValidation = errors.New("field @ must be a valid email address")`, `@`, fieldName))
+	Err@EmailValidation = errors.New("field @ must be a valid email address")`, `@`, e.structName+fieldName))
 
 	return result.String()
 }
 
 func (e *emailValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@EmailValidation", `@`, e.FieldName())
+	return strings.ReplaceAll("Err@EmailValidation", `@`, e.structName+e.FieldName())
 }
 
 func (e *emailValidator) Imports() []string {
@@ -59,7 +61,7 @@ func (e *emailValidator) Imports() []string {
 }
 
 // ValidateEmail creates a new emailValidator for string types.
-func ValidateEmail(pass *codegen.Pass, field *ast.Field, _ map[string]string) validator.Validator {
+func ValidateEmail(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type
@@ -69,7 +71,8 @@ func ValidateEmail(pass *codegen.Pass, field *ast.Field, _ map[string]string) va
 	}
 
 	return &emailValidator{
-		pass:  pass,
-		field: field,
+		pass:       pass,
+		field:      field,
+		structName: structName,
 	}
 }

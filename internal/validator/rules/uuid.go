@@ -12,8 +12,9 @@ import (
 )
 
 type uuidValidator struct {
-	pass  *codegen.Pass
-	field *ast.Field
+	pass       *codegen.Pass
+	field      *ast.Field
+	structName string
 }
 
 var _ validator.Validator = (*uuidValidator)(nil)
@@ -101,21 +102,22 @@ func (u *uuidValidator) Err() string {
 		result.WriteString(u.generateValidationFunction())
 	}
 
-	if validator.GeneratorMemory[fmt.Sprintf(uuidKey, fieldName)] {
+	key := fmt.Sprintf(uuidKey, u.structName+fieldName)
+	if validator.GeneratorMemory[key] {
 		return result.String()
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(uuidKey, fieldName)] = true
+	validator.GeneratorMemory[key] = true
 
 	result.WriteString(strings.ReplaceAll(`
 	// Err@UUIDValidation is the error returned when the field is not a valid UUID.
-	Err@UUIDValidation = errors.New("field @ must be a valid UUID")`, "@", fieldName))
+	Err@UUIDValidation = errors.New("field @ must be a valid UUID")`, "@", u.structName+fieldName))
 
 	return result.String()
 }
 
 func (u *uuidValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@UUIDValidation", "@", u.FieldName())
+	return strings.ReplaceAll("Err@UUIDValidation", "@", u.structName+u.FieldName())
 }
 
 func (u *uuidValidator) Imports() []string {
@@ -123,7 +125,7 @@ func (u *uuidValidator) Imports() []string {
 }
 
 // ValidateUUID creates a new uuidValidator for string types.
-func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string) validator.Validator {
+func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type
@@ -133,7 +135,8 @@ func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string) val
 	}
 
 	return &uuidValidator{
-		pass:  pass,
-		field: field,
+		pass:       pass,
+		field:      field,
+		structName: structName,
 	}
 }

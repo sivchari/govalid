@@ -18,6 +18,7 @@ type celValidator struct {
 	pass       *codegen.Pass
 	field      *ast.Field
 	expression string
+	structName string
 }
 
 var _ validator.Validator = (*celValidator)(nil)
@@ -52,16 +53,17 @@ func (c *celValidator) Err() string {
 	var result strings.Builder
 
 	// Generate error variable only once per field
-	if validator.GeneratorMemory[fmt.Sprintf(celKey, fieldName)] {
+	key := fmt.Sprintf(celKey, c.structName+fieldName)
+	if validator.GeneratorMemory[key] {
 		return result.String()
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(celKey, fieldName)] = true
+	validator.GeneratorMemory[key] = true
 
 	// Generate error variable with the CEL expression included for debugging
 	result.WriteString(strings.ReplaceAll(`
 	// Err@CELValidation is the error returned when the CEL expression evaluation fails.
-	Err@CELValidation = errors.New("field @ failed CEL validation: EXPRESSION")`, "@", fieldName))
+	Err@CELValidation = errors.New("field @ failed CEL validation: EXPRESSION")`, "@", c.structName+fieldName))
 
 	// Replace EXPRESSION placeholder with the actual CEL expression
 	errorString := result.String()
@@ -71,7 +73,7 @@ func (c *celValidator) Err() string {
 }
 
 func (c *celValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@CELValidation", "@", c.FieldName())
+	return strings.ReplaceAll("Err@CELValidation", "@", c.structName+c.FieldName())
 }
 
 func (c *celValidator) Imports() []string {
@@ -129,7 +131,7 @@ func (c *celValidator) needsTimeImport() bool {
 
 // ValidateCEL creates a new celValidator for fields with CEL marker.
 // This validator supports all field types since CEL can handle various data types.
-func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
+func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
 	celExpression, ok := expressions[markers.GoValidMarkerCEL]
 	if !ok {
 		return nil
@@ -144,6 +146,7 @@ func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]st
 		pass:       pass,
 		field:      field,
 		expression: celExpression,
+		structName: structName,
 	}
 }
 

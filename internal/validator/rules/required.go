@@ -14,8 +14,9 @@ import (
 )
 
 type requiredValidator struct {
-	pass  *codegen.Pass
-	field *ast.Field
+	pass       *codegen.Pass
+	field      *ast.Field
+	structName string
 }
 
 var _ validator.Validator = (*requiredValidator)(nil)
@@ -50,19 +51,20 @@ func (r *requiredValidator) FieldName() string {
 }
 
 func (r *requiredValidator) Err() string {
-	if validator.GeneratorMemory[fmt.Sprintf(requiredKey, r.FieldName())] {
+	key := fmt.Sprintf(requiredKey, r.structName+r.FieldName())
+	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(requiredKey, r.FieldName())] = true
+	validator.GeneratorMemory[key] = true
 
 	return strings.ReplaceAll(`
 	// Err@RequiredValidation is returned when the @ is required but not provided.
-	Err@RequiredValidation = errors.New("field @ is required")`, "@", r.FieldName())
+	Err@RequiredValidation = errors.New("field @ is required")`, "@", r.structName+r.FieldName())
 }
 
 func (r *requiredValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@RequiredValidation", "@", r.FieldName())
+	return strings.ReplaceAll("Err@RequiredValidation", "@", r.structName+r.FieldName())
 }
 
 func (r *requiredValidator) Imports() []string {
@@ -70,11 +72,12 @@ func (r *requiredValidator) Imports() []string {
 }
 
 // ValidateRequired creates a new required validator for the given field.
-func ValidateRequired(pass *codegen.Pass, field *ast.Field) validator.Validator {
-	validator.GeneratorMemory[fmt.Sprintf(requiredKey, field.Names[0].Name)] = false
+func ValidateRequired(pass *codegen.Pass, field *ast.Field, structName string) validator.Validator {
+	validator.GeneratorMemory[fmt.Sprintf(requiredKey, structName+field.Names[0].Name)] = false
 
 	return &requiredValidator{
-		pass:  pass,
-		field: field,
+		pass:       pass,
+		field:      field,
+		structName: structName,
 	}
 }
