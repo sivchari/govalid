@@ -191,6 +191,39 @@ func (v *{validator}Validator) Err() string {
 
 ## 🔧 Advanced Technical Patterns
 
+### Error Variable Naming Pattern
+
+**Since Issue #72 Implementation**: Error variables now include struct name prefixes to prevent naming conflicts:
+
+```go
+// Before (Issue #72)
+ErrNameRequiredValidation = errors.New("field Name is required")
+
+// After (Issue #72)
+ErrUserNameRequiredValidation = errors.New("field Name is required")
+ErrProductNameRequiredValidation = errors.New("field Name is required")
+```
+
+**Benefits:**
+- **Prevents naming conflicts**: Multiple structs can have fields with same names
+- **Improves code clarity**: Clear which struct the error belongs to
+- **Maintains backward compatibility**: Generated code compiles without changes
+
+**Implementation Pattern:**
+```go
+// Validator struct includes struct name
+type requiredValidator struct {
+    pass       *codegen.Pass
+    field      *ast.Field
+    structName string  // Added for Issue #72
+}
+
+// Error variable generation uses struct name prefix
+func (r *requiredValidator) ErrVariable() string {
+    return strings.ReplaceAll("Err@RequiredValidation", "@", r.structName+r.FieldName())
+}
+```
+
 ### Interface-Based Import System
 ```go
 // Validator interface

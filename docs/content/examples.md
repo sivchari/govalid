@@ -102,12 +102,12 @@ import (
 )
 
 var (
-	ErrNilUser                = errors.New("input User is nil")
-	ErrNameRequiredValidation = errors.New("field Name is required")
-	ErrEmailRequiredValidation = errors.New("field Email is required")
-	ErrEmailEmailValidation   = errors.New("field Email must be a valid email address")
-	ErrAgeGTEValidation       = errors.New("field Age must be greater than or equal to 0")
-	ErrAgeLTEValidation       = errors.New("field Age must be less than or equal to 120")
+	ErrNilUser                     = errors.New("input User is nil")
+	ErrUserNameRequiredValidation  = errors.New("field Name is required")
+	ErrUserEmailRequiredValidation = errors.New("field Email is required")
+	ErrUserEmailEmailValidation    = errors.New("field Email must be a valid email address")
+	ErrUserAgeGTEValidation        = errors.New("field Age must be greater than or equal to 0")
+	ErrUserAgeLTEValidation        = errors.New("field Age must be less than or equal to 120")
 )
 
 func ValidateUser(t *User) error {
@@ -116,23 +116,23 @@ func ValidateUser(t *User) error {
 	}
 
 	if len(t.Name) == 0 {
-		return ErrNameRequiredValidation
+		return ErrUserNameRequiredValidation
 	}
 
 	if len(t.Email) == 0 {
-		return ErrEmailRequiredValidation
+		return ErrUserEmailRequiredValidation
 	}
 
 	if !validationhelper.IsValidEmail(t.Email) {
-		return ErrEmailEmailValidation
+		return ErrUserEmailEmailValidation
 	}
 
 	if !(t.Age >= 0) {
-		return ErrAgeGTEValidation
+		return ErrUserAgeGTEValidation
 	}
 
 	if !(t.Age <= 120) {
-		return ErrAgeLTEValidation
+		return ErrUserAgeLTEValidation
 	}
 
 	return nil
@@ -753,19 +753,19 @@ type User struct {
 func ProcessUser(user *User) error {
     if err := ValidateUser(user); err != nil {
         // Handle specific validation errors
-        if errors.Is(err, ErrNameRequiredValidation) {
+        if errors.Is(err, ErrUserNameRequiredValidation) {
             return fmt.Errorf("user name is mandatory")
         }
         
-        if errors.Is(err, ErrEmailRequiredValidation) {
+        if errors.Is(err, ErrUserEmailRequiredValidation) {
             return fmt.Errorf("email address is required")
         }
         
-        if errors.Is(err, ErrEmailEmailValidation) {
+        if errors.Is(err, ErrUserEmailEmailValidation) {
             return fmt.Errorf("please provide a valid email address")
         }
         
-        if errors.Is(err, ErrAgeGTEValidation) {
+        if errors.Is(err, ErrUserAgeGTEValidation) {
             return fmt.Errorf("user must be at least 18 years old")
         }
         
@@ -822,13 +822,13 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
         case errors.Is(err, ErrNilUser):
             statusCode = http.StatusBadRequest
             message = "User data is required"
-        case errors.Is(err, ErrNameRequiredValidation):
+        case errors.Is(err, ErrUserNameRequiredValidation):
             statusCode = http.StatusBadRequest
             message = "Name is required"
-        case errors.Is(err, ErrEmailEmailValidation):
+        case errors.Is(err, ErrUserEmailEmailValidation):
             statusCode = http.StatusBadRequest
             message = "Invalid email format"
-        case errors.Is(err, ErrAgeGTEValidation):
+        case errors.Is(err, ErrUserAgeGTEValidation):
             statusCode = http.StatusBadRequest
             message = "User must be at least 18 years old"
         default:
