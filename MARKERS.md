@@ -408,3 +408,35 @@ govalid supports the following markers:
   }
   ```
 - **Note**: CEL validation follows govalid's zero-reflection philosophy. Cross-field validation (accessing other struct fields) is not supported.
+
+## `govalid:length`
+- **Description**: Ensures that a string field has exactly the specified length (Unicode-aware).
+- **Example**:
+  ```go
+  type User struct {
+      // +govalid:length=7
+      PostalCode string `json:"postal_code"`
+      
+      // +govalid:length=10
+      PhoneNumber string `json:"phone_number"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateUser(t *User) error {
+      if t == nil {
+          return ErrNilUser
+      }
+
+      if utf8.RuneCountInString(t.PostalCode) != 7 {
+          return ErrUserPostalCodeLengthValidation
+      }
+
+      if utf8.RuneCountInString(t.PhoneNumber) != 10 {
+          return ErrUserPhoneNumberLengthValidation
+      }
+
+      return nil
+  }
+  ```
+- **Note**: Uses `utf8.RuneCountInString()` for proper Unicode character counting, ensuring accurate validation for international characters and emojis.
