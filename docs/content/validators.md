@@ -90,21 +90,14 @@ Ensures that a string field has exactly the specified length (Unicode-aware).
 ```go
 type User struct {
     // +govalid:length=7
-    PostalCode string `json:"postal_code"`
-    
-    // +govalid:length=10
-    PhoneNumber string `json:"phone_number"`
+    Name string `json:"name"`
 }
 ```
 
 **Generated Code:**
 ```go
-if utf8.RuneCountInString(t.PostalCode) != 7 {
-    return ErrPostalCodeLengthValidation
-}
-
-if utf8.RuneCountInString(t.PhoneNumber) != 10 {
-    return ErrPhoneNumberLengthValidation
+if utf8.RuneCountInString(t.Name) != 7 {
+    return ErrNameLengthValidation
 }
 ```
 

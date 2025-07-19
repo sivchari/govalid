@@ -10,11 +10,8 @@ var (
 	// ErrNilLength is returned when the Length is nil.
 	ErrNilLength = errors.New("input Length is nil")
 
-	// ErrLengthPostalCodeLengthValidation is the error returned when the length of the field is not exactly 7.
-	ErrLengthPostalCodeLengthValidation = errors.New("field LengthPostalCode must have exactly length of 7")
-
-	// ErrLengthPhoneNumberLengthValidation is the error returned when the length of the field is not exactly 10.
-	ErrLengthPhoneNumberLengthValidation = errors.New("field LengthPhoneNumber must have exactly length of 10")
+	// ErrLengthNameLengthValidation is the error returned when the length of the field is not exactly 7.
+	ErrLengthNameLengthValidation = errors.New("field LengthName must have exactly length of 7")
 )
 
 func ValidateLength(t *Length) error {
@@ -22,12 +19,8 @@ func ValidateLength(t *Length) error {
 		return ErrNilLength
 	}
 
-	if utf8.RuneCountInString(t.PostalCode) != 7 {
-		return ErrLengthPostalCodeLengthValidation
-	}
-
-	if utf8.RuneCountInString(t.PhoneNumber) != 10 {
-		return ErrLengthPhoneNumberLengthValidation
+	if utf8.RuneCountInString(t.Name) != 7 {
+		return ErrLengthNameLengthValidation
 	}
 
 	return nil

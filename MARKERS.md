@@ -415,10 +415,7 @@ govalid supports the following markers:
   ```go
   type User struct {
       // +govalid:length=7
-      PostalCode string `json:"postal_code"`
-      
-      // +govalid:length=10
-      PhoneNumber string `json:"phone_number"`
+      Name string `json:"name"`
   }
   ```
 - **Generated Code**:
@@ -428,12 +425,8 @@ govalid supports the following markers:
           return ErrNilUser
       }
 
-      if utf8.RuneCountInString(t.PostalCode) != 7 {
-          return ErrUserPostalCodeLengthValidation
-      }
-
-      if utf8.RuneCountInString(t.PhoneNumber) != 10 {
-          return ErrUserPhoneNumberLengthValidation
+      if utf8.RuneCountInString(t.Name) != 7 {
+          return ErrUserNameLengthValidation
       }
 
       return nil

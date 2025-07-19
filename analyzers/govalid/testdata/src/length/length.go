@@ -4,8 +4,10 @@ package length
 
 type Length struct {
 	// +govalid:length=7
-	PostalCode string
+	String string
 
-	// +govalid:length=10
-	PhoneNumber string
+	Struct struct {
+		// +govalid:length=10
+		Name string
+	}
 }

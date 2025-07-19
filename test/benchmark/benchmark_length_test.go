@@ -9,8 +9,7 @@ import (
 
 func BenchmarkGoValidLength(b *testing.B) {
 	instance := test.Length{
-		PostalCode:  "1234567",
-		PhoneNumber: "1234567890",
+		Name: "1234567",
 	}
 	b.ResetTimer()
 	for b.Loop() {
@@ -25,8 +24,7 @@ func BenchmarkGoValidLength(b *testing.B) {
 func BenchmarkGoPlaygroundLength(b *testing.B) {
 	validate := validator.New()
 	instance := test.Length{
-		PostalCode:  "1234567",
-		PhoneNumber: "1234567890",
+		Name: "1234567",
 	}
 	b.ResetTimer()
 	for b.Loop() {

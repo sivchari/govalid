@@ -132,8 +132,5 @@ type CELCrossField struct {
 
 type Length struct {
 	// +govalid:length=7
-	PostalCode string `json:"postal_code"`
-
-	// +govalid:length=10
-	PhoneNumber string `json:"phone_number"`
+	Name string `json:"name"`
 }

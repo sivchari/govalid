@@ -13,39 +13,34 @@ func TestLengthValidation(t *testing.T) {
 		expectError bool
 	}{
 		{
-			name:        "valid postal code and phone number",
-			data:        test.Length{PostalCode: "1234567", PhoneNumber: "1234567890"},
+			name:        "exactly at limit",
+			data:        test.Length{Name: "1234567"},
 			expectError: false,
 		},
 		{
-			name:        "postal code too long",
-			data:        test.Length{PostalCode: "12345678", PhoneNumber: "1234567890"},
+			name:        "limit minus one",
+			data:        test.Length{Name: "123456"},
 			expectError: true,
 		},
 		{
-			name:        "postal code too short",
-			data:        test.Length{PostalCode: "123456", PhoneNumber: "1234567890"},
+			name:        "limit plus one",
+			data:        test.Length{Name: "12345678"},
 			expectError: true,
 		},
 		{
-			name:        "phone number too long",
-			data:        test.Length{PostalCode: "1234567", PhoneNumber: "12345678901"},
-			expectError: true,
-		},
-		{
-			name:        "phone number too short",
-			data:        test.Length{PostalCode: "1234567", PhoneNumber: "123456789"},
-			expectError: true,
-		},
-		{
-			name:        "both invalid",
-			data:        test.Length{PostalCode: "123", PhoneNumber: "123"},
+			name:        "empty string",
+			data:        test.Length{Name: ""},
 			expectError: true,
 		},
 		{
 			name:        "unicode characters - valid",
-			data:        test.Length{PostalCode: "1234567", PhoneNumber: "🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥"},
+			data:        test.Length{Name: "🔥🔥🔥🔥🔥🔥🔥"},
 			expectError: false,
+		},
+		{
+			name:        "unicode characters - invalid",
+			data:        test.Length{Name: "🔥🔥🔥🔥🔥🔥"},
+			expectError: true,
 		},
 	}
 
