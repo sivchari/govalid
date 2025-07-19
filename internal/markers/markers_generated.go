@@ -2,6 +2,9 @@
 package markers
 
 var (
+	// GoValidMarkerAlpha is the marker for alpha validation.
+	GoValidMarkerAlpha = "govalid:alpha"
+
 	// GoValidMarkerCel is the marker for cel validation.
 	GoValidMarkerCel = "govalid:cel"
 
@@ -46,24 +49,24 @@ var (
 
 	// GoValidMarkerUuid is the marker for uuid validation.
 	GoValidMarkerUuid = "govalid:uuid"
-
 )
 
 // GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
-	GoValidMarkerCel: {},
-	GoValidMarkerEmail: {},
-	GoValidMarkerEnum: {},
-	GoValidMarkerGt: {},
-	GoValidMarkerGte: {},
-	GoValidMarkerLength: {},
-	GoValidMarkerLt: {},
-	GoValidMarkerLte: {},
-	GoValidMarkerMaxitems: {},
+	GoValidMarkerAlpha:     {},
+	GoValidMarkerCel:       {},
+	GoValidMarkerEmail:     {},
+	GoValidMarkerEnum:      {},
+	GoValidMarkerGt:        {},
+	GoValidMarkerGte:       {},
+	GoValidMarkerLength:    {},
+	GoValidMarkerLt:        {},
+	GoValidMarkerLte:       {},
+	GoValidMarkerMaxitems:  {},
 	GoValidMarkerMaxlength: {},
-	GoValidMarkerMinitems: {},
+	GoValidMarkerMinitems:  {},
 	GoValidMarkerMinlength: {},
-	GoValidMarkerRequired: {},
-	GoValidMarkerUrl: {},
-	GoValidMarkerUuid: {},
+	GoValidMarkerRequired:  {},
+	GoValidMarkerUrl:       {},
+	GoValidMarkerUuid:      {},
 }
