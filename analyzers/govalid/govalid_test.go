@@ -2,6 +2,7 @@ package govalid_test
 
 import (
 	"flag"
+	"fmt"
 	"testing"
 
 	"github.com/gostaticanalysis/codegen/codegentest"
@@ -47,11 +48,15 @@ func Test(t *testing.T) {
 		"uuid",
 		"url",
 		"cel",
+		"alpha",
 	}
 
 	for _, tc := range markers {
 		t.Run(tc, func(t *testing.T) {
 			results := codegentest.Run(t, codegentest.TestData(), govalid, tc)
+			for _, result := range results {
+				fmt.Println(*result)
+			}
 			codegentest.Golden(t, results, update)
 		})
 	}

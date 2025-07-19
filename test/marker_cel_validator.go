@@ -9,17 +9,17 @@ var (
 	// ErrNilCEL is returned when the CEL is nil.
 	ErrNilCEL = errors.New("input CEL is nil")
 
-	// ErrAgeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrAgeCELValidation = errors.New("field Age failed CEL validation: value >= 18")
+	// ErrCELAgeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELAgeCELValidation = errors.New("field CELAge failed CEL validation: value >= 18")
 
-	// ErrNameCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrNameCELValidation = errors.New("field Name failed CEL validation: size(value) > 0")
+	// ErrCELNameCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELNameCELValidation = errors.New("field CELName failed CEL validation: size(value) > 0")
 
-	// ErrScoreCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrScoreCELValidation = errors.New("field Score failed CEL validation: value > 0.0")
+	// ErrCELScoreCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELScoreCELValidation = errors.New("field CELScore failed CEL validation: value > 0.0")
 
-	// ErrIsActiveCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrIsActiveCELValidation = errors.New("field IsActive failed CEL validation: value == true")
+	// ErrCELIsActiveCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELIsActiveCELValidation = errors.New("field CELIsActive failed CEL validation: value == true")
 )
 
 func ValidateCEL(t *CEL) error {
@@ -28,19 +28,19 @@ func ValidateCEL(t *CEL) error {
 	}
 
 	if !(t.Age >= 18) {
-		return ErrAgeCELValidation
+		return ErrCELAgeCELValidation
 	}
 
 	if !(len(t.Name) > 0) {
-		return ErrNameCELValidation
+		return ErrCELNameCELValidation
 	}
 
 	if !(t.Score > 0) {
-		return ErrScoreCELValidation
+		return ErrCELScoreCELValidation
 	}
 
 	if !(t.IsActive == true) {
-		return ErrIsActiveCELValidation
+		return ErrCELIsActiveCELValidation
 	}
 
 	return nil

@@ -212,6 +212,8 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 			v = rules.ValidateURL(pass, field, marker.Expressions, structName)
 		case govalidmarkers.GoValidMarkerCEL:
 			v = rules.ValidateCEL(pass, field, marker.Expressions, structName)
+		case govalidmarkers.GoValidMarkerAlpha:
+			v = rules.ValidateAlpha(pass, field, marker.Expressions, structName)
 		default:
 			continue
 		}
