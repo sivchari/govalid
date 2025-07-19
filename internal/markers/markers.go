@@ -58,6 +58,10 @@ var (
 	// This marker supports complex validation expressions with access to 'value' (current field) and 'this' (struct instance).
 	// Available for all types and enables cross-field validation and complex business rules.
 	GoValidMarkerCEL = "govalid:cel"
+
+	// GoValidMarkerAlpha is the marker for ensuring a string contains only alphabetic characters(a-z, A-Z).
+	// This marker is only available for string types.
+	GoValidMarkerAlpha = "govalid:alpha"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -76,4 +80,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerUUID:      {},
 	GoValidMarkerURL:       {},
 	GoValidMarkerCEL:       {},
+	GoValidMarkerAlpha:     {},
 }

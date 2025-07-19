@@ -9,8 +9,8 @@ var (
 	// ErrNilLT is returned when the LT is nil.
 	ErrNilLT = errors.New("input LT is nil")
 
-	// ErrAgeLTValidation is the error returned when the value of the field is greater than the 10.
-	ErrAgeLTValidation = errors.New("field Age must be less than 10")
+	// ErrLTAgeLTValidation is the error returned when the value of the field is greater than the 10.
+	ErrLTAgeLTValidation = errors.New("field LTAge must be less than 10")
 )
 
 func ValidateLT(t *LT) error {
@@ -19,7 +19,7 @@ func ValidateLT(t *LT) error {
 	}
 
 	if !(t.Age < 10) {
-		return ErrAgeLTValidation
+		return ErrLTAgeLTValidation
 	}
 
 	return nil

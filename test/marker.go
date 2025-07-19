@@ -64,6 +64,17 @@ type MinItems struct {
 	// +govalid:minitems=1
 	ChanField chan int `json:"chan_field"`
 }
+
+type Alpha struct {
+	// +govalid:alpha
+	FirstName string `validate:"alpha" json:"first_name"`
+
+	// +govalid:alpha
+	LastName string `validate:"alpha" json:"last_name"`
+
+	// +govalid:alpha
+	CountryCode string `validate:"alpha" json:"country_code"`
+}
 // Custom types for enum testing
 type UserRole string
 type Priority int
@@ -119,12 +130,12 @@ type CELCrossField struct {
 	// Cross-field validation: Price must be less than MaxPrice
 	// +govalid:cel=value < this.MaxPrice
 	Price float64 `json:"price"`
-	
+
 	MaxPrice float64 `json:"max_price"`
-	
+
 	// Cross-field validation: Quantity * Price <= Budget
 	// +govalid:cel=value * this.Price <= this.Budget
 	Quantity float64 `json:"quantity"`
-	
+
 	Budget float64 `json:"budget"`
 }
