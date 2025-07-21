@@ -4,6 +4,7 @@ import (
 	_ "embed"
 )
 
-// Embed validation template
+// ValidationTemplate is the template for generating validation code.
+//
 //go:embed templates/validation.go.tmpl
 var ValidationTemplate string

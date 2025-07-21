@@ -48,6 +48,7 @@ func NewRegistry(builders ...Builder) Registry {
 	for _, builder := range builders {
 		builder(r)
 	}
+
 	return r
 }
 
@@ -61,6 +62,7 @@ func AddValidators(validators ...ValidatorInitializer) Builder {
 		if !ok {
 			panic("AddValidators: registry is not of type *registry")
 		}
+
 		reg.validatorInitializers = append(reg.validatorInitializers, validators...)
 	}
 }
@@ -71,6 +73,7 @@ func (r *registry) Markers() []string {
 	for marker := range r.initializedValidators {
 		markers = append(markers, marker)
 	}
+
 	return markers
 }
 
@@ -80,6 +83,7 @@ func (r *registry) Validator(marker string) (ValidatorFactory, error) {
 	if !exists {
 		return nil, fmt.Errorf("validator %s not found in registry", marker)
 	}
+
 	return factory, nil
 }
 
@@ -90,18 +94,25 @@ func (r *registry) Init() error {
 		if _, exists := r.initializedValidators[marker]; exists {
 			return fmt.Errorf("duplicate validator registration for marker %s", marker)
 		}
+
 		r.initializedValidators[marker] = initializer.Init()
 	}
+
 	return nil
 }
 
-// Global registry instance
+// Global registry instance.
 var globalRegistry Registry
 
 // Init initializes the global registry with the provided builders.
 func Init(builders ...Builder) error {
 	globalRegistry = NewRegistry(builders...)
-	return globalRegistry.Init()
+
+	if err := globalRegistry.Init(); err != nil {
+		return fmt.Errorf("failed to initialize global registry: %w", err)
+	}
+
+	return nil
 }
 
 // Markers returns all registered markers from the global registry.
@@ -109,6 +120,7 @@ func Markers() []string {
 	if globalRegistry == nil {
 		return nil
 	}
+
 	return globalRegistry.Markers()
 }
 
@@ -117,5 +129,11 @@ func Validator(marker string) (ValidatorFactory, error) {
 	if globalRegistry == nil {
 		return nil, fmt.Errorf("registry not initialized")
 	}
-	return globalRegistry.Validator(marker)
+
+	validator, err := globalRegistry.Validator(marker)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get validator for marker %s: %w", marker, err)
+	}
+
+	return validator, nil
 }

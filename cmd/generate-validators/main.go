@@ -1,8 +1,10 @@
+// Package main is a tool to generate Go validators and their initializers
 package main
 
 import (
 	"bytes"
 	_ "embed"
+	"errors"
 	"flag"
 	"fmt"
 	"go/ast"
@@ -14,6 +16,8 @@ import (
 	"sort"
 	"strings"
 	"text/template"
+
+	"golang.org/x/text/cases"
 )
 
 // Embed templates
@@ -33,7 +37,7 @@ var markersTemplate string
 //go:embed templates/validator.go.tmpl
 var validatorTemplate string
 
-// Fixed paths
+// Fixed paths.
 const (
 	rulesDir     = "internal/validator/rules"
 	outputDir    = "internal/validator/registry/initializers"
@@ -46,9 +50,10 @@ var funcMap = template.FuncMap{
 		if len(s) > 0 {
 			return strings.ToLower(s[:1])
 		}
+
 		return "x"
 	},
-	"title": strings.Title,
+	"title": cases.Title,
 }
 
 var (
@@ -74,6 +79,7 @@ func main() {
 		if err := scaffoldValidator(*marker); err != nil {
 			log.Fatalf("Failed to scaffold validator: %v", err)
 		}
+
 		return
 	}
 
@@ -85,14 +91,21 @@ func main() {
 
 func changeToProjectRoot() error {
 	dir, _ := os.Getwd()
+
 	for {
 		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return os.Chdir(dir)
+			if err := os.Chdir(dir); err != nil {
+				return fmt.Errorf("failed to change directory to %s: %w", dir, err)
+			}
+
+			return nil
 		}
+
 		parent := filepath.Dir(dir)
 		if parent == dir {
-			return fmt.Errorf("go.mod not found")
+			return errors.New("go.mod not found")
 		}
+
 		dir = parent
 	}
 }
@@ -133,7 +146,7 @@ func generateAll() error {
 	}
 
 	// Create output directory if it doesn't exist
-	if err := os.MkdirAll(outputDir, 0755); err != nil {
+	if err := os.MkdirAll(outputDir, 0750); err != nil {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
 
@@ -153,14 +166,16 @@ func generateAll() error {
 	}
 
 	// Generate markers file
-	if err := os.MkdirAll(filepath.Dir(markersFile), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(markersFile), 0750); err != nil {
 		return fmt.Errorf("failed to create markers directory: %w", err)
 	}
+
 	if err := generateFromTemplate(markersTemplate, validators, markersFile); err != nil {
 		return fmt.Errorf("failed to generate markers file: %w", err)
 	}
 
 	fmt.Printf("✓ Generated initializers for %d validators\n", len(validators))
+
 	return nil
 }
 
@@ -180,6 +195,7 @@ func discoverValidators() ([]ValidatorInfo, error) {
 		info, err := analyzeValidatorFile(file)
 		if err != nil {
 			log.Printf("Warning: failed to analyze %s: %v", file, err)
+
 			continue
 		}
 
@@ -198,12 +214,14 @@ func discoverValidators() ([]ValidatorInfo, error) {
 
 func analyzeValidatorFile(filepath string) (*ValidatorInfo, error) {
 	fset := token.NewFileSet()
+
 	node, err := parser.ParseFile(fset, filepath, nil, parser.ParseComments)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse file %s: %w", filepath, err)
 	}
 
 	var validatorType string
+
 	var validateFunc string
 
 	// Find validator struct and Validate function
@@ -221,11 +239,12 @@ func analyzeValidatorFile(filepath string) (*ValidatorInfo, error) {
 				}
 			}
 		}
+
 		return true
 	})
 
 	if validatorType == "" || validateFunc == "" {
-		return nil, nil
+		return nil, nil //nolint:nilnil // No valid validator found
 	}
 
 	// Extract marker name from validator type
@@ -243,7 +262,7 @@ func generateInitializers(validators []ValidatorInfo) error {
 	for _, validator := range validators {
 		t, err := template.New("initializer").Funcs(funcMap).Parse(initializerTemplate)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to parse template for %s: %w", validator.MarkerName, err)
 		}
 
 		var buf bytes.Buffer
@@ -252,7 +271,7 @@ func generateInitializers(validators []ValidatorInfo) error {
 		}
 
 		filename := filepath.Join(outputDir, validator.MarkerName+".go")
-		if err := os.WriteFile(filename, buf.Bytes(), 0644); err != nil {
+		if err := os.WriteFile(filename, buf.Bytes(), 0600); err != nil {
 			return fmt.Errorf("failed to write file %s: %w", filename, err)
 		}
 	}
@@ -263,13 +282,17 @@ func generateInitializers(validators []ValidatorInfo) error {
 func generateFromTemplate(tmplContent string, data any, outputPath string) error {
 	t, err := template.New("template").Funcs(funcMap).Parse(tmplContent)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to parse template: %w", err)
 	}
 
 	var buf bytes.Buffer
 	if err := t.Execute(&buf, data); err != nil {
-		return err
+		return fmt.Errorf("failed to execute template: %w", err)
 	}
 
-	return os.WriteFile(outputPath, buf.Bytes(), 0644)
+	if err := os.WriteFile(outputPath, buf.Bytes(), 0600); err != nil {
+		return fmt.Errorf("failed to write file %s: %w", outputPath, err)
+	}
+
+	return nil
 }
