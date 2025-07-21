@@ -17,6 +17,7 @@ import (
 )
 
 // Embed templates
+//
 //go:embed templates/initializer.go.tmpl
 var initializerTemplate string
 
@@ -34,10 +35,10 @@ var validatorTemplate string
 
 // Fixed paths
 const (
-	rulesDir       = "internal/validator/rules"
-	outputDir      = "internal/validator/registry/initializers"
-	registryFile   = "internal/analyzers/govalid/registry_init.go"
-	markersFile    = "internal/markers/markers_generated.go"
+	rulesDir     = "internal/validator/rules"
+	outputDir    = "internal/validator/registry/initializers"
+	registryFile = "internal/analyzers/govalid/registry_init.go"
+	markersFile  = "internal/markers/markers_generated.go"
 )
 
 var (
@@ -46,17 +47,8 @@ var (
 
 // ValidatorInfo contains information about a discovered validator.
 type ValidatorInfo struct {
-	MarkerName     string // e.g., "required", "maxlength"
-	MarkerConstant string // e.g., "GoValidMarkerRequired"
-	FunctionName   string // e.g., "ValidateRequired"
-	StructName     string // e.g., "Required", "MaxLength"
-	IsSpecial      bool   // true for validators like required that don't use expressions
-	Description    string // Description from comments
-	TypeInfo       string // Type information from comments
-	HasParameter   bool   // Whether validator takes a parameter
-	ParameterName  string // Name of the parameter field
-	ErrorMessage   string // Custom error message
-	TypeCheckCode  string // Type checking code
+	MarkerName   string // e.g., "required", "maxlength"
+	FunctionName string // e.g., "ValidateRequired"
 }
 
 func main() {
@@ -98,56 +90,30 @@ func changeToProjectRoot() error {
 func scaffoldValidator(markerName string) error {
 	// Convert marker name to various forms
 	markerLower := strings.ToLower(markerName)
-	structName := toPascalCase(markerLower)
-	
-	info := &ValidatorInfo{
-		MarkerName:     markerLower,
-		StructName:     structName,
-		FunctionName:   "Validate" + structName,
-		MarkerConstant: "GoValidMarker" + structName,
-		HasParameter:   true, // Most validators have parameters
-		ParameterName:  "value",
-		TypeCheckCode:  generateTypeCheckCode("string"), // Default to string
+	// Simple inline PascalCase conversion
+	structName := strings.ToUpper(markerLower[:1]) + markerLower[1:]
+
+	// Use a map for template data since we need more fields than ValidatorInfo
+	data := map[string]string{
+		"MarkerName":     markerLower,
+		"StructName":     structName,
+		"FunctionName":   "Validate" + structName,
+		"MarkerConstant": "GoValidMarker" + structName,
 	}
-	
+
 	// Create validator rule file
 	validatorPath := filepath.Join(rulesDir, markerLower+".go")
-	if err := generateFromTemplate(validatorTemplate, info, validatorPath); err != nil {
+	if err := generateFromTemplate(validatorTemplate, data, validatorPath); err != nil {
 		return fmt.Errorf("failed to generate validator: %w", err)
 	}
-	
+
 	fmt.Printf("✓ Created validator scaffold: %s\n", validatorPath)
 	fmt.Printf("\nNext steps:\n")
 	fmt.Printf("1. Implement validation logic in %s\n", validatorPath)
-	fmt.Printf("2. Update type checking if needed (currently set for string)\n")
-	fmt.Printf("3. Add test cases\n")
-	fmt.Printf("4. Run 'go generate ./analyzers/govalid' to update registry\n")
-	
-	return nil
-}
+	fmt.Printf("2. Add test cases\n")
+	fmt.Printf("3. Run 'go generate ./internal/analyzers/govalid' to update registry\n")
 
-func generateTypeCheckCode(fieldType string) string {
-	switch fieldType {
-	case "string":
-		return `	basic, ok := typ.Underlying().(*types.Basic)
-	if !ok || basic.Kind() != types.String {
-		return nil
-	}`
-	case "numeric":
-		return `	basic, ok := typ.Underlying().(*types.Basic)
-	if !ok || (basic.Info()&types.IsNumeric) == 0 {
-		return nil
-	}`
-	case "collection":
-		return `	switch typ.Underlying().(type) {
-	case *types.Slice, *types.Array, *types.Map, *types.Chan:
-		// Valid collection type
-	default:
-		return nil
-	}`
-	default:
-		return `	// TODO: Add appropriate type checking`
-	}
+	return nil
 }
 
 func generateAll() error {
@@ -229,7 +195,6 @@ func analyzeValidatorFile(filepath string) (*ValidatorInfo, error) {
 
 	var validatorType string
 	var validateFunc string
-	var isSpecial bool
 
 	// Find validator struct and Validate function
 	ast.Inspect(node, func(n ast.Node) bool {
@@ -243,11 +208,6 @@ func analyzeValidatorFile(filepath string) (*ValidatorInfo, error) {
 				// Check if it returns validator.Validator
 				if node.Type.Results != nil && len(node.Type.Results.List) == 1 {
 					validateFunc = node.Name.Name
-					
-					// Check if it's a special validator (3 params instead of 4)
-					if node.Type.Params != nil && len(node.Type.Params.List) == 3 {
-						isSpecial = true
-					}
 				}
 			}
 		}
@@ -261,91 +221,11 @@ func analyzeValidatorFile(filepath string) (*ValidatorInfo, error) {
 	// Extract marker name from validator type
 	markerName := strings.TrimSuffix(validatorType, "Validator")
 	markerName = strings.ToLower(markerName)
-	
-	// Convert to struct name
-	structName := toPascalCase(markerName)
-	
-	// Convert to marker constant name
-	markerConstant := "GoValidMarker" + structName
-
-	// Get description and type info
-	description, typeInfo := getValidatorDescription(markerName)
 
 	return &ValidatorInfo{
-		MarkerName:     markerName,
-		MarkerConstant: markerConstant,
-		FunctionName:   validateFunc,
-		StructName:     structName,
-		IsSpecial:      isSpecial,
-		Description:    description,
-		TypeInfo:       typeInfo,
+		MarkerName:   markerName,
+		FunctionName: validateFunc,
 	}, nil
-}
-
-func getValidatorDescription(markerName string) (description, typeInfo string) {
-	// Default descriptions based on marker names
-	switch markerName {
-	case "required":
-		return "the marker for required fields", ""
-	case "lt":
-		return "the marker for checking if a value is less than a specified maximum", "numeric types"
-	case "gt":
-		return "the marker for checking if a value is greater than a specified minimum", "numeric types"
-	case "lte":
-		return "the marker for checking if a value is less than or equal to a specified maximum", "numeric types"
-	case "gte":
-		return "the marker for checking if a value is greater than or equal to a specified minimum", "numeric types"
-	case "maxlength":
-		return "the marker for checking if a string's length is less than or equal to a specified maximum", "string types"
-	case "minlength":
-		return "the marker for checking if a string's length is greater than or equal to a specified minimum", "string types"
-	case "maxitems":
-		return "the marker for checking if a collection's length is less than or equal to a specified maximum", "slice, array, map, and channel types"
-	case "minitems":
-		return "the marker for checking if a collection's length is greater than or equal to a specified minimum", "slice, array, map, and channel types"
-	case "enum":
-		return "the marker for checking if a field value is within a specified set of allowed values", "string, numeric, and custom types with comparable values"
-	case "email":
-		return "the marker for checking if a string is a valid email address", "string types"
-	case "uuid":
-		return "the marker for checking if a string is a valid UUID", "string types"
-	case "url":
-		return "the marker for checking if a string is a valid URL", "string types"
-	case "cel":
-		return "the marker for CEL (Common Expression Language) validation", "all types"
-	default:
-		return fmt.Sprintf("the marker for %s validation", markerName), ""
-	}
-}
-
-func toPascalCase(s string) string {
-	// Handle special cases for consistency with existing constants
-	switch s {
-	case "maxlength":
-		return "MaxLength"
-	case "minlength":
-		return "MinLength"
-	case "maxitems":
-		return "MaxItems"
-	case "minitems":
-		return "MinItems"
-	case "lt":
-		return "LT"
-	case "gt":
-		return "GT"
-	case "lte":
-		return "LTE"
-	case "gte":
-		return "GTE"
-	case "cel":
-		return "CEL"
-	case "uuid":
-		return "UUID"
-	case "url":
-		return "URL"
-	default:
-		return strings.Title(s)
-	}
 }
 
 func generateInitializers(validators []ValidatorInfo) error {
@@ -355,6 +235,12 @@ func generateInitializers(validators []ValidatorInfo) error {
 				return strings.ToLower(s[:1])
 			}
 			return "x"
+		},
+		"title": func(s string) string {
+			if len(s) > 0 {
+				return strings.ToUpper(s[:1]) + s[1:]
+			}
+			return s
 		},
 	}
 
@@ -379,7 +265,7 @@ func generateInitializers(validators []ValidatorInfo) error {
 	return nil
 }
 
-func generateFromTemplate(tmplContent string, data interface{}, outputPath string) error {
+func generateFromTemplate(tmplContent string, data any, outputPath string) error {
 	t, err := template.New("template").Parse(tmplContent)
 	if err != nil {
 		return err

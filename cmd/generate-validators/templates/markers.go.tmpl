@@ -4,13 +4,12 @@
 package markers
 
 var (
-{{range .}}	// GoValidMarker{{.StructName}} is {{.Description}} in govalid.
-{{if .TypeInfo}}	// This marker is only available for {{.TypeInfo}}.
-{{end}}	GoValidMarker{{.StructName}} = "govalid:{{.MarkerName}}"
+{{range .}}	// GoValidMarker{{.MarkerName | title}} is the marker for {{.MarkerName}} validation.
+	GoValidMarker{{.MarkerName | title}} = "govalid:{{.MarkerName}}"
 
 {{end}})
 
 // GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
-{{range .}}	GoValidMarker{{.StructName}}: {},
+{{range .}}	GoValidMarker{{.MarkerName | title}}: {},
 {{end}}}

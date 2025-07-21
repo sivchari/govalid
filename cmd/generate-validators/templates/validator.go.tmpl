@@ -16,7 +16,6 @@ type {{.MarkerName}}Validator struct {
 	pass       *codegen.Pass
 	field      *ast.Field
 	structName string
-	{{if .HasParameter}}{{.ParameterName}} string{{end}}
 }
 
 var _ validator.Validator = (*{{.MarkerName}}Validator)(nil)
@@ -26,7 +25,7 @@ const {{.MarkerName}}Key = "%s-{{.MarkerName}}"
 func (v *{{.MarkerName}}Validator) Validate() string {
 	// TODO: Implement validation logic
 	// Return a Go expression that evaluates to true when validation fails
-	return fmt.Sprintf("!isValid{{.StructName}}(t.%s{{if .HasParameter}}, v.{{.ParameterName}}{{end}})", v.FieldName())
+    return ""
 }
 
 func (v *{{.MarkerName}}Validator) FieldName() string {
@@ -68,6 +67,5 @@ func Validate{{.StructName}}(pass *codegen.Pass, field *ast.Field, expressions m
 		pass:       pass,
 		field:      field,
 		structName: structName,
-		{{if .HasParameter}}{{.ParameterName}}: expressions["value"], // TODO: Parse parameter from expressions{{end}}
 	}
 }
