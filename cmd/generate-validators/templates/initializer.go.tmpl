@@ -1,0 +1,29 @@
+package initializers
+
+import (
+{{if .IsSpecial}}	"go/ast"
+
+	"github.com/gostaticanalysis/codegen"
+
+{{end}}	"github.com/sivchari/govalid/internal/markers"
+{{if .IsSpecial}}	"github.com/sivchari/govalid/internal/validator"
+{{end}}	"github.com/sivchari/govalid/internal/validator/registry"
+	"github.com/sivchari/govalid/internal/validator/rules"
+)
+
+// {{.StructName}}Initializer implements ValidatorInitializer for the {{.MarkerName}} validator.
+type {{.StructName}}Initializer struct{}
+
+// Marker returns the marker identifier for the {{.MarkerName}} validator.
+func ({{.MarkerName | firstLetter}} {{.StructName}}Initializer) Marker() string {
+	return markers.{{.MarkerConstant}}
+}
+
+// Init initializes the {{.MarkerName}} validator factory.
+func ({{.MarkerName | firstLetter}} {{.StructName}}Initializer) Init() registry.ValidatorFactory {
+{{if .IsSpecial}}	// Special case: {{.MarkerName}} doesn't use expressions parameter
+	return func(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
+		return rules.{{.FunctionName}}(pass, field, structName)
+	}
+{{else}}	return rules.{{.FunctionName}}
+{{end}}}
