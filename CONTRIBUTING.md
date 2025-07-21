@@ -32,29 +32,20 @@ go install ./cmd/govalid/
 
 ### Overview
 
-Adding a new marker involves implementing the validator logic, integrating it with the analyzer, and adding comprehensive tests. Follow this step-by-step guide:
+With our new automated system, adding a new marker is streamlined to just a few steps. The registry system automatically discovers and integrates new validators without manual switch statement updates.
 
-### Step 1: Feature Branch Setup
+### Step 1: Create a New Validator Using Scaffold
 
 ```bash
-git checkout -b feature/{marker-name}-marker
+# Create a scaffold for your new validator
+go run cmd/generate-validators/main.go -marker=phoneNumber
+
+# This generates: internal/validator/rules/phonenumber.go
 ```
 
-### Step 2: Core Implementation
+### Step 2: Implement the Validator Logic
 
-#### A. Define the Marker (`internal/markers/markers.go`)
-
-Add your marker constant:
-
-```go
-// GoValidMarker{MarkerName} is the marker for {description}.
-// This marker is only available for {type} types.
-GoValidMarker{MarkerName} = "govalid:{markername}"
-```
-
-#### B. Implement the Validator (`internal/validator/rules/{markername}.go`)
-
-Create a new validator file following this pattern:
+Edit the generated file `internal/validator/rules/phonenumber.go`:
 
 ```go
 package rules
@@ -62,98 +53,149 @@ package rules
 import (
     "fmt"
     "go/ast"
+    "go/types"
     "strings"
+    
     "github.com/gostaticanalysis/codegen"
     "github.com/sivchari/govalid/internal/validator"
 )
 
-type {markerName}Validator struct {
-    pass           *codegen.Pass
-    field          *ast.Field
-    {markerName}Value string // or appropriate type (int, bool, etc.)
+type phonenumberValidator struct {
+    pass       *codegen.Pass
+    field      *ast.Field
+    structName string
+    pattern    string // Add any parameters your validator needs
 }
 
-var _ validator.Validator = (*{markerName}Validator)(nil)
+var _ validator.Validator = (*phonenumberValidator)(nil)
 
-const {markerName}Key = "%s-{markername}"
+const phonenumberKey = "%s-phonenumber"
 
-func (v *{markerName}Validator) Validate() string {
-    // Return the validation logic as Go code
-    return fmt.Sprintf("{validation_logic}", v.FieldName(), v.{markerName}Value)
+func (v *phonenumberValidator) Validate() string {
+    // Implement your validation logic
+    // Return a Go expression that evaluates to true when validation FAILS
+    return fmt.Sprintf(`!regexp.MustCompile(%q).MatchString(t.%s)`, v.pattern, v.FieldName())
 }
 
-func (v *{markerName}Validator) FieldName() string {
+func (v *phonenumberValidator) FieldName() string {
     return v.field.Names[0].Name
 }
 
-func (v *{markerName}Validator) Err() string {
-    if validator.GeneratorMemory[fmt.Sprintf({markerName}Key, v.FieldName())] {
+func (v *phonenumberValidator) Err() string {
+    key := fmt.Sprintf(phonenumberKey, v.structName+v.FieldName())
+    if validator.GeneratorMemory[key] {
         return ""
     }
 
-    validator.GeneratorMemory[fmt.Sprintf({markerName}Key, v.FieldName())] = true
+    validator.GeneratorMemory[key] = true
 
-    return fmt.Sprintf(strings.ReplaceAll(`
-    // Err@{MarkerName}Validation is the error returned when {description}.
-    Err@{MarkerName}Validation = errors.New("{error message}")`, "@", v.FieldName()))
+    return strings.ReplaceAll(`
+    // Err@PhonenumberValidation is returned when the @ fails phonenumber validation.
+    Err@PhonenumberValidation = errors.New("field @ must be a valid phone number")`, "@", v.structName+v.FieldName())
 }
 
-func (v *{markerName}Validator) ErrVariable() string {
-    return strings.ReplaceAll("Err@{MarkerName}Validation", "@", v.FieldName())
+func (v *phonenumberValidator) ErrVariable() string {
+    return strings.ReplaceAll("Err@PhonenumberValidation", "@", v.structName+v.FieldName())
 }
 
-func (v *{markerName}Validator) Imports() []string {
-    // Return required imports for your validation logic
-    return []string{} // e.g., []string{"unicode/utf8"} for string validators
+func (v *phonenumberValidator) Imports() []string {
+    // Add any imports your validation logic needs
+    return []string{"regexp"}
 }
 
-// Validate{MarkerName} creates a new {markerName}Validator if conditions are met.
-func Validate{MarkerName}(pass *codegen.Pass, field *ast.Field, expressions map[string]string) validator.Validator {
-    // Add type checking and marker validation logic
-    // Return validator instance or nil
+// ValidatePhonenumber creates a new phonenumber validator for the given field.
+func ValidatePhonenumber(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
+    typ := pass.TypesInfo.TypeOf(field.Type)
+
+    // Type checking - ensure it's a string
+    basic, ok := typ.Underlying().(*types.Basic)
+    if !ok || basic.Kind() != types.String {
+        return nil
+    }
+
+    validator.GeneratorMemory[fmt.Sprintf(phonenumberKey, structName+field.Names[0].Name)] = false
+
+    // Parse pattern from expressions, default to international format
+    pattern := `^\+?[1-9]\d{1,14}$`
+    if p, ok := expressions["pattern"]; ok {
+        pattern = p
+    }
+
+    return &phonenumberValidator{
+        pass:       pass,
+        field:      field,
+        structName: structName,
+        pattern:    pattern,
+    }
 }
 ```
 
-#### C. Integrate with Analyzer (`analyzers/govalid/govalid.go`)
+### Step 3: Generate All Required Files
 
-Add your marker to the `makeValidator` function:
+```bash
+# From project root, regenerate all registry files
+go generate ./internal/analyzers/govalid
 
-```go
-case markers.GoValidMarker{MarkerName}:
-    v = rules.Validate{MarkerName}(pass, field, marker.Expressions)
+# This automatically:
+# - Updates internal/markers/markers_generated.go
+# - Creates internal/validator/registry/initializers/phonenumber.go
+# - Updates internal/validator/registry/initializers/all.go
+# - Updates internal/analyzers/govalid/registry_init.go
 ```
 
-### Step 3: Testing Implementation
+### Step 4: Testing Implementation
 
-#### A. Golden Tests (`analyzers/govalid/testdata/src/{markername}/`)
+#### A. Golden Tests (`internal/analyzers/govalid/testdata/src/phonenumber/`)
 
-Create test input file `{markername}.go`:
+Create test input file `phonenumber.go`:
 
 ```go
-package {markername}
+package phonenumber
 
-//govalid:generate
-type {MarkerName} struct {
-    Field string `govalid:"{markername}=value"`
+type User struct {
+    // govalid:phonenumber
+    Phone string `json:"phone"`
+    
+    // govalid:phonenumber,pattern=^\\d{3}-\\d{4}$
+    ZipCode string `json:"zip_code"`
 }
 ```
 
 Create expected output file `govalid.golden`:
 
 ```go
-// Code generated by govalid. DO NOT EDIT.
+// Code generated by govalid; DO NOT EDIT.
+package phonenumber
 
-package {markername}
+import (
+    "errors"
+    "regexp"
+)
 
-import "fmt"
+var (
+    ErrNilUser = errors.New("input User is nil")
+    ErrUserPhonePhonenumberValidation = errors.New("field Phone must be a valid phone number")
+    ErrUserZipCodePhonenumberValidation = errors.New("field ZipCode must be a valid phone number")
+)
 
-func Validate{MarkerName}(t *{MarkerName}) error {
-    // Expected generated validation code
+func ValidateUser(t *User) error {
+    if t == nil {
+        return ErrNilUser
+    }
+    
+    if !regexp.MustCompile(`^\+?[1-9]\d{1,14}$`).MatchString(t.Phone) {
+        return ErrUserPhonePhonenumberValidation
+    }
+    
+    if !regexp.MustCompile(`^\d{3}-\d{4}$`).MatchString(t.ZipCode) {
+        return ErrUserZipCodePhonenumberValidation
+    }
+    
     return nil
 }
 ```
 
-#### B. Unit Tests (`test/unit/{markername}_test.go`)
+#### B. Unit Tests (`test/unit/phonenumber_test.go`)
 
 ```go
 package unit
@@ -163,22 +205,23 @@ import (
     "github.com/sivchari/govalid/test"
 )
 
-func Test{MarkerName}Validation(t *testing.T) {
+func TestPhonenumberValidation(t *testing.T) {
     tests := []struct {
         name        string
-        data        test.{MarkerName}
+        phone       string
         expectError bool
     }{
-        {"valid_case", test.{MarkerName}{Field: "valid_value"}, false},
-        {"boundary_minus_one", test.{MarkerName}{Field: "boundary-1"}, false},
-        {"exactly_at_boundary", test.{MarkerName}{Field: "boundary"}, false},
-        {"boundary_plus_one", test.{MarkerName}{Field: "boundary+1"}, true},
-        {"invalid_case", test.{MarkerName}{Field: "invalid_value"}, true},
+        {"valid_international", "+1234567890", false},
+        {"valid_without_plus", "1234567890", false},
+        {"invalid_empty", "", true},
+        {"invalid_letters", "abc123", true},
+        {"invalid_too_long", "+123456789012345678", true},
     }
 
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
-            err := test.Validate{MarkerName}(&tt.data)
+            user := &test.UserPhoneNumber{Phone: tt.phone}
+            err := test.ValidateUserPhoneNumber(user)
             hasError := err != nil
             
             if hasError != tt.expectError {
@@ -189,7 +232,7 @@ func Test{MarkerName}Validation(t *testing.T) {
 }
 ```
 
-#### C. Benchmark Tests (`test/benchmark/benchmark_{markername}_test.go`)
+#### C. Benchmark Tests (`test/benchmark/benchmark_phonenumber_test.go`)
 
 ```go
 package benchmark
@@ -200,11 +243,11 @@ import (
     "github.com/sivchari/govalid/test"
 )
 
-func BenchmarkGoValid{MarkerName}(b *testing.B) {
-    instance := test.{MarkerName}{Field: "test_value"}
+func BenchmarkGoValidPhonenumber(b *testing.B) {
+    instance := test.UserPhoneNumber{Phone: "+1234567890"}
     b.ResetTimer()
     for b.Loop() {
-        err := test.Validate{MarkerName}(&instance)
+        err := test.ValidateUserPhoneNumber(&instance)
         if err != nil {
             b.Fatal("unexpected error:", err)
         }
@@ -212,9 +255,17 @@ func BenchmarkGoValid{MarkerName}(b *testing.B) {
     b.StopTimer()
 }
 
-func BenchmarkGoPlayground{MarkerName}(b *testing.B) {
+func BenchmarkGoPlaygroundPhonenumber(b *testing.B) {
     validate := validator.New()
-    instance := test.{MarkerName}{Field: "test_value"}
+    validate.RegisterValidation("phone", func(fl validator.FieldLevel) bool {
+        // Simple phone validation for comparison
+        return len(fl.Field().String()) >= 10
+    })
+    
+    instance := struct {
+        Phone string `validate:"phone"`
+    }{Phone: "+1234567890"}
+    
     b.ResetTimer()
     for b.Loop() {
         err := validate.Struct(&instance)
@@ -226,9 +277,7 @@ func BenchmarkGoPlayground{MarkerName}(b *testing.B) {
 }
 ```
 
-### Step 4: Test Execution and Validation
-
-Run tests in this specific order:
+### Step 5: Test Execution and Validation
 
 ```bash
 # 1. Build and install updated binary
@@ -238,30 +287,91 @@ go install ./cmd/govalid/
 cd test && go generate
 
 # 3. Run golden tests
-cd .. && go test ./analyzers/govalid/ -v
+cd .. && go test ./internal/analyzers/govalid/ -v
 
 # 4. Run unit tests
 cd test && go test ./unit/ -v
 
 # 5. Run benchmarks
-go test ./benchmark/ -bench=Benchmark.*{MarkerName} -benchmem
+go test ./benchmark/ -bench=Benchmark.*Phonenumber -benchmem
 
 # 6. Run lint checks
-cd .. && make golangci-lint
+make golangci-lint
 
-# 7. Fix any lint issues and re-run benchmarks if needed
+# 7. Update benchmark README with results
+# Edit test/benchmark/README.md
 ```
 
-### Step 5: Documentation Updates
+### Step 6: Documentation Updates
 
-1. Update `MARKERS.md` with your marker documentation
-2. Update `docs/content/validators.md` with usage examples and behavior details
+Update the main README.md with your new marker:
+
+```markdown
+| `phonenumber` | Phone number validation | string | `// govalid:phonenumber` or `// govalid:phonenumber,pattern=^\d{10}$` |
+```
+
+## 🎯 Key Differences from Old System
+
+### What's Changed:
+
+1. **No Manual Switch Statements**: The registry system automatically discovers your validator
+2. **No Manual Marker Definition**: `markers_generated.go` is auto-generated
+3. **Automatic Initializer Creation**: No need to manually create initializer files
+4. **Single Command Integration**: `go generate` handles everything
+
+### What Stays the Same:
+
+1. **Validator Implementation**: Core logic remains the same
+2. **Testing Approach**: Golden tests, unit tests, and benchmarks
+3. **Performance Focus**: Zero-allocation design principles
+
+## 💡 Best Practices
+
+### Performance Optimization
+
+1. **Avoid Allocations**: Use inline comparisons when possible
+2. **Precompile Regexes**: For complex patterns, consider using validation helper functions
+3. **Benchmark Everything**: Always compare against go-playground/validator
+
+### Code Quality
+
+1. **Follow Existing Patterns**: Look at `maxlength.go` or `email.go` for examples
+2. **Type Safety**: Always check field types in your Validate function
+3. **Clear Error Messages**: Make errors actionable for users
+
+### Validation Helper Functions
+
+For complex validation logic, use external helper functions:
+
+```go
+// validation/validationhelper/phone.go
+package validationhelper
+
+import "regexp"
+
+var phoneRegex = regexp.MustCompile(`^\+?[1-9]\d{1,14}$`)
+
+func IsValidPhoneNumber(phone string) bool {
+    return phoneRegex.MatchString(phone)
+}
+```
+
+Then in your validator:
+```go
+func (v *phonenumberValidator) Validate() string {
+    return fmt.Sprintf("!validationhelper.IsValidPhoneNumber(t.%s)", v.FieldName())
+}
+
+func (v *phonenumberValidator) Imports() []string {
+    return []string{"github.com/sivchari/govalid/validation/validationhelper"}
+}
+```
 
 ## 🤝 Getting Help
 
 - **Issues**: Check existing issues or create a new one
 - **Discussions**: Use GitHub Discussions for questions
-- **Code patterns**: Reference existing markers (MaxLength, GT, etc.) as examples
+- **Examples**: Reference existing validators in `internal/validator/rules/`
 
 ## 📜 License
 
