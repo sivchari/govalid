@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// UUIDInitializer implements ValidatorInitializer for the uuid validator.
-type UUIDInitializer struct{}
+// UuidInitializer implements ValidatorInitializer for the uuid validator.
+type UuidInitializer struct{}
 
 // Marker returns the marker identifier for the uuid validator.
-func (u UUIDInitializer) Marker() string {
-	return markers.GoValidMarkerUUID
+func (u UuidInitializer) Marker() string {
+	return markers.GoValidMarkerUuid
 }
 
 // Init initializes the uuid validator factory.
-func (u UUIDInitializer) Init() registry.ValidatorFactory {
+func (u UuidInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateUUID
 }

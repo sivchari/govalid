@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// URLInitializer implements ValidatorInitializer for the url validator.
-type URLInitializer struct{}
+// UrlInitializer implements ValidatorInitializer for the url validator.
+type UrlInitializer struct{}
 
 // Marker returns the marker identifier for the url validator.
-func (u URLInitializer) Marker() string {
-	return markers.GoValidMarkerURL
+func (u UrlInitializer) Marker() string {
+	return markers.GoValidMarkerUrl
 }
 
 // Init initializes the url validator factory.
-func (u URLInitializer) Init() registry.ValidatorFactory {
+func (u UrlInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateURL
 }

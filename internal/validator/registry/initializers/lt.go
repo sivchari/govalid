@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// LTInitializer implements ValidatorInitializer for the lt validator.
-type LTInitializer struct{}
+// LtInitializer implements ValidatorInitializer for the lt validator.
+type LtInitializer struct{}
 
 // Marker returns the marker identifier for the lt validator.
-func (l LTInitializer) Marker() string {
-	return markers.GoValidMarkerLT
+func (l LtInitializer) Marker() string {
+	return markers.GoValidMarkerLt
 }
 
 // Init initializes the lt validator factory.
-func (l LTInitializer) Init() registry.ValidatorFactory {
+func (l LtInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateLT
 }

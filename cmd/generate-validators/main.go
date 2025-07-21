@@ -41,6 +41,16 @@ const (
 	markersFile  = "internal/markers/markers_generated.go"
 )
 
+var funcMap = template.FuncMap{
+	"firstLetter": func(s string) string {
+		if len(s) > 0 {
+			return strings.ToLower(s[:1])
+		}
+		return "x"
+	},
+	"title": strings.Title,
+}
+
 var (
 	marker = flag.String("marker", "", "Create a new validator with the given marker name (e.g., 'phoneNumber')")
 )
@@ -229,21 +239,6 @@ func analyzeValidatorFile(filepath string) (*ValidatorInfo, error) {
 }
 
 func generateInitializers(validators []ValidatorInfo) error {
-	funcMap := template.FuncMap{
-		"firstLetter": func(s string) string {
-			if len(s) > 0 {
-				return strings.ToLower(s[:1])
-			}
-			return "x"
-		},
-		"title": func(s string) string {
-			if len(s) > 0 {
-				return strings.ToUpper(s[:1]) + s[1:]
-			}
-			return s
-		},
-	}
-
 	// Generate individual initializer files
 	for _, validator := range validators {
 		t, err := template.New("initializer").Funcs(funcMap).Parse(initializerTemplate)
@@ -266,7 +261,7 @@ func generateInitializers(validators []ValidatorInfo) error {
 }
 
 func generateFromTemplate(tmplContent string, data any, outputPath string) error {
-	t, err := template.New("template").Parse(tmplContent)
+	t, err := template.New("template").Funcs(funcMap).Parse(tmplContent)
 	if err != nil {
 		return err
 	}

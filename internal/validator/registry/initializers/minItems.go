@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// MinItemsInitializer implements ValidatorInitializer for the minitems validator.
-type MinItemsInitializer struct{}
+// MinitemsInitializer implements ValidatorInitializer for the minitems validator.
+type MinitemsInitializer struct{}
 
 // Marker returns the marker identifier for the minitems validator.
-func (m MinItemsInitializer) Marker() string {
-	return markers.GoValidMarkerMinItems
+func (m MinitemsInitializer) Marker() string {
+	return markers.GoValidMarkerMinitems
 }
 
 // Init initializes the minitems validator factory.
-func (m MinItemsInitializer) Init() registry.ValidatorFactory {
+func (m MinitemsInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateMinItems
 }

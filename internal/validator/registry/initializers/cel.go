@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// CELInitializer implements ValidatorInitializer for the cel validator.
-type CELInitializer struct{}
+// CelInitializer implements ValidatorInitializer for the cel validator.
+type CelInitializer struct{}
 
 // Marker returns the marker identifier for the cel validator.
-func (c CELInitializer) Marker() string {
-	return markers.GoValidMarkerCEL
+func (c CelInitializer) Marker() string {
+	return markers.GoValidMarkerCel
 }
 
 // Init initializes the cel validator factory.
-func (c CELInitializer) Init() registry.ValidatorFactory {
+func (c CelInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateCEL
 }

@@ -4,77 +4,64 @@
 package markers
 
 var (
-	// GoValidMarkerCEL is the marker for CEL (Common Expression Language) validation in govalid.
-	// This marker is only available for all types.
-	GoValidMarkerCEL = "govalid:cel"
+	// GoValidMarkerCel is the marker for cel validation.
+	GoValidMarkerCel = "govalid:cel"
 
-	// GoValidMarkerEmail is the marker for checking if a string is a valid email address in govalid.
-	// This marker is only available for string types.
+	// GoValidMarkerEmail is the marker for email validation.
 	GoValidMarkerEmail = "govalid:email"
 
-	// GoValidMarkerEnum is the marker for checking if a field value is within a specified set of allowed values in govalid.
-	// This marker is only available for string, numeric, and custom types with comparable values.
+	// GoValidMarkerEnum is the marker for enum validation.
 	GoValidMarkerEnum = "govalid:enum"
 
-	// GoValidMarkerGT is the marker for checking if a value is greater than a specified minimum in govalid.
-	// This marker is only available for numeric types.
-	GoValidMarkerGT = "govalid:gt"
+	// GoValidMarkerGt is the marker for gt validation.
+	GoValidMarkerGt = "govalid:gt"
 
-	// GoValidMarkerGTE is the marker for checking if a value is greater than or equal to a specified minimum in govalid.
-	// This marker is only available for numeric types.
-	GoValidMarkerGTE = "govalid:gte"
+	// GoValidMarkerGte is the marker for gte validation.
+	GoValidMarkerGte = "govalid:gte"
 
-	// GoValidMarkerLT is the marker for checking if a value is less than a specified maximum in govalid.
-	// This marker is only available for numeric types.
-	GoValidMarkerLT = "govalid:lt"
+	// GoValidMarkerLt is the marker for lt validation.
+	GoValidMarkerLt = "govalid:lt"
 
-	// GoValidMarkerLTE is the marker for checking if a value is less than or equal to a specified maximum in govalid.
-	// This marker is only available for numeric types.
-	GoValidMarkerLTE = "govalid:lte"
+	// GoValidMarkerLte is the marker for lte validation.
+	GoValidMarkerLte = "govalid:lte"
 
-	// GoValidMarkerMaxItems is the marker for checking if a collection's length is less than or equal to a specified maximum in govalid.
-	// This marker is only available for slice, array, map, and channel types.
-	GoValidMarkerMaxItems = "govalid:maxitems"
+	// GoValidMarkerMaxitems is the marker for maxitems validation.
+	GoValidMarkerMaxitems = "govalid:maxitems"
 
-	// GoValidMarkerMaxLength is the marker for checking if a string's length is less than or equal to a specified maximum in govalid.
-	// This marker is only available for string types.
-	GoValidMarkerMaxLength = "govalid:maxlength"
+	// GoValidMarkerMaxlength is the marker for maxlength validation.
+	GoValidMarkerMaxlength = "govalid:maxlength"
 
-	// GoValidMarkerMinItems is the marker for checking if a collection's length is greater than or equal to a specified minimum in govalid.
-	// This marker is only available for slice, array, map, and channel types.
-	GoValidMarkerMinItems = "govalid:minitems"
+	// GoValidMarkerMinitems is the marker for minitems validation.
+	GoValidMarkerMinitems = "govalid:minitems"
 
-	// GoValidMarkerMinLength is the marker for checking if a string's length is greater than or equal to a specified minimum in govalid.
-	// This marker is only available for string types.
-	GoValidMarkerMinLength = "govalid:minlength"
+	// GoValidMarkerMinlength is the marker for minlength validation.
+	GoValidMarkerMinlength = "govalid:minlength"
 
-	// GoValidMarkerRequired is the marker for required fields in govalid.
+	// GoValidMarkerRequired is the marker for required validation.
 	GoValidMarkerRequired = "govalid:required"
 
-	// GoValidMarkerURL is the marker for checking if a string is a valid URL in govalid.
-	// This marker is only available for string types.
-	GoValidMarkerURL = "govalid:url"
+	// GoValidMarkerUrl is the marker for url validation.
+	GoValidMarkerUrl = "govalid:url"
 
-	// GoValidMarkerUUID is the marker for checking if a string is a valid UUID in govalid.
-	// This marker is only available for string types.
-	GoValidMarkerUUID = "govalid:uuid"
+	// GoValidMarkerUuid is the marker for uuid validation.
+	GoValidMarkerUuid = "govalid:uuid"
 
 )
 
 // GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
-	GoValidMarkerCEL: {},
+	GoValidMarkerCel: {},
 	GoValidMarkerEmail: {},
 	GoValidMarkerEnum: {},
-	GoValidMarkerGT: {},
-	GoValidMarkerGTE: {},
-	GoValidMarkerLT: {},
-	GoValidMarkerLTE: {},
-	GoValidMarkerMaxItems: {},
-	GoValidMarkerMaxLength: {},
-	GoValidMarkerMinItems: {},
-	GoValidMarkerMinLength: {},
+	GoValidMarkerGt: {},
+	GoValidMarkerGte: {},
+	GoValidMarkerLt: {},
+	GoValidMarkerLte: {},
+	GoValidMarkerMaxitems: {},
+	GoValidMarkerMaxlength: {},
+	GoValidMarkerMinitems: {},
+	GoValidMarkerMinlength: {},
 	GoValidMarkerRequired: {},
-	GoValidMarkerURL: {},
-	GoValidMarkerUUID: {},
+	GoValidMarkerUrl: {},
+	GoValidMarkerUuid: {},
 }

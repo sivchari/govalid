@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// GTInitializer implements ValidatorInitializer for the gt validator.
-type GTInitializer struct{}
+// GtInitializer implements ValidatorInitializer for the gt validator.
+type GtInitializer struct{}
 
 // Marker returns the marker identifier for the gt validator.
-func (g GTInitializer) Marker() string {
-	return markers.GoValidMarkerGT
+func (g GtInitializer) Marker() string {
+	return markers.GoValidMarkerGt
 }
 
 // Init initializes the gt validator factory.
-func (g GTInitializer) Init() registry.ValidatorFactory {
+func (g GtInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateGT
 }

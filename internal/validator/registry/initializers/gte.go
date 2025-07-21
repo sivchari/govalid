@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// GTEInitializer implements ValidatorInitializer for the gte validator.
-type GTEInitializer struct{}
+// GteInitializer implements ValidatorInitializer for the gte validator.
+type GteInitializer struct{}
 
 // Marker returns the marker identifier for the gte validator.
-func (g GTEInitializer) Marker() string {
-	return markers.GoValidMarkerGTE
+func (g GteInitializer) Marker() string {
+	return markers.GoValidMarkerGte
 }
 
 // Init initializes the gte validator factory.
-func (g GTEInitializer) Init() registry.ValidatorFactory {
+func (g GteInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateGTE
 }

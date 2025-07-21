@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// MaxLengthInitializer implements ValidatorInitializer for the maxlength validator.
-type MaxLengthInitializer struct{}
+// MaxlengthInitializer implements ValidatorInitializer for the maxlength validator.
+type MaxlengthInitializer struct{}
 
 // Marker returns the marker identifier for the maxlength validator.
-func (m MaxLengthInitializer) Marker() string {
-	return markers.GoValidMarkerMaxLength
+func (m MaxlengthInitializer) Marker() string {
+	return markers.GoValidMarkerMaxlength
 }
 
 // Init initializes the maxlength validator factory.
-func (m MaxLengthInitializer) Init() registry.ValidatorFactory {
+func (m MaxlengthInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateMaxLength
 }

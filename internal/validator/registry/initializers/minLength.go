@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// MinLengthInitializer implements ValidatorInitializer for the minlength validator.
-type MinLengthInitializer struct{}
+// MinlengthInitializer implements ValidatorInitializer for the minlength validator.
+type MinlengthInitializer struct{}
 
 // Marker returns the marker identifier for the minlength validator.
-func (m MinLengthInitializer) Marker() string {
-	return markers.GoValidMarkerMinLength
+func (m MinlengthInitializer) Marker() string {
+	return markers.GoValidMarkerMinlength
 }
 
 // Init initializes the minlength validator factory.
-func (m MinLengthInitializer) Init() registry.ValidatorFactory {
+func (m MinlengthInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateMinLength
 }

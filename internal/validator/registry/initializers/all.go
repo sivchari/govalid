@@ -10,19 +10,19 @@ import (
 // All returns all built-in validator initializers.
 func All() []registry.ValidatorInitializer {
 	return []registry.ValidatorInitializer{
-		CELInitializer{},
+		CelInitializer{},
 		EmailInitializer{},
 		EnumInitializer{},
-		GTInitializer{},
-		GTEInitializer{},
-		LTInitializer{},
-		LTEInitializer{},
-		MaxItemsInitializer{},
-		MaxLengthInitializer{},
-		MinItemsInitializer{},
-		MinLengthInitializer{},
+		GtInitializer{},
+		GteInitializer{},
+		LtInitializer{},
+		LteInitializer{},
+		MaxitemsInitializer{},
+		MaxlengthInitializer{},
+		MinitemsInitializer{},
+		MinlengthInitializer{},
 		RequiredInitializer{},
-		URLInitializer{},
-		UUIDInitializer{},
+		UrlInitializer{},
+		UuidInitializer{},
 	}
 }

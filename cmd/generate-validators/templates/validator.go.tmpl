@@ -4,7 +4,6 @@ package rules
 import (
 	"fmt"
 	"go/ast"
-	"go/types"
 	"strings"
 
 	"github.com/gostaticanalysis/codegen"
@@ -40,9 +39,9 @@ func (v *{{.MarkerName}}Validator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	return strings.ReplaceAll(` + "`" + `
+	return strings.ReplaceAll(`
 	// Err@{{.StructName}}Validation is returned when the @ fails {{.MarkerName}} validation.
-	Err@{{.StructName}}Validation = errors.New("{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field @ failed {{.MarkerName}} validation{{end}}")` + "`" + `, "@", v.structName+v.FieldName())
+	Err@{{.StructName}}Validation = errors.New("{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field @ failed {{.MarkerName}} validation{{end}}")`, "@", v.structName+v.FieldName())
 }
 
 func (v *{{.MarkerName}}Validator) ErrVariable() string {
@@ -56,11 +55,6 @@ func (v *{{.MarkerName}}Validator) Imports() []string {
 
 // Validate{{.StructName}} creates a new {{.MarkerName}} validator for the given field.
 func Validate{{.StructName}}(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
-	typ := pass.TypesInfo.TypeOf(field.Type)
-
-	// Type checking
-{{.TypeCheckCode}}
-
 	validator.GeneratorMemory[fmt.Sprintf({{.MarkerName}}Key, structName+field.Names[0].Name)] = false
 
 	return &{{.MarkerName}}Validator{

@@ -6,15 +6,15 @@ import (
 	"github.com/sivchari/govalid/internal/validator/rules"
 )
 
-// MaxItemsInitializer implements ValidatorInitializer for the maxitems validator.
-type MaxItemsInitializer struct{}
+// MaxitemsInitializer implements ValidatorInitializer for the maxitems validator.
+type MaxitemsInitializer struct{}
 
 // Marker returns the marker identifier for the maxitems validator.
-func (m MaxItemsInitializer) Marker() string {
-	return markers.GoValidMarkerMaxItems
+func (m MaxitemsInitializer) Marker() string {
+	return markers.GoValidMarkerMaxitems
 }
 
 // Init initializes the maxitems validator factory.
-func (m MaxItemsInitializer) Init() registry.ValidatorFactory {
+func (m MaxitemsInitializer) Init() registry.ValidatorFactory {
 	return rules.ValidateMaxItems
 }
