@@ -1,4 +1,4 @@
-//go:generate govalid ./alpha.go
+//go:generate ./alpha.go
 package alpha
 
 // Alpha is a struct for testing alpha validation
