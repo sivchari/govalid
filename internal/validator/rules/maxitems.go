@@ -65,7 +65,7 @@ func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[stri
 		return nil
 	}
 
-	maxItemsValue, ok := expressions[markers.GoValidMarkerMaxItems]
+	maxItemsValue, ok := expressions[markers.GoValidMarkerMaxitems]
 	if !ok {
 		return nil
 	}
