@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strings"
 	"text/template"
+	"unicode/utf8"
 
 	"golang.org/x/text/cases"
 )
@@ -47,11 +48,12 @@ const (
 
 var funcMap = template.FuncMap{
 	"firstLetter": func(s string) string {
-		if len(s) > 0 {
-			return strings.ToLower(s[:1])
+		r, size := utf8.DecodeRuneInString(s)
+		if size == 0 {
+			return "x"
 		}
 
-		return "x"
+		return strings.ToLower(string(r))
 	},
 	"title": cases.Title,
 }
@@ -114,7 +116,12 @@ func scaffoldValidator(markerName string) error {
 	// Convert marker name to various forms
 	markerLower := strings.ToLower(markerName)
 	// Simple inline PascalCase conversion
-	structName := strings.ToUpper(markerLower[:1]) + markerLower[1:]
+	r, size := utf8.DecodeRuneInString(markerLower)
+	if size == 0 {
+		return errors.New("marker name cannot be empty")
+	}
+
+	structName := strings.ToUpper(string(r)) + markerLower[size:]
 
 	// Use a map for template data since we need more fields than ValidatorInfo
 	data := map[string]string{
