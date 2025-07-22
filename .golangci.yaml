@@ -38,6 +38,7 @@ linters:
     - revive
     - staticcheck
     - tagliatelle
+    - thelper
     - unconvert
     - unparam
     - unused
