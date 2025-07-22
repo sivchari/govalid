@@ -164,10 +164,12 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 			parentVariable = field.Names[0].Name
 		}
 
-		analyzed = append(analyzed, &AnalyzedMetadata{
-			Validators:     validators,
-			ParentVariable: parentVariable,
-		})
+		if len(validators) > 0 {
+			analyzed = append(analyzed, &AnalyzedMetadata{
+				Validators:     validators,
+				ParentVariable: parentVariable,
+			})
+		}
 
 		// Recursively analyze nested structs
 		analyzed = append(analyzed, analyzeMarker(pass, markersInspect, structType, parentVariable, structName)...)
