@@ -36,9 +36,19 @@ install-govalid: ## Install govalid binary for validation code generation
 	go install ./cmd/govalid
 
 # Generate validation code for test
-.PHONY: gen-valdation-code
-gen-valdation-code: install-govalid ## Generate validation code using govalid
+.PHONY: generate-valdation-code
+generate-valdation-code: install-govalid ## Generate validation code using govalid
 	go generate ./test/marker.go
+
+# Generate new validator scaffold
+.PHONY: generate-validator
+generate-validator: ## Generate a new validator scaffold and all registry files. Usage: make generate-validator MARKER=phoneNumber
+	@if [ -z "$(MARKER)" ]; then \
+		echo "Error: MARKER parameter is required"; \
+		echo "Usage: make generate-validator MARKER=phoneNumber"; \
+		exit 1; \
+	fi
+	go run cmd/generate-validators/main.go -marker=$(MARKER)
 
 # Test targets
 .PHONY: test

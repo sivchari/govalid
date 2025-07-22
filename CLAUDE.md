@@ -11,12 +11,17 @@ git checkout -b feature/{marker-name}-marker
 
 ### 2. Automated Validator Creation
 
-#### A. Scaffold Generation
+#### A. One-Command Scaffold and Generation
 ```bash
-# Create a new validator with all boilerplate
-go run cmd/generate-validators/main.go -marker=phoneNumber
+# Create a new validator AND generate all registry files in one command:
+make generate-validator MARKER=phoneNumber
 
-# This generates: internal/validator/rules/phonenumber.go
+# This:
+# ✓ Generates scaffold: internal/validator/rules/phonenumber.go
+# ✓ Updates internal/markers/markers_generated.go
+# ✓ Creates internal/validator/registry/initializers/phonenumber.go
+# ✓ Updates internal/validator/registry/initializers/all.go
+# ✓ Updates internal/analyzers/govalid/registry_init.go
 ```
 
 #### B. Implement Validator Logic
@@ -30,19 +35,6 @@ func (v *phonenumberValidator) Validate() string {
 func (v *phonenumberValidator) Imports() []string {
     return []string{"regexp"} // Add required imports
 }
-```
-
-#### C. Automatic Registry Integration
-```bash
-# Single command regenerates everything:
-go generate ./internal/analyzers/govalid
-
-# This automatically:
-# ✓ Updates internal/markers/markers_generated.go
-# ✓ Creates internal/validator/registry/initializers/phonenumber.go
-# ✓ Updates internal/validator/registry/initializers/all.go
-# ✓ Updates internal/analyzers/govalid/registry_init.go
-# ✓ No manual switch statements or marker definitions needed!
 ```
 
 ### 3. Testing Structure
@@ -104,7 +96,7 @@ go install ./cmd/govalid/
 # 2. Generate test files
 cd test && go generate
 
-# 3. Run golden tests (note: path updated)
+# 3. Run golden tests
 cd .. && go test ./internal/analyzers/govalid/ -v
 
 # 4. Run unit tests
@@ -162,13 +154,17 @@ func (p PhoneNumberInitializer) Init() registry.ValidatorFactory {
 ### Automatic Code Generation Flow
 
 ```
-internal/validator/rules/phonenumber.go (manual implementation)
-                    ↓
-        go generate ./internal/analyzers/govalid
+make generate-validator MARKER=phonenumber
                     ↓
     ┌───────────────────────────────────┐
-    │ cmd/generate-validators discovers  │
-    │ all validators in rules/           │
+    │ Creates scaffold in rules/        │
+    │ • internal/validator/rules/       │
+    │   phonenumber.go                  │
+    └───────────────────────────────────┘
+                    ↓
+    ┌───────────────────────────────────┐
+    │ Automatically discovers all       │
+    │ validators in rules/              │
     └───────────────────────────────────┘
                     ↓
     ┌───────────────────────────────────┐

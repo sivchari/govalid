@@ -37,10 +37,15 @@ With our new automated system, adding a new marker is streamlined to just a few 
 ### Step 1: Create a New Validator Using Scaffold
 
 ```bash
-# Create a scaffold for your new validator
-go run cmd/generate-validators/main.go -marker=phoneNumber
+# Create a scaffold for your new validator and generate all registry files
+make generate-validator MARKER=phoneNumber
 
-# This generates: internal/validator/rules/phonenumber.go
+# This:
+# ✓ Generates scaffold: internal/validator/rules/phonenumber.go
+# ✓ Updates internal/markers/markers_generated.go
+# ✓ Creates internal/validator/registry/initializers/phonenumber.go
+# ✓ Updates internal/validator/registry/initializers/all.go
+# ✓ Updates internal/analyzers/govalid/registry_init.go
 ```
 
 ### Step 2: Implement the Validator Logic
@@ -130,20 +135,7 @@ func ValidatePhonenumber(pass *codegen.Pass, field *ast.Field, expressions map[s
 }
 ```
 
-### Step 3: Generate All Required Files
-
-```bash
-# From project root, regenerate all registry files
-go generate ./internal/analyzers/govalid
-
-# This automatically:
-# - Updates internal/markers/markers_generated.go
-# - Creates internal/validator/registry/initializers/phonenumber.go
-# - Updates internal/validator/registry/initializers/all.go
-# - Updates internal/analyzers/govalid/registry_init.go
-```
-
-### Step 4: Testing Implementation
+### Step 3: Testing Implementation
 
 #### A. Golden Tests (`internal/analyzers/govalid/testdata/src/phonenumber/`)
 
@@ -277,7 +269,7 @@ func BenchmarkGoPlaygroundPhonenumber(b *testing.B) {
 }
 ```
 
-### Step 5: Test Execution and Validation
+### Step 4: Test Execution and Validation
 
 ```bash
 # 1. Build and install updated binary
@@ -302,7 +294,7 @@ make golangci-lint
 # Edit test/benchmark/README.md
 ```
 
-### Step 6: Documentation Updates
+### Step 5: Documentation Updates
 
 Update the main README.md with your new marker:
 
