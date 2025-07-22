@@ -9,11 +9,11 @@ var (
 	// ErrNilCELCrossField is returned when the CELCrossField is nil.
 	ErrNilCELCrossField = errors.New("input CELCrossField is nil")
 
-	// ErrPriceCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrPriceCELValidation = errors.New("field Price failed CEL validation: value < this.MaxPrice")
+	// ErrCELCrossFieldPriceCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELCrossFieldPriceCELValidation = errors.New("field CELCrossFieldPrice failed CEL validation: value < this.MaxPrice")
 
-	// ErrQuantityCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrQuantityCELValidation = errors.New("field Quantity failed CEL validation: value * this.Price <= this.Budget")
+	// ErrCELCrossFieldQuantityCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELCrossFieldQuantityCELValidation = errors.New("field CELCrossFieldQuantity failed CEL validation: value * this.Price <= this.Budget")
 )
 
 func ValidateCELCrossField(t *CELCrossField) error {
@@ -22,11 +22,11 @@ func ValidateCELCrossField(t *CELCrossField) error {
 	}
 
 	if !(t.Price < t.MaxPrice) {
-		return ErrPriceCELValidation
+		return ErrCELCrossFieldPriceCELValidation
 	}
 
 	if !(t.Quantity*t.Price <= t.Budget) {
-		return ErrQuantityCELValidation
+		return ErrCELCrossFieldQuantityCELValidation
 	}
 
 	return nil

@@ -9,8 +9,8 @@ var (
 	// ErrNilLTE is returned when the LTE is nil.
 	ErrNilLTE = errors.New("input LTE is nil")
 
-	// ErrAgeLTEValidation is the error returned when the value of the field is greater than 100.
-	ErrAgeLTEValidation = errors.New("field Age must be less than or equal to 100")
+	// ErrLTEAgeLTEValidation is the error returned when the value of the field is greater than 100.
+	ErrLTEAgeLTEValidation = errors.New("field LTEAge must be less than or equal to 100")
 )
 
 func ValidateLTE(t *LTE) error {
@@ -19,7 +19,7 @@ func ValidateLTE(t *LTE) error {
 	}
 
 	if !(t.Age <= 100) {
-		return ErrAgeLTEValidation
+		return ErrLTEAgeLTEValidation
 	}
 
 	return nil

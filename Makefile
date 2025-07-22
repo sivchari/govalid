@@ -17,11 +17,24 @@ golangci-lint: ## Run golangci-lint over the codebase.
 golangci-lint-fix: GOLANGCI_LINT_EXTRA_ARGS := --fix
 golangci-lint-fix: golangci-lint ## Run golangci-lint over the codebase and run auto-fixers if supported by the linter
 
+.PHONY: fmt
+fmt: ## Format code with golangci-lint
+	${GOLANGCI_LINT} fmt ./...
+
 # Documentation targets
 .PHONY: docs-dev
 docs-dev: ## Start Hugo development server
 	cd docs && hugo server
 
+# Install govalid binary
+.PHONY: install-govalid
+install-govalid: ## Install govalid binary for validation code generation
+	go install ./cmd/govalid
+
+# Generate validation code for test
+.PHONY: gen-valdation-code
+gen-valdation-code: install-govalid ## Generate validation code using govalid
+	go generate ./test/marker.go
 
 # Test targets
 .PHONY: test

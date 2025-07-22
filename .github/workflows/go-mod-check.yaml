@@ -1,0 +1,40 @@
+name: Go Mod Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  go-mod-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Check go.mod and go.sum
+        run: |
+          go mod tidy
+          if [ -n "$(git status --porcelain go.mod go.sum)" ]; then
+            echo "go.mod or go.sum is not up to date. Please run 'go mod tidy' and commit the changes."
+            git diff go.mod go.sum
+            exit 1
+          fi
+
+      - name: Check tools/go.mod and tools/go.sum
+        run: |
+          cd tools
+          go mod tidy
+          if [ -n "$(git status --porcelain go.mod go.sum)" ]; then
+            echo "tools/go.mod or tools/go.sum is not up to date. Please run 'go mod tidy' in the tools directory and commit the changes."
+            git diff go.mod go.sum
+            exit 1
+          fi

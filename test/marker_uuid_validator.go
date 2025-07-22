@@ -50,8 +50,8 @@ var (
 
 		return true
 	}
-	// ErrUUIDUUIDValidation is the error returned when the field is not a valid UUID.
-	ErrUUIDUUIDValidation = errors.New("field UUID must be a valid UUID")
+	// ErrUUIDUUIDUUIDValidation is the error returned when the field is not a valid UUID.
+	ErrUUIDUUIDUUIDValidation = errors.New("field UUIDUUID must be a valid UUID")
 )
 
 func ValidateUUID(t *UUID) error {
@@ -60,7 +60,7 @@ func ValidateUUID(t *UUID) error {
 	}
 
 	if !isValidUUID(t.UUID) {
-		return ErrUUIDUUIDValidation
+		return ErrUUIDUUIDUUIDValidation
 	}
 
 	return nil

@@ -56,7 +56,7 @@ func BenchmarkGoValidCELCacheEffectiveness(b *testing.B) {
 
 	instance := test.CEL{
 		Age:      25,
-		Name:     "John Doe", 
+		Name:     "John Doe",
 		Score:    85.5,
 		IsActive: true,
 	}

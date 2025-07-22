@@ -26,3 +26,6 @@ go.work.sum
 
 # dist
 dist
+
+# build file
+bin

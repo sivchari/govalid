@@ -19,8 +19,8 @@ func TestEmailValidation(t *testing.T) {
 		{"valid_with_plus", test.Email{Email: "user+tag@example.com"}, false},
 		{"valid_subdomain", test.Email{Email: "user@sub.example.com"}, false},
 		{"valid_with_special_chars", test.Email{Email: "user.name+tag@example-domain.com"}, false},
-		
-		// Invalid cases  
+
+		// Invalid cases
 		{"empty", test.Email{Email: ""}, true},
 		{"no_at_symbol", test.Email{Email: "userexample.com"}, true},
 		{"multiple_at_symbols", test.Email{Email: "user@@example.com"}, true},

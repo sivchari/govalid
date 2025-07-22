@@ -9,17 +9,17 @@ var (
 	// ErrNilEnum is returned when the Enum is nil.
 	ErrNilEnum = errors.New("input Enum is nil")
 
-	// ErrRoleEnumValidation is the error returned when the value is not in the allowed enum values [admin, user, guest].
-	ErrRoleEnumValidation = errors.New("field Role must be one of [admin, user, guest]")
+	// ErrEnumRoleEnumValidation is the error returned when the value is not in the allowed enum values [admin, user, guest].
+	ErrEnumRoleEnumValidation = errors.New("field EnumRole must be one of [admin, user, guest]")
 
-	// ErrLevelEnumValidation is the error returned when the value is not in the allowed enum values [1, 2, 3].
-	ErrLevelEnumValidation = errors.New("field Level must be one of [1, 2, 3]")
+	// ErrEnumLevelEnumValidation is the error returned when the value is not in the allowed enum values [1, 2, 3].
+	ErrEnumLevelEnumValidation = errors.New("field EnumLevel must be one of [1, 2, 3]")
 
-	// ErrUserRoleEnumValidation is the error returned when the value is not in the allowed enum values [manager, developer, tester].
-	ErrUserRoleEnumValidation = errors.New("field UserRole must be one of [manager, developer, tester]")
+	// ErrEnumUserRoleEnumValidation is the error returned when the value is not in the allowed enum values [manager, developer, tester].
+	ErrEnumUserRoleEnumValidation = errors.New("field EnumUserRole must be one of [manager, developer, tester]")
 
-	// ErrPriorityEnumValidation is the error returned when the value is not in the allowed enum values [10, 20, 30].
-	ErrPriorityEnumValidation = errors.New("field Priority must be one of [10, 20, 30]")
+	// ErrEnumPriorityEnumValidation is the error returned when the value is not in the allowed enum values [10, 20, 30].
+	ErrEnumPriorityEnumValidation = errors.New("field EnumPriority must be one of [10, 20, 30]")
 )
 
 func ValidateEnum(t *Enum) error {
@@ -28,19 +28,19 @@ func ValidateEnum(t *Enum) error {
 	}
 
 	if t.Role != "admin" && t.Role != "user" && t.Role != "guest" {
-		return ErrRoleEnumValidation
+		return ErrEnumRoleEnumValidation
 	}
 
 	if t.Level != 1 && t.Level != 2 && t.Level != 3 {
-		return ErrLevelEnumValidation
+		return ErrEnumLevelEnumValidation
 	}
 
 	if t.UserRole != "manager" && t.UserRole != "developer" && t.UserRole != "tester" {
-		return ErrUserRoleEnumValidation
+		return ErrEnumUserRoleEnumValidation
 	}
 
 	if t.Priority != 10 && t.Priority != 20 && t.Priority != 30 {
-		return ErrPriorityEnumValidation
+		return ErrEnumPriorityEnumValidation
 	}
 
 	return nil

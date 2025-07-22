@@ -32,7 +32,7 @@ func BenchmarkGoValidCELCrossField(b *testing.B) {
 		Quantity: 2.0,
 		Budget:   500.0,
 	}
-	
+
 	b.ResetTimer()
 	for b.Loop() {
 		err := test.ValidateCELCrossField(&instance)
@@ -51,7 +51,7 @@ func BenchmarkGoValidCELStringLength(b *testing.B) {
 		Score:    85.5,
 		IsActive: true,
 	}
-	
+
 	b.ResetTimer()
 	for b.Loop() {
 		// Focus on just the name validation (len(t.Name) > 0)
@@ -70,7 +70,7 @@ func BenchmarkGoValidCELNumericComparison(b *testing.B) {
 		Score:    85.5,
 		IsActive: true,
 	}
-	
+
 	b.ResetTimer()
 	for b.Loop() {
 		// Focus on just the score validation (t.Score > 0)

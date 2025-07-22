@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/go-ozzo/ozzo-validation/v4"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/go-playground/validator/v10"
 	"github.com/gookit/validate"

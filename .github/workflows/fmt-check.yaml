@@ -1,0 +1,31 @@
+name: Format Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  fmt-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Check formatting
+        run: |
+          # Run golangci-lint fmt and check if there are any changes
+          make fmt
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Code is not formatted properly. Please run 'make fmt' and commit the changes."
+            git diff
+            exit 1
+          fi
