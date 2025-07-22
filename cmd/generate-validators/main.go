@@ -151,7 +151,7 @@ func generateAll() error {
 	}
 
 	// Create output directory if it doesn't exist
-	if err := os.MkdirAll(outputDir, 0750); err != nil {
+	if err := os.MkdirAll(outputDir, 0o750); err != nil {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
 
@@ -171,7 +171,7 @@ func generateAll() error {
 	}
 
 	// Generate markers file
-	if err := os.MkdirAll(filepath.Dir(markersFile), 0750); err != nil {
+	if err := os.MkdirAll(filepath.Dir(markersFile), 0o750); err != nil {
 		return fmt.Errorf("failed to create markers directory: %w", err)
 	}
 
@@ -276,7 +276,7 @@ func generateInitializers(validators []ValidatorInfo) error {
 		}
 
 		filename := filepath.Join(outputDir, validator.MarkerName+".go")
-		if err := os.WriteFile(filename, buf.Bytes(), 0600); err != nil {
+		if err := os.WriteFile(filename, buf.Bytes(), 0o600); err != nil {
 			return fmt.Errorf("failed to write file %s: %w", filename, err)
 		}
 	}
@@ -295,7 +295,7 @@ func generateFromTemplate(tmplContent string, data any, outputPath string) error
 		return fmt.Errorf("failed to execute template: %w", err)
 	}
 
-	if err := os.WriteFile(outputPath, buf.Bytes(), 0600); err != nil {
+	if err := os.WriteFile(outputPath, buf.Bytes(), 0o600); err != nil {
 		return fmt.Errorf("failed to write file %s: %w", outputPath, err)
 	}
 
