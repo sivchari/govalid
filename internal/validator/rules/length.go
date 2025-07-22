@@ -40,7 +40,7 @@ func (l *lengthValidator) Err() string {
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@LengthValidation is the error returned when the length of the field is not exactly %s.
-	Err@LengthValidation = errors.New("field @ must have exactly length of %s")`, "@", l.structName+l.FieldName()), l.lengthValue, l.lengthValue)
+	Err@LengthValidation = errors.New("field @ length must be exactly %s")`, "@", l.structName+l.FieldName()), l.lengthValue, l.lengthValue)
 }
 
 func (l *lengthValidator) ErrVariable() string {
@@ -51,7 +51,7 @@ func (l *lengthValidator) Imports() []string {
 	return []string{"unicode/utf8"}
 }
 
-// ValidateLength creates a new lengthValidator if the field type is stringand the length marker is present.
+// ValidateLength creates a new lengthValidator if the field type is string and the length marker is present.
 func ValidateLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
