@@ -451,6 +451,8 @@ func FuzzIsValidEmail(f *testing.F) {
 }
 
 func addEmailFuzzSeeds(f *testing.F) {
+	f.Helper()
+
 	seeds := []string{
 		"user@example.com",
 		"test.email@domain.org",
@@ -484,6 +486,8 @@ func addEmailFuzzSeeds(f *testing.F) {
 }
 
 func validateEmailStructure(t *testing.T, email string) {
+	t.Helper()
+
 	// Valid emails must have basic structural requirements
 	if len(email) < 5 || len(email) > 254 {
 		t.Errorf("IsValidEmail(%q) returned true but length is invalid: %d", email, len(email))
@@ -507,6 +511,8 @@ func validateEmailStructure(t *testing.T, email string) {
 }
 
 func validateEmailDomainDot(t *testing.T, email string) {
+	t.Helper()
+
 	atIndex := -1
 
 	for i, c := range email {

@@ -326,6 +326,8 @@ func FuzzIsValidUUID(f *testing.F) {
 }
 
 func addUUIDFuzzSeeds(f *testing.F) {
+	f.Helper()
+
 	seeds := []string{
 		"550e8400-e29b-41d4-a716-446655440000",
 		"f47ac10b-58cc-4372-a567-0e02b2c3d479",
@@ -358,6 +360,8 @@ func addUUIDFuzzSeeds(f *testing.F) {
 }
 
 func validateUUIDStructure(t *testing.T, uuid string) {
+	t.Helper()
+
 	// Valid UUIDs must be exactly 36 characters
 	if len(uuid) != 36 {
 		t.Errorf("IsValidUUID(%q) returned true but length is %d, expected 36", uuid, len(uuid))
@@ -371,6 +375,8 @@ func validateUUIDStructure(t *testing.T, uuid string) {
 }
 
 func validateUUIDHyphens(t *testing.T, uuid string) {
+	t.Helper()
+
 	// Must have hyphens at positions 8, 13, 18, 23
 	if len(uuid) >= 24 {
 		expectedHyphenPositions := []int{8, 13, 18, 23}
@@ -383,6 +389,8 @@ func validateUUIDHyphens(t *testing.T, uuid string) {
 }
 
 func validateUUIDVersionAndVariant(t *testing.T, uuid string) {
+	t.Helper()
+
 	// Special cases: allow nil UUID and max UUID
 	if uuid == "00000000-0000-0000-0000-000000000000" || uuid == "ffffffff-ffff-ffff-ffff-ffffffffffff" {
 		return
@@ -393,6 +401,8 @@ func validateUUIDVersionAndVariant(t *testing.T, uuid string) {
 }
 
 func validateUUIDVersion(t *testing.T, uuid string) {
+	t.Helper()
+
 	// Version must be 1-5 (position 14)
 	if len(uuid) > 14 {
 		version := uuid[14]
@@ -403,6 +413,8 @@ func validateUUIDVersion(t *testing.T, uuid string) {
 }
 
 func validateUUIDVariant(t *testing.T, uuid string) {
+	t.Helper()
+
 	// Variant must be 8, 9, A, B (position 19)
 	if len(uuid) > 19 {
 		variant := uuid[19]
@@ -424,6 +436,8 @@ func validateUUIDVariant(t *testing.T, uuid string) {
 }
 
 func validateUUIDHexChars(t *testing.T, uuid string) {
+	t.Helper()
+
 	// All non-hyphen characters must be valid hex
 	if len(uuid) != 36 {
 		return

@@ -271,6 +271,8 @@ func FuzzIsValidURL(f *testing.F) {
 }
 
 func addURLFuzzSeeds(f *testing.F) {
+	f.Helper()
+
 	seeds := []string{
 		"https://example.com",
 		"http://example.com",
@@ -331,6 +333,8 @@ func addURLFuzzSeeds(f *testing.F) {
 }
 
 func validateURLStructure(t *testing.T, url string) {
+	t.Helper()
+
 	// Valid URLs must contain a colon for the scheme separator
 	if !validateURLHasColon(t, url) {
 		return
@@ -341,6 +345,8 @@ func validateURLStructure(t *testing.T, url string) {
 }
 
 func validateURLHasColon(t *testing.T, url string) bool {
+	t.Helper()
+
 	hasColon := false
 
 	for _, c := range url {
@@ -361,6 +367,8 @@ func validateURLHasColon(t *testing.T, url string) bool {
 }
 
 func validateURLScheme(t *testing.T, url string) {
+	t.Helper()
+
 	colonPos := -1
 
 	for i, c := range url {
@@ -391,6 +399,8 @@ func validateURLScheme(t *testing.T, url string) {
 }
 
 func validateURLCharacters(t *testing.T, url string) {
+	t.Helper()
+
 	// URLs should not contain control characters or spaces
 	for i, c := range url {
 		if c < 32 || c == 127 {
