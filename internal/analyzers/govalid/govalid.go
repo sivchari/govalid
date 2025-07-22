@@ -1,7 +1,5 @@
 package govalid
 
-//go:generate go run ../../../cmd/generate-validators/main.go
-
 import (
 	"bytes"
 	"fmt"

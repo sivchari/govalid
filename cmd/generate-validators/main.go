@@ -81,8 +81,6 @@ func main() {
 		if err := scaffoldValidator(*marker); err != nil {
 			log.Fatalf("Failed to scaffold validator: %v", err)
 		}
-
-		return
 	}
 
 	// Otherwise, generate all files from existing validators
