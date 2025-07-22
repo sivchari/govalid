@@ -34,7 +34,7 @@ var celCache sync.Map
 // Note: This implementation prioritizes simplicity and performance,
 // following govalid's zero-reflection philosophy. Cross-field validation
 // is not supported without reflection.
-func IsValidCEL(expression string, value interface{}, structInstance interface{}) bool {
+func IsValidCEL(expression string, value, structInstance any) bool {
 	// Try to get cached program first
 	if cached, ok := celCache.Load(expression); ok {
 		program, ok := cached.(cel.Program)
@@ -58,11 +58,11 @@ func IsValidCEL(expression string, value interface{}, structInstance interface{}
 }
 
 // evaluateCELProgram evaluates a compiled CEL program with given values.
-func evaluateCELProgram(program cel.Program, value interface{}, structInstance interface{}) bool {
+func evaluateCELProgram(program cel.Program, value, structInstance any) bool {
 	// Prepare evaluation variables
 	// Note: Without reflection, we cannot support cross-field validation
 	// that accesses struct fields. Only 'value' based validation is supported.
-	vars := map[string]interface{}{
+	vars := map[string]any{
 		"value": value,
 		"this":  structInstance,
 	}

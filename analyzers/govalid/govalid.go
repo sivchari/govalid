@@ -62,7 +62,7 @@ type TemplateData struct {
 
 // run is the main function that runs the govalid analyzer.
 func (g *generator) run(pass *codegen.Pass) error {
-	inspect, ok := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
+	inspector, ok := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 	if !ok {
 		return govaliderrors.ErrCouldNotGetInspector
 	}
@@ -78,7 +78,7 @@ func (g *generator) run(pass *codegen.Pass) error {
 
 	tmplList := map[string]TemplateData{}
 
-	inspect.Preorder(nodeFilter, func(n ast.Node) {
+	inspector.Preorder(nodeFilter, func(n ast.Node) {
 		ts, ok := n.(*ast.TypeSpec)
 		if !ok {
 			return
@@ -120,19 +120,19 @@ type AnalyzedMetadata struct {
 	ParentVariable string
 }
 
-func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structType *ast.StructType, parent string, structName string) []*AnalyzedMetadata {
+func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structType *ast.StructType, parent, structName string) []*AnalyzedMetadata {
 	analyzed := make([]*AnalyzedMetadata, 0)
 
 	for _, field := range structType.Fields.List {
 		validators := make([]validator.Validator, 0)
 
 		// Apply markers to the field
-		markers := markersInspect.FieldMarkers(field)
+		markerSet := markersInspect.FieldMarkers(field)
 
 		// Traverse nested structs
 		structType, ok := field.Type.(*ast.StructType)
 		if !ok {
-			validators = makeValidator(pass, markers, field, structName)
+			validators = makeValidator(pass, markerSet, field, structName)
 			if len(validators) == 0 {
 				continue
 			}
@@ -153,7 +153,7 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 					Name string `json:"name"`
 				}
 			*/
-			validators = append(validators, makeValidator(pass, markers, field, structName)...)
+			validators = append(validators, makeValidator(pass, markerSet, field, structName)...)
 		}
 
 		// Add the parent variable name to the analyzed metadata
@@ -176,7 +176,7 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 	return analyzed
 }
 
-//nolint:cyclop
+//nolint:cyclop //nolint:gocritic // This case will be removed.
 func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Field, structName string) []validator.Validator {
 	validators := make([]validator.Validator, 0)
 
@@ -274,13 +274,20 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 	typeName := ts.Name.Name
 	fileName = fmt.Sprintf("%s_%s_validator.go", fileName, strings.ToLower(typeName))
 
-	file, err := os.Create(fileName) //nolint:gosec
+	file, err := os.Create(filepath.Clean(fileName))
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
-	defer file.Close() //nolint:errcheck
 
-	fmt.Fprint(file, string(src)) //nolint:errcheck
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Printf("failed to close file: %v\n", err)
+		}
+	}()
+
+	if _, err := fmt.Fprint(file, string(src)); err != nil {
+		return fmt.Errorf("failed to write to file: %w", err)
+	}
 
 	return nil
 }

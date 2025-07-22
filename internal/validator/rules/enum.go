@@ -98,7 +98,7 @@ func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]s
 	}
 
 	// Determine the type and set appropriate flags
-	//nolint:exhaustive
+	//nolint:exhaustive // This is a simplified version, assuming basic types and custom types.
 	switch underlying := typ.Underlying().(type) {
 	case *types.Basic:
 		switch underlying.Kind() {

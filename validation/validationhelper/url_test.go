@@ -373,13 +373,13 @@ func validateURLScheme(t *testing.T, url string) {
 
 	if colonPos > 0 {
 		scheme := url[:colonPos]
-		if len(scheme) == 0 {
+		if scheme == "" {
 			t.Errorf("IsValidURL(%q) returned true but has empty scheme", url)
 
 			return
 		}
 		// First character must be a letter
-		if len(scheme) > 0 {
+		if scheme != "" {
 			first := scheme[0]
 			if (first >= 'a' && first <= 'z') || (first >= 'A' && first <= 'Z') {
 				return

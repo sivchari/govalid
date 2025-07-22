@@ -46,6 +46,11 @@ linters:
     - wrapcheck
     - wsl
   settings:
+    gocritic:
+      enable-all: true
+      disabled-checks:
+        - importShadow
+        - unnamedResult
     cyclop:
       max-complexity: 11
     revive:

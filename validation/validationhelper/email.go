@@ -108,7 +108,7 @@ func findAtSymbol(email string) int {
 //	"" (empty)       -> no characters
 func isValidLocalPart(local string) bool {
 	// Length check: 1-64 characters (RFC 5321 section 4.5.3.1.1)
-	if len(local) == 0 || len(local) > 64 {
+	if local == "" || len(local) > 64 {
 		return false
 	}
 
@@ -215,7 +215,7 @@ func isValidLocalSpecialChar(c rune) bool {
 //	"-example.com"        -> starts with hyphen
 func isValidDomainPart(domain string) bool {
 	// Length check: 1-253 characters (RFC 1035 section 2.3.4)
-	if len(domain) == 0 || len(domain) > 253 {
+	if domain == "" || len(domain) > 253 {
 		return false
 	}
 
@@ -265,24 +265,26 @@ func validateDomainLabels(domain string) bool {
 	// Parse domain into labels by iterating character by character
 	for i := 0; i <= len(domain); i++ {
 		// Process label when we hit a dot or reach the end
-		if i == len(domain) || domain[i] == '.' {
-			if i == start {
-				// Empty label (consecutive dots or dot at start/end)
-				return false
-			}
-
-			// Extract label from start position to current position
-			label := domain[start:i]
-			labelCount++
-
-			// Validate this label
-			if !isValidDomainLabel(label) {
-				return false
-			}
-
-			// Move start to character after the dot
-			start = i + 1
+		if i != len(domain) && domain[i] != '.' {
+			continue
 		}
+
+		if i == start {
+			// Empty label (consecutive dots or dot at start/end)
+			return false
+		}
+
+		// Extract label from start position to current position
+		label := domain[start:i]
+		labelCount++
+
+		// Validate this label
+		if !isValidDomainLabel(label) {
+			return false
+		}
+
+		// Move start to character after the dot
+		start = i + 1
 	}
 
 	// Must have at least 2 labels to form a valid domain
@@ -310,7 +312,7 @@ func validateDomainLabels(domain string) bool {
 //	"ex_ample"   -> contains underscore (not allowed in domain)
 func isValidDomainLabel(label string) bool {
 	// Length check: 1-63 characters (RFC 1035 section 2.3.1)
-	if len(label) == 0 || len(label) > 63 {
+	if label == "" || len(label) > 63 {
 		return false
 	}
 
