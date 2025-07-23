@@ -118,13 +118,11 @@ func main() {
 
 | Validator | govalid | go-playground | go-validator | ozzo-validation | Best Improvement |
 |-----------|---------|---------------|--------------|-----------------|------------------|
-| Required  | 1.935ns | 85.51ns | 1.929ns | 33.69ns | **44.2x faster** |
-| Email     | 38.24ns | 649.4ns | 584.1ns | 39.35ns | **17.0x faster** |
-| GT/LT     | ~1.946ns | ~60.30ns | ~53.57ns | N/A | **32.5x faster** |
-| MaxLength | 15.67ns | 73.50ns | 155.7ns | 159.3ns | **10.2x faster** |
-| URL       | 42.54ns | 287.9ns | 7776ns | 7739ns | **186.5x faster** |
-| UUID      | 37.69ns | 254.0ns | 193.1ns | 231.5ns | **6.7x faster** |
-| Enum      | 2.231ns | N/A | N/A | N/A | **govalid exclusive** |
+| Required  | 1.403 | 111.6 | **79.5x faster** |
+| Email     | 47.49 | 930.4 | **19.5x faster** |
+| GT/LT     | ~1.000 | ~84.35 | **84.3x faster** |
+| MaxLength | 22.77 | 101.0 | **4.4x faster** |
+| Enum      | 2.234 | N/A (unique to govalid)| **govalid exclusive** |
 
 *All benchmarks show 0 allocations for govalid vs 0-80 allocations for competitors*
 
