@@ -11,10 +11,10 @@ var (
 	ErrNilLength = errors.New("input Length is nil")
 
 	// ErrLengthStringLengthValidation is the error returned when the length of the field is not exactly 7.
-	ErrLengthStringLengthValidation = errors.New("field LengthString must have exactly length of 7")
+	ErrLengthStringLengthValidation = errors.New("field LengthString length must be exactly 7")
 
 	// ErrLengthNameLengthValidation is the error returned when the length of the field is not exactly 10.
-	ErrLengthNameLengthValidation = errors.New("field LengthName must have exactly length of 10")
+	ErrLengthNameLengthValidation = errors.New("field LengthName length must be exactly 10")
 )
 
 func ValidateLength(t *Length) error {
