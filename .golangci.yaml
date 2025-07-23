@@ -52,6 +52,10 @@ linters:
       disabled-checks:
         - importShadow
         - unnamedResult
+    nolintlint:
+      allow-used: false
+      require-specific: true
+      require-explanation: true
     cyclop:
       max-complexity: 11
     revive:
