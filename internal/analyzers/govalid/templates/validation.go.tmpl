@@ -32,8 +32,8 @@ func Validate{{.TypeName}}(t *{{.TypeName}}) error {
 		{{ if ne .ParentVariable "" }}
 	    	{{ $parentVariable = .ParentVariable }}
 		{{ end -}}
-		{{ if and (ne $parentVariable "") ( .Validators ) }}
-	    	{{ "{" }}
+		{{ if and (ne $parentVariable "") ( .Validators ) -}}
+	    	{
   			t := t.{{ $parentVariable }}
 		{{ end -}}
 		{{ range .Validators }}
@@ -43,8 +43,8 @@ func Validate{{.TypeName}}(t *{{.TypeName}}) error {
 				}
 			{{ end }}
 		{{ end }}
-		{{ if and (ne $parentVariable "") ( .Validators ) }}
-			{{ "}" }}
+		{{ if and (ne $parentVariable "") ( .Validators ) -}}
+			}
 			{{ $parentVariable = "" }}
 		{{ end -}}
 	{{ end -}}
