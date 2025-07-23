@@ -32,7 +32,7 @@ func Test(t *testing.T) {
 		t.Fatalf("failed to get govalid generator: %v", err)
 	}
 
-	markers := []string{
+	testCases := []string{
 		"required",
 		"lt",
 		"gt",
@@ -47,9 +47,10 @@ func Test(t *testing.T) {
 		"uuid",
 		"url",
 		"cel",
+		"nestedstruct",
 	}
 
-	for _, tc := range markers {
+	for _, tc := range testCases {
 		t.Run(tc, func(t *testing.T) {
 			results := codegentest.Run(t, codegentest.TestData(), govalid, tc)
 			codegentest.Golden(t, results, update)
