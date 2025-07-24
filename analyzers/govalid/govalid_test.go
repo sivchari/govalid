@@ -47,7 +47,9 @@ func Test(t *testing.T) {
 		"uuid",
 		"url",
 		"cel",
-		"nestedstruct",
+		"nestedstruct/nop",
+		"nestedstruct/inside",
+		"nestedstruct/partial",
 	}
 
 	for _, tc := range testCases {
