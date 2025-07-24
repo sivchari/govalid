@@ -9,8 +9,10 @@ import (
 
 var (
 	// ErrNilURL is returned when the URL is nil.
-	ErrNilURL              = errors.New("input URL is nil")
-	ErrURLURLURLValidation = govaliderrors.ValidationError{}
+	ErrNilURL = errors.New("input URL is nil")
+
+	// ErrURLURLURLValidation is the error returned when the field is not a valid URL.
+	ErrURLURLURLValidation = govaliderrors.ValidationError{Reason: "field URLURL must be a valid URL"}
 )
 
 func ValidateURL(t *URL) error {

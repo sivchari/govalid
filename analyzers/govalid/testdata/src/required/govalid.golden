@@ -3,6 +3,7 @@ package required
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
@@ -10,46 +11,46 @@ var (
 	ErrNilRequired = errors.New("input Required is nil")
 
 	// ErrRequiredStringRequiredValidation is returned when the RequiredString is required but not provided.
-	ErrRequiredStringRequiredValidation = errors.New("field RequiredString is required")
+	ErrRequiredStringRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredString is required"}
 
 	// ErrRequiredIntRequiredValidation is returned when the RequiredInt is required but not provided.
-	ErrRequiredIntRequiredValidation = errors.New("field RequiredInt is required")
+	ErrRequiredIntRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredInt is required"}
 
 	// ErrRequiredArrayRequiredValidation is returned when the RequiredArray is required but not provided.
-	ErrRequiredArrayRequiredValidation = errors.New("field RequiredArray is required")
+	ErrRequiredArrayRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredArray is required"}
 
 	// ErrRequiredSliceRequiredValidation is returned when the RequiredSlice is required but not provided.
-	ErrRequiredSliceRequiredValidation = errors.New("field RequiredSlice is required")
+	ErrRequiredSliceRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredSlice is required"}
 
 	// ErrRequiredMapRequiredValidation is returned when the RequiredMap is required but not provided.
-	ErrRequiredMapRequiredValidation = errors.New("field RequiredMap is required")
+	ErrRequiredMapRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredMap is required"}
 
 	// ErrRequiredInterfaceRequiredValidation is returned when the RequiredInterface is required but not provided.
-	ErrRequiredInterfaceRequiredValidation = errors.New("field RequiredInterface is required")
+	ErrRequiredInterfaceRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredInterface is required"}
 
 	// ErrRequiredAnyRequiredValidation is returned when the RequiredAny is required but not provided.
-	ErrRequiredAnyRequiredValidation = errors.New("field RequiredAny is required")
+	ErrRequiredAnyRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredAny is required"}
 
 	// ErrRequiredPointerRequiredValidation is returned when the RequiredPointer is required but not provided.
-	ErrRequiredPointerRequiredValidation = errors.New("field RequiredPointer is required")
+	ErrRequiredPointerRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredPointer is required"}
 
 	// ErrRequiredEntireRequiredStructNameRequiredValidation is returned when the RequiredEntireRequiredStructName is required but not provided.
-	ErrRequiredEntireRequiredStructNameRequiredValidation = errors.New("field RequiredEntireRequiredStructName is required")
+	ErrRequiredEntireRequiredStructNameRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredEntireRequiredStructName is required"}
 
 	// ErrRequiredPartialStructStringRequiredValidation is returned when the RequiredPartialStructString is required but not provided.
-	ErrRequiredPartialStructStringRequiredValidation = errors.New("field RequiredPartialStructString is required")
+	ErrRequiredPartialStructStringRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredPartialStructString is required"}
 
 	// ErrRequiredNested2StringRequiredValidation is returned when the RequiredNested2String is required but not provided.
-	ErrRequiredNested2StringRequiredValidation = errors.New("field RequiredNested2String is required")
+	ErrRequiredNested2StringRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredNested2String is required"}
 
 	// ErrRequiredChannelRequiredValidation is returned when the RequiredChannel is required but not provided.
-	ErrRequiredChannelRequiredValidation = errors.New("field RequiredChannel is required")
+	ErrRequiredChannelRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredChannel is required"}
 
 	// ErrRequiredFuncRequiredValidation is returned when the RequiredFunc is required but not provided.
-	ErrRequiredFuncRequiredValidation = errors.New("field RequiredFunc is required")
+	ErrRequiredFuncRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredFunc is required"}
 
 	// ErrRequiredNamedRequiredValidation is returned when the RequiredNamed is required but not provided.
-	ErrRequiredNamedRequiredValidation = errors.New("field RequiredNamed is required")
+	ErrRequiredNamedRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredNamed is required"}
 )
 
 func ValidateRequired(t *Required) error {
@@ -57,43 +58,63 @@ func ValidateRequired(t *Required) error {
 		return ErrNilRequired
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if t.String == "" {
-		return ErrRequiredStringRequiredValidation
+		err := ErrRequiredStringRequiredValidation
+		err.Value = t.String
+		errs = append(errs, err)
 	}
 
 	if t.Int == 0 {
-		return ErrRequiredIntRequiredValidation
+		err := ErrRequiredIntRequiredValidation
+		err.Value = t.Int
+		errs = append(errs, err)
 	}
 
 	if len(t.Array) == 0 {
-		return ErrRequiredArrayRequiredValidation
+		err := ErrRequiredArrayRequiredValidation
+		err.Value = t.Array
+		errs = append(errs, err)
 	}
 
 	if t.Slice == nil {
-		return ErrRequiredSliceRequiredValidation
+		err := ErrRequiredSliceRequiredValidation
+		err.Value = t.Slice
+		errs = append(errs, err)
 	}
 
 	if t.Map == nil {
-		return ErrRequiredMapRequiredValidation
+		err := ErrRequiredMapRequiredValidation
+		err.Value = t.Map
+		errs = append(errs, err)
 	}
 
 	if t.Interface == nil {
-		return ErrRequiredInterfaceRequiredValidation
+		err := ErrRequiredInterfaceRequiredValidation
+		err.Value = t.Interface
+		errs = append(errs, err)
 	}
 
 	if t.Any == nil {
-		return ErrRequiredAnyRequiredValidation
+		err := ErrRequiredAnyRequiredValidation
+		err.Value = t.Any
+		errs = append(errs, err)
 	}
 
 	if t.Pointer == nil {
-		return ErrRequiredPointerRequiredValidation
+		err := ErrRequiredPointerRequiredValidation
+		err.Value = t.Pointer
+		errs = append(errs, err)
 	}
 
 	{
 		t := t.EntireRequiredStruct
 
 		if t.EntireRequiredStructName == "" {
-			return ErrRequiredEntireRequiredStructNameRequiredValidation
+			err := ErrRequiredEntireRequiredStructNameRequiredValidation
+			err.Value = t.EntireRequiredStructName
+			errs = append(errs, err)
 		}
 
 	}
@@ -102,7 +123,9 @@ func ValidateRequired(t *Required) error {
 		t := t.PartialStruct
 
 		if t.PartialStructString == "" {
-			return ErrRequiredPartialStructStringRequiredValidation
+			err := ErrRequiredPartialStructStringRequiredValidation
+			err.Value = t.PartialStructString
+			errs = append(errs, err)
 		}
 
 	}
@@ -111,7 +134,9 @@ func ValidateRequired(t *Required) error {
 		t := t.NestedStruct.Nested2
 
 		if t.Nested2String == "" {
-			return ErrRequiredNested2StringRequiredValidation
+			err := ErrRequiredNested2StringRequiredValidation
+			err.Value = t.Nested2String
+			errs = append(errs, err)
 		}
 
 	}
@@ -120,22 +145,33 @@ func ValidateRequired(t *Required) error {
 		t := t.OtherNestedStruct.Nested2
 
 		if t.Nested2String == "" {
-			return ErrRequiredNested2StringRequiredValidation
+			err := ErrRequiredNested2StringRequiredValidation
+			err.Value = t.Nested2String
+			errs = append(errs, err)
 		}
 
 	}
 
 	if t.Channel == nil {
-		return ErrRequiredChannelRequiredValidation
+		err := ErrRequiredChannelRequiredValidation
+		err.Value = t.Channel
+		errs = append(errs, err)
 	}
 
 	if t.Func == nil {
-		return ErrRequiredFuncRequiredValidation
+		err := ErrRequiredFuncRequiredValidation
+		err.Value = t.Func
+		errs = append(errs, err)
 	}
 
 	if t.Named == "" {
-		return ErrRequiredNamedRequiredValidation
+		err := ErrRequiredNamedRequiredValidation
+		err.Value = t.Named
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

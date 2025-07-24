@@ -3,6 +3,7 @@ package gte
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
@@ -10,13 +11,13 @@ var (
 	ErrNilGTE = errors.New("input GTE is nil")
 
 	// ErrGTEAgeGTEValidation is the error returned when the value of the field is less than 18.
-	ErrGTEAgeGTEValidation = errors.New("field GTEAge must be greater than or equal to 18")
+	ErrGTEAgeGTEValidation = govaliderrors.ValidationError{Reason: "field GTEAge must be greater than or equal to 18"}
 
 	// ErrGTEScoreGTEValidation is the error returned when the value of the field is less than 0.
-	ErrGTEScoreGTEValidation = errors.New("field GTEScore must be greater than or equal to 0")
+	ErrGTEScoreGTEValidation = govaliderrors.ValidationError{Reason: "field GTEScore must be greater than or equal to 0"}
 
 	// ErrGTEValueGTEValidation is the error returned when the value of the field is less than 100.
-	ErrGTEValueGTEValidation = errors.New("field GTEValue must be greater than or equal to 100")
+	ErrGTEValueGTEValidation = govaliderrors.ValidationError{Reason: "field GTEValue must be greater than or equal to 100"}
 )
 
 func ValidateGTE(t *GTE) error {
@@ -24,22 +25,33 @@ func ValidateGTE(t *GTE) error {
 		return ErrNilGTE
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !(t.Age >= 18) {
-		return ErrGTEAgeGTEValidation
+		err := ErrGTEAgeGTEValidation
+		err.Value = t.Age
+		errs = append(errs, err)
 	}
 
 	if !(t.Score >= 0) {
-		return ErrGTEScoreGTEValidation
+		err := ErrGTEScoreGTEValidation
+		err.Value = t.Score
+		errs = append(errs, err)
 	}
 
 	{
 		t := t.Struct
 
 		if !(t.Value >= 100) {
-			return ErrGTEValueGTEValidation
+			err := ErrGTEValueGTEValidation
+			err.Value = t.Value
+			errs = append(errs, err)
 		}
 
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

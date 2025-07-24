@@ -112,7 +112,7 @@ func (u *uuidValidator) Err() string {
 
 	result.WriteString(strings.ReplaceAll(`
 	// Err@UUIDValidation is the error returned when the field is not a valid UUID.
-	Err@UUIDValidation = errors.New("field @ must be a valid UUID")`, "@", u.structName+fieldName))
+	Err@UUIDValidation = govaliderrors.ValidationError{Reason:"field @ must be a valid UUID"}`, "@", u.structName+fieldName))
 
 	return result.String()
 }
@@ -122,7 +122,7 @@ func (u *uuidValidator) ErrVariable() string {
 }
 
 func (u *uuidValidator) Imports() []string {
-	return []string{} // No imports needed for manual validation
+	return []string{}
 }
 
 // ValidateUUID creates a new uuidValidator for string types.

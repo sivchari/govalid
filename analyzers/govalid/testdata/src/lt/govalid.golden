@@ -3,6 +3,7 @@ package lt
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
@@ -10,49 +11,49 @@ var (
 	ErrNilLT = errors.New("input LT is nil")
 
 	// ErrLTIntLTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTIntLTValidation = errors.New("field LTInt must be less than 1")
+	ErrLTIntLTValidation = govaliderrors.ValidationError{Reason: "field LTInt must be less than 1"}
 
 	// ErrLTInt8LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTInt8LTValidation = errors.New("field LTInt8 must be less than 1")
+	ErrLTInt8LTValidation = govaliderrors.ValidationError{Reason: "field LTInt8 must be less than 1"}
 
 	// ErrLTInt16LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTInt16LTValidation = errors.New("field LTInt16 must be less than 1")
+	ErrLTInt16LTValidation = govaliderrors.ValidationError{Reason: "field LTInt16 must be less than 1"}
 
 	// ErrLTInt32LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTInt32LTValidation = errors.New("field LTInt32 must be less than 1")
+	ErrLTInt32LTValidation = govaliderrors.ValidationError{Reason: "field LTInt32 must be less than 1"}
 
 	// ErrLTInt64LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTInt64LTValidation = errors.New("field LTInt64 must be less than 1")
+	ErrLTInt64LTValidation = govaliderrors.ValidationError{Reason: "field LTInt64 must be less than 1"}
 
 	// ErrLTFloat32LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTFloat32LTValidation = errors.New("field LTFloat32 must be less than 1")
+	ErrLTFloat32LTValidation = govaliderrors.ValidationError{Reason: "field LTFloat32 must be less than 1"}
 
 	// ErrLTFloat64LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTFloat64LTValidation = errors.New("field LTFloat64 must be less than 1")
+	ErrLTFloat64LTValidation = govaliderrors.ValidationError{Reason: "field LTFloat64 must be less than 1"}
 
 	// ErrLTUintLTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTUintLTValidation = errors.New("field LTUint must be less than 1")
+	ErrLTUintLTValidation = govaliderrors.ValidationError{Reason: "field LTUint must be less than 1"}
 
 	// ErrLTUint8LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTUint8LTValidation = errors.New("field LTUint8 must be less than 1")
+	ErrLTUint8LTValidation = govaliderrors.ValidationError{Reason: "field LTUint8 must be less than 1"}
 
 	// ErrLTUint16LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTUint16LTValidation = errors.New("field LTUint16 must be less than 1")
+	ErrLTUint16LTValidation = govaliderrors.ValidationError{Reason: "field LTUint16 must be less than 1"}
 
 	// ErrLTUint32LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTUint32LTValidation = errors.New("field LTUint32 must be less than 1")
+	ErrLTUint32LTValidation = govaliderrors.ValidationError{Reason: "field LTUint32 must be less than 1"}
 
 	// ErrLTUint64LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTUint64LTValidation = errors.New("field LTUint64 must be less than 1")
+	ErrLTUint64LTValidation = govaliderrors.ValidationError{Reason: "field LTUint64 must be less than 1"}
 
 	// ErrLTUintptrLTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTUintptrLTValidation = errors.New("field LTUintptr must be less than 1")
+	ErrLTUintptrLTValidation = govaliderrors.ValidationError{Reason: "field LTUintptr must be less than 1"}
 
 	// ErrLTComplex64LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTComplex64LTValidation = errors.New("field LTComplex64 must be less than 1")
+	ErrLTComplex64LTValidation = govaliderrors.ValidationError{Reason: "field LTComplex64 must be less than 1"}
 
 	// ErrLTComplex128LTValidation is the error returned when the value of the field is greater than the 1.
-	ErrLTComplex128LTValidation = errors.New("field LTComplex128 must be less than 1")
+	ErrLTComplex128LTValidation = govaliderrors.ValidationError{Reason: "field LTComplex128 must be less than 1"}
 )
 
 func ValidateLT(t *LT) error {
@@ -60,74 +61,111 @@ func ValidateLT(t *LT) error {
 		return ErrNilLT
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !(t.Int < 1) {
-		return ErrLTIntLTValidation
+		err := ErrLTIntLTValidation
+		err.Value = t.Int
+		errs = append(errs, err)
 	}
 
 	if !(t.Int8 < 1) {
-		return ErrLTInt8LTValidation
+		err := ErrLTInt8LTValidation
+		err.Value = t.Int8
+		errs = append(errs, err)
 	}
 
 	if !(t.Int16 < 1) {
-		return ErrLTInt16LTValidation
+		err := ErrLTInt16LTValidation
+		err.Value = t.Int16
+		errs = append(errs, err)
 	}
 
 	if !(t.Int32 < 1) {
-		return ErrLTInt32LTValidation
+		err := ErrLTInt32LTValidation
+		err.Value = t.Int32
+		errs = append(errs, err)
 	}
 
 	if !(t.Int64 < 1) {
-		return ErrLTInt64LTValidation
+		err := ErrLTInt64LTValidation
+		err.Value = t.Int64
+		errs = append(errs, err)
 	}
 
 	if !(t.Float32 < 1) {
-		return ErrLTFloat32LTValidation
+		err := ErrLTFloat32LTValidation
+		err.Value = t.Float32
+		errs = append(errs, err)
 	}
 
 	if !(t.Float64 < 1) {
-		return ErrLTFloat64LTValidation
+		err := ErrLTFloat64LTValidation
+		err.Value = t.Float64
+		errs = append(errs, err)
 	}
 
 	if !(t.Uint < 1) {
-		return ErrLTUintLTValidation
+		err := ErrLTUintLTValidation
+		err.Value = t.Uint
+		errs = append(errs, err)
 	}
 
 	if !(t.Uint8 < 1) {
-		return ErrLTUint8LTValidation
+		err := ErrLTUint8LTValidation
+		err.Value = t.Uint8
+		errs = append(errs, err)
 	}
 
 	if !(t.Uint16 < 1) {
-		return ErrLTUint16LTValidation
+		err := ErrLTUint16LTValidation
+		err.Value = t.Uint16
+		errs = append(errs, err)
 	}
 
 	if !(t.Uint32 < 1) {
-		return ErrLTUint32LTValidation
+		err := ErrLTUint32LTValidation
+		err.Value = t.Uint32
+		errs = append(errs, err)
 	}
 
 	if !(t.Uint64 < 1) {
-		return ErrLTUint64LTValidation
+		err := ErrLTUint64LTValidation
+		err.Value = t.Uint64
+		errs = append(errs, err)
 	}
 
 	if !(t.Uintptr < 1) {
-		return ErrLTUintptrLTValidation
+		err := ErrLTUintptrLTValidation
+		err.Value = t.Uintptr
+		errs = append(errs, err)
 	}
 
 	if !(t.Complex64 < 1) {
-		return ErrLTComplex64LTValidation
+		err := ErrLTComplex64LTValidation
+		err.Value = t.Complex64
+		errs = append(errs, err)
 	}
 
 	if !(t.Complex128 < 1) {
-		return ErrLTComplex128LTValidation
+		err := ErrLTComplex128LTValidation
+		err.Value = t.Complex128
+		errs = append(errs, err)
 	}
 
 	{
 		t := t.Struct
 
 		if !(t.Int < 1) {
-			return ErrLTIntLTValidation
+			err := ErrLTIntLTValidation
+			err.Value = t.Int
+			errs = append(errs, err)
 		}
 
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

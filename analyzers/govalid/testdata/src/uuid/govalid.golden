@@ -3,6 +3,7 @@ package uuid
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
@@ -51,7 +52,7 @@ var (
 		return true
 	}
 	// ErrUUIDUUIDUUIDValidation is the error returned when the field is not a valid UUID.
-	ErrUUIDUUIDUUIDValidation = errors.New("field UUIDUUID must be a valid UUID")
+	ErrUUIDUUIDUUIDValidation = govaliderrors.ValidationError{Reason: "field UUIDUUID must be a valid UUID"}
 )
 
 func ValidateUUID(t *UUID) error {
@@ -59,9 +60,16 @@ func ValidateUUID(t *UUID) error {
 		return ErrNilUUID
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !isValidUUID(t.UUID) {
-		return ErrUUIDUUIDUUIDValidation
+		err := ErrUUIDUUIDUUIDValidation
+		err.Value = t.UUID
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

@@ -9,8 +9,10 @@ import (
 
 var (
 	// ErrNilEmail is returned when the Email is nil.
-	ErrNilEmail                  = errors.New("input Email is nil")
-	ErrEmailEmailEmailValidation = govaliderrors.ValidationError{}
+	ErrNilEmail = errors.New("input Email is nil")
+
+	// ErrEmailEmailEmailValidation is the error returned when the field is not a valid email address.
+	ErrEmailEmailEmailValidation = govaliderrors.ValidationError{Reason: "field EmailEmail must be a valid email address"}
 )
 
 func ValidateEmail(t *Email) error {

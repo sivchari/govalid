@@ -10,4 +10,6 @@ type ValidationError struct {
 type ValidationErrors []ValidationError
 
 // Implement error interface
-func (e ValidationErrors) Error() string
+func (e ValidationErrors) Error() string {
+	return ""
+}

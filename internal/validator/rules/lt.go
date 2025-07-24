@@ -42,7 +42,7 @@ func (m *ltValidator) Err() string {
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@LTValidation is the error returned when the value of the field is greater than the %s.
-	Err@LTValidation = errors.New("field @ must be less than %s")`, "@", m.structName+m.FieldName()), m.ltValue, m.ltValue)
+	Err@LTValidation = govaliderrors.ValidationError{Reason:"field @ must be less than %s"}`, "@", m.structName+m.FieldName()), m.ltValue, m.ltValue)
 }
 
 func (m *ltValidator) ErrVariable() string {

@@ -42,7 +42,7 @@ func (m *maxLengthValidator) Err() string {
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@MaxLengthValidation is the error returned when the length of the field exceeds the maximum of %s.
-	Err@MaxLengthValidation = errors.New("field @ must have a maximum length of %s")`, "@", m.structName+m.FieldName()), m.maxLengthValue, m.maxLengthValue)
+	Err@MaxLengthValidation = govaliderrors.ValidationError{Reason:"field @ must have a maximum length of %s"}`, "@", m.structName+m.FieldName()), m.maxLengthValue, m.maxLengthValue)
 }
 
 func (m *maxLengthValidator) ErrVariable() string {

@@ -3,6 +3,7 @@ package lte
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
@@ -10,13 +11,13 @@ var (
 	ErrNilLTE = errors.New("input LTE is nil")
 
 	// ErrLTEAgeLTEValidation is the error returned when the value of the field is greater than 100.
-	ErrLTEAgeLTEValidation = errors.New("field LTEAge must be less than or equal to 100")
+	ErrLTEAgeLTEValidation = govaliderrors.ValidationError{Reason: "field LTEAge must be less than or equal to 100"}
 
 	// ErrLTEScoreLTEValidation is the error returned when the value of the field is greater than 10.5.
-	ErrLTEScoreLTEValidation = errors.New("field LTEScore must be less than or equal to 10.5")
+	ErrLTEScoreLTEValidation = govaliderrors.ValidationError{Reason: "field LTEScore must be less than or equal to 10.5"}
 
 	// ErrLTEValueLTEValidation is the error returned when the value of the field is greater than 50.
-	ErrLTEValueLTEValidation = errors.New("field LTEValue must be less than or equal to 50")
+	ErrLTEValueLTEValidation = govaliderrors.ValidationError{Reason: "field LTEValue must be less than or equal to 50"}
 )
 
 func ValidateLTE(t *LTE) error {
@@ -24,22 +25,33 @@ func ValidateLTE(t *LTE) error {
 		return ErrNilLTE
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !(t.Age <= 100) {
-		return ErrLTEAgeLTEValidation
+		err := ErrLTEAgeLTEValidation
+		err.Value = t.Age
+		errs = append(errs, err)
 	}
 
 	if !(t.Score <= 10.5) {
-		return ErrLTEScoreLTEValidation
+		err := ErrLTEScoreLTEValidation
+		err.Value = t.Score
+		errs = append(errs, err)
 	}
 
 	{
 		t := t.Struct
 
 		if !(t.Value <= 50) {
-			return ErrLTEValueLTEValidation
+			err := ErrLTEValueLTEValidation
+			err.Value = t.Value
+			errs = append(errs, err)
 		}
 
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

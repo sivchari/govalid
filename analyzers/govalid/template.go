@@ -19,7 +19,7 @@ var (
 {{- range .Metadata -}}
 	{{- range .Validators -}}
 		{{ if ne .Validate "" }}
-			{{.ErrVariable}} = govaliderrors.ValidationError{}
+			{{.Err}}
 		{{ end -}}
 	{{- end -}}
 {{ end -}}

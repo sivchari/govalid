@@ -47,7 +47,7 @@ func (e *emailValidator) Err() string {
 
 	result.WriteString(strings.ReplaceAll(`
 	// Err@EmailValidation is the error returned when the field is not a valid email address.
-	Err@EmailValidation = errors.New("field @ must be a valid email address")`, `@`, e.structName+fieldName))
+	Err@EmailValidation = govaliderrors.ValidationError{Reason:"field @ must be a valid email address"}`, `@`, e.structName+fieldName))
 
 	return result.String()
 }
@@ -57,7 +57,6 @@ func (e *emailValidator) ErrVariable() string {
 }
 
 func (e *emailValidator) Imports() []string {
-	// Import validation helper package
 	return []string{"github.com/sivchari/govalid/validation/validationhelper"}
 }
 

@@ -61,7 +61,7 @@ func (e *enumValidator) Err() string {
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@EnumValidation is the error returned when the value is not in the allowed enum values [%s].
-	Err@EnumValidation = errors.New("field @ must be one of [%s]")`, "@", e.structName+e.FieldName()), enumList, enumList)
+	Err@EnumValidation = govaliderrors.ValidationError{Reason:"field @ must be one of [%s]"}`, "@", e.structName+e.FieldName()), enumList, enumList)
 }
 
 func (e *enumValidator) ErrVariable() string {

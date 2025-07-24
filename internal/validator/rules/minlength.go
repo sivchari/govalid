@@ -42,7 +42,7 @@ func (m *minLengthValidator) Err() string {
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@MinLengthValidation is the error returned when the length of the field is less than the minimum of %s.
-	Err@MinLengthValidation = errors.New("field @ must have a minimum length of %s")`, "@", m.structName+m.FieldName()), m.minLengthValue, m.minLengthValue)
+	Err@MinLengthValidation = govaliderrors.ValidationError{Reason:"field @ must have a minimum length of %s"}`, "@", m.structName+m.FieldName()), m.minLengthValue, m.minLengthValue)
 }
 
 func (m *minLengthValidator) ErrVariable() string {

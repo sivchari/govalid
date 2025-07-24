@@ -3,6 +3,7 @@ package url
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
 
@@ -11,19 +12,19 @@ var (
 	ErrNilURL = errors.New("input URL is nil")
 
 	// ErrURLWebsiteURLURLValidation is the error returned when the field is not a valid URL.
-	ErrURLWebsiteURLURLValidation = errors.New("field URLWebsiteURL must be a valid URL")
+	ErrURLWebsiteURLURLValidation = govaliderrors.ValidationError{Reason: "field URLWebsiteURL must be a valid URL"}
 
 	// ErrURLHomepageURLURLValidation is the error returned when the field is not a valid URL.
-	ErrURLHomepageURLURLValidation = errors.New("field URLHomepageURL must be a valid URL")
+	ErrURLHomepageURLURLValidation = govaliderrors.ValidationError{Reason: "field URLHomepageURL must be a valid URL"}
 
 	// ErrURLApiURLURLValidation is the error returned when the field is not a valid URL.
-	ErrURLApiURLURLValidation = errors.New("field URLApiURL must be a valid URL")
+	ErrURLApiURLURLValidation = govaliderrors.ValidationError{Reason: "field URLApiURL must be a valid URL"}
 
 	// ErrURLProfileURLURLValidation is the error returned when the field is not a valid URL.
-	ErrURLProfileURLURLValidation = errors.New("field URLProfileURL must be a valid URL")
+	ErrURLProfileURLURLValidation = govaliderrors.ValidationError{Reason: "field URLProfileURL must be a valid URL"}
 
 	// ErrURLDownloadURLURLValidation is the error returned when the field is not a valid URL.
-	ErrURLDownloadURLURLValidation = errors.New("field URLDownloadURL must be a valid URL")
+	ErrURLDownloadURLURLValidation = govaliderrors.ValidationError{Reason: "field URLDownloadURL must be a valid URL"}
 )
 
 func ValidateURL(t *URL) error {
@@ -31,25 +32,40 @@ func ValidateURL(t *URL) error {
 		return ErrNilURL
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !validationhelper.IsValidURL(t.WebsiteURL) {
-		return ErrURLWebsiteURLURLValidation
+		err := ErrURLWebsiteURLURLValidation
+		err.Value = t.WebsiteURL
+		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidURL(t.HomepageURL) {
-		return ErrURLHomepageURLURLValidation
+		err := ErrURLHomepageURLURLValidation
+		err.Value = t.HomepageURL
+		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidURL(t.ApiURL) {
-		return ErrURLApiURLURLValidation
+		err := ErrURLApiURLURLValidation
+		err.Value = t.ApiURL
+		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidURL(t.ProfileURL) {
-		return ErrURLProfileURLURLValidation
+		err := ErrURLProfileURLURLValidation
+		err.Value = t.ProfileURL
+		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidURL(t.DownloadURL) {
-		return ErrURLDownloadURLURLValidation
+		err := ErrURLDownloadURLURLValidation
+		err.Value = t.DownloadURL
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

@@ -60,7 +60,7 @@ func (r *requiredValidator) Err() string {
 
 	return strings.ReplaceAll(`
 	// Err@RequiredValidation is returned when the @ is required but not provided.
-	Err@RequiredValidation = errors.New("field @ is required")`, "@", r.structName+r.FieldName())
+	Err@RequiredValidation = govaliderrors.ValidationError{Reason:"field @ is required"}`, "@", r.structName+r.FieldName())
 }
 
 func (r *requiredValidator) ErrVariable() string {

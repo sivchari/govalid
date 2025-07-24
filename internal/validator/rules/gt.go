@@ -42,7 +42,7 @@ func (m *gtValidator) Err() string {
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@GTValidation is the error returned when the value of the field is less than the %s.
-	Err@GTValidation = errors.New("field @ must be greater than %s")`, "@", m.structName+m.FieldName()), m.gtValue, m.gtValue)
+	Err@GTValidation = govaliderrors.ValidationError{Reason:"field @ must be greater than %s"}`, "@", m.structName+m.FieldName()), m.gtValue, m.gtValue)
 }
 
 func (m *gtValidator) ErrVariable() string {

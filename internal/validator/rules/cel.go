@@ -61,10 +61,9 @@ func (c *celValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	// Generate error variable with the CEL expression included for debugging
 	result.WriteString(strings.ReplaceAll(`
 	// Err@CELValidation is the error returned when the CEL expression evaluation fails.
-	Err@CELValidation = errors.New("field @ failed CEL validation: EXPRESSION")`, "@", c.structName+fieldName))
+	Err@CELValidation = govaliderrors.ValidationError{Reason:"field @ failed CEL validation: EXPRESSION"}`, "@", c.structName+fieldName))
 
 	// Replace EXPRESSION placeholder with the actual CEL expression
 	errorString := result.String()

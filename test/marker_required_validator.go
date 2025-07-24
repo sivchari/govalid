@@ -8,12 +8,16 @@ import (
 
 var (
 	// ErrNilRequired is returned when the Required is nil.
-	ErrNilRequired                    = errors.New("input Required is nil")
-	ErrRequiredNameRequiredValidation = govaliderrors.ValidationError{}
+	ErrNilRequired = errors.New("input Required is nil")
 
-	ErrRequiredAgeRequiredValidation = govaliderrors.ValidationError{}
+	// ErrRequiredNameRequiredValidation is returned when the RequiredName is required but not provided.
+	ErrRequiredNameRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredName is required"}
 
-	ErrRequiredItemsRequiredValidation = govaliderrors.ValidationError{}
+	// ErrRequiredAgeRequiredValidation is returned when the RequiredAge is required but not provided.
+	ErrRequiredAgeRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredAge is required"}
+
+	// ErrRequiredItemsRequiredValidation is returned when the RequiredItems is required but not provided.
+	ErrRequiredItemsRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredItems is required"}
 )
 
 func ValidateRequired(t *Required) error {

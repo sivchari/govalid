@@ -3,6 +3,7 @@ package maxlength
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"unicode/utf8"
 )
 
@@ -11,10 +12,10 @@ var (
 	ErrNilMaxLength = errors.New("input MaxLength is nil")
 
 	// ErrMaxLengthStringMaxLengthValidation is the error returned when the length of the field exceeds the maximum of 10.
-	ErrMaxLengthStringMaxLengthValidation = errors.New("field MaxLengthString must have a maximum length of 10")
+	ErrMaxLengthStringMaxLengthValidation = govaliderrors.ValidationError{Reason: "field MaxLengthString must have a maximum length of 10"}
 
 	// ErrMaxLengthNameMaxLengthValidation is the error returned when the length of the field exceeds the maximum of 20.
-	ErrMaxLengthNameMaxLengthValidation = errors.New("field MaxLengthName must have a maximum length of 20")
+	ErrMaxLengthNameMaxLengthValidation = govaliderrors.ValidationError{Reason: "field MaxLengthName must have a maximum length of 20"}
 )
 
 func ValidateMaxLength(t *MaxLength) error {
@@ -22,18 +23,27 @@ func ValidateMaxLength(t *MaxLength) error {
 		return ErrNilMaxLength
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if utf8.RuneCountInString(t.String) > 10 {
-		return ErrMaxLengthStringMaxLengthValidation
+		err := ErrMaxLengthStringMaxLengthValidation
+		err.Value = t.String
+		errs = append(errs, err)
 	}
 
 	{
 		t := t.Struct
 
 		if utf8.RuneCountInString(t.Name) > 20 {
-			return ErrMaxLengthNameMaxLengthValidation
+			err := ErrMaxLengthNameMaxLengthValidation
+			err.Value = t.Name
+			errs = append(errs, err)
 		}
 
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

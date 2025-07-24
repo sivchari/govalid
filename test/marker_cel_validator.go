@@ -8,14 +8,19 @@ import (
 
 var (
 	// ErrNilCEL is returned when the CEL is nil.
-	ErrNilCEL              = errors.New("input CEL is nil")
-	ErrCELAgeCELValidation = govaliderrors.ValidationError{}
+	ErrNilCEL = errors.New("input CEL is nil")
 
-	ErrCELNameCELValidation = govaliderrors.ValidationError{}
+	// ErrCELAgeCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELAge failed CEL validation: value >= 18"}
 
-	ErrCELScoreCELValidation = govaliderrors.ValidationError{}
+	// ErrCELNameCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELNameCELValidation = govaliderrors.ValidationError{Reason: "field CELName failed CEL validation: size(value) > 0"}
 
-	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{}
+	// ErrCELScoreCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELScore failed CEL validation: value > 0.0"}
+
+	// ErrCELIsActiveCELValidation is the error returned when the CEL expression evaluation fails.
+	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{Reason: "field CELIsActive failed CEL validation: value == true"}
 )
 
 func ValidateCEL(t *CEL) error {

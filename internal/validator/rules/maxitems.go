@@ -42,7 +42,7 @@ func (m *maxItemsValidator) Err() string {
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@MaxItemsValidation is the error returned when the length of the field exceeds the maximum of %s.
-	Err@MaxItemsValidation = errors.New("field @ must have a maximum of %s items")`, "@", m.structName+m.FieldName()), m.maxItemsValue, m.maxItemsValue)
+	Err@MaxItemsValidation = govaliderrors.ValidationError{Reason:"field @ must have a maximum of %s items"}`, "@", m.structName+m.FieldName()), m.maxItemsValue, m.maxItemsValue)
 }
 
 func (m *maxItemsValidator) ErrVariable() string {

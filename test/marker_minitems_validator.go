@@ -8,12 +8,16 @@ import (
 
 var (
 	// ErrNilMinItems is returned when the MinItems is nil.
-	ErrNilMinItems                     = errors.New("input MinItems is nil")
-	ErrMinItemsItemsMinItemsValidation = govaliderrors.ValidationError{}
+	ErrNilMinItems = errors.New("input MinItems is nil")
 
-	ErrMinItemsMetadataMinItemsValidation = govaliderrors.ValidationError{}
+	// ErrMinItemsItemsMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
+	ErrMinItemsItemsMinItemsValidation = govaliderrors.ValidationError{Reason: "field MinItemsItems must have a minimum of 2 items"}
 
-	ErrMinItemsChanFieldMinItemsValidation = govaliderrors.ValidationError{}
+	// ErrMinItemsMetadataMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
+	ErrMinItemsMetadataMinItemsValidation = govaliderrors.ValidationError{Reason: "field MinItemsMetadata must have a minimum of 1 items"}
+
+	// ErrMinItemsChanFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
+	ErrMinItemsChanFieldMinItemsValidation = govaliderrors.ValidationError{Reason: "field MinItemsChanField must have a minimum of 1 items"}
 )
 
 func ValidateMinItems(t *MinItems) error {

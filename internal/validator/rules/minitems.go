@@ -42,7 +42,7 @@ func (m *minItemsValidator) Err() string {
 
 	return fmt.Sprintf(strings.ReplaceAll(`
 	// Err@MinItemsValidation is the error returned when the length of the field is less than the minimum of %s.
-	Err@MinItemsValidation = errors.New("field @ must have a minimum of %s items")`, "@", m.structName+m.FieldName()), m.minItemsValue, m.minItemsValue)
+	Err@MinItemsValidation = govaliderrors.ValidationError{Reason:"field @ must have a minimum of %s items"}`, "@", m.structName+m.FieldName()), m.minItemsValue, m.minItemsValue)
 }
 
 func (m *minItemsValidator) ErrVariable() string {

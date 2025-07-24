@@ -3,6 +3,7 @@ package minitems
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
@@ -10,19 +11,19 @@ var (
 	ErrNilMinItems = errors.New("input MinItems is nil")
 
 	// ErrMinItemsSliceMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
-	ErrMinItemsSliceMinItemsValidation = errors.New("field MinItemsSlice must have a minimum of 2 items")
+	ErrMinItemsSliceMinItemsValidation = govaliderrors.ValidationError{Reason: "field MinItemsSlice must have a minimum of 2 items"}
 
 	// ErrMinItemsArrayMinItemsValidation is the error returned when the length of the field is less than the minimum of 3.
-	ErrMinItemsArrayMinItemsValidation = errors.New("field MinItemsArray must have a minimum of 3 items")
+	ErrMinItemsArrayMinItemsValidation = govaliderrors.ValidationError{Reason: "field MinItemsArray must have a minimum of 3 items"}
 
 	// ErrMinItemsMapFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
-	ErrMinItemsMapFieldMinItemsValidation = errors.New("field MinItemsMapField must have a minimum of 1 items")
+	ErrMinItemsMapFieldMinItemsValidation = govaliderrors.ValidationError{Reason: "field MinItemsMapField must have a minimum of 1 items"}
 
 	// ErrMinItemsChanFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
-	ErrMinItemsChanFieldMinItemsValidation = errors.New("field MinItemsChanField must have a minimum of 2 items")
+	ErrMinItemsChanFieldMinItemsValidation = govaliderrors.ValidationError{Reason: "field MinItemsChanField must have a minimum of 2 items"}
 
 	// ErrMinItemsItemsMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
-	ErrMinItemsItemsMinItemsValidation = errors.New("field MinItemsItems must have a minimum of 1 items")
+	ErrMinItemsItemsMinItemsValidation = govaliderrors.ValidationError{Reason: "field MinItemsItems must have a minimum of 1 items"}
 )
 
 func ValidateMinItems(t *MinItems) error {
@@ -30,30 +31,45 @@ func ValidateMinItems(t *MinItems) error {
 		return ErrNilMinItems
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if len(t.Slice) < 2 {
-		return ErrMinItemsSliceMinItemsValidation
+		err := ErrMinItemsSliceMinItemsValidation
+		err.Value = t.Slice
+		errs = append(errs, err)
 	}
 
 	if len(t.Array) < 3 {
-		return ErrMinItemsArrayMinItemsValidation
+		err := ErrMinItemsArrayMinItemsValidation
+		err.Value = t.Array
+		errs = append(errs, err)
 	}
 
 	if len(t.MapField) < 1 {
-		return ErrMinItemsMapFieldMinItemsValidation
+		err := ErrMinItemsMapFieldMinItemsValidation
+		err.Value = t.MapField
+		errs = append(errs, err)
 	}
 
 	if len(t.ChanField) < 2 {
-		return ErrMinItemsChanFieldMinItemsValidation
+		err := ErrMinItemsChanFieldMinItemsValidation
+		err.Value = t.ChanField
+		errs = append(errs, err)
 	}
 
 	{
 		t := t.Struct
 
 		if len(t.Items) < 1 {
-			return ErrMinItemsItemsMinItemsValidation
+			err := ErrMinItemsItemsMinItemsValidation
+			err.Value = t.Items
+			errs = append(errs, err)
 		}
 
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

@@ -46,7 +46,7 @@ func (u *urlValidator) Err() string {
 
 	result.WriteString(strings.ReplaceAll(`
 	// Err@URLValidation is the error returned when the field is not a valid URL.
-	Err@URLValidation = errors.New("field @ must be a valid URL")`, `@`, u.structName+fieldName))
+	Err@URLValidation = govaliderrors.ValidationError{Reason:"field @ must be a valid URL"}`, "@", u.structName+fieldName))
 
 	return result.String()
 }
@@ -56,7 +56,6 @@ func (u *urlValidator) ErrVariable() string {
 }
 
 func (u *urlValidator) Imports() []string {
-	// Import validation helper package
 	return []string{"github.com/sivchari/govalid/validation/validationhelper"}
 }
 
