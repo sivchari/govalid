@@ -17,6 +17,9 @@ var (
 	// GoValidMarkerGte is the marker for gte validation.
 	GoValidMarkerGte = "govalid:gte"
 
+	// GoValidMarkerLength is the marker for length validation.
+	GoValidMarkerLength = "govalid:length"
+
 	// GoValidMarkerLt is the marker for lt validation.
 	GoValidMarkerLt = "govalid:lt"
 
@@ -53,6 +56,7 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerEnum: {},
 	GoValidMarkerGt: {},
 	GoValidMarkerGte: {},
+	GoValidMarkerLength: {},
 	GoValidMarkerLt: {},
 	GoValidMarkerLte: {},
 	GoValidMarkerMaxitems: {},

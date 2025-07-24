@@ -7,6 +7,7 @@ import (
 	"unicode/utf8"
 
 	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // FuncMap provides a set of template functions for use in Go templates.
@@ -19,5 +20,7 @@ var FuncMap = template.FuncMap{
 
 		return strings.ToLower(string(r))
 	},
-	"title": cases.Title,
+	"title": func(s string) string {
+		return cases.Title(language.English).String(s)
+	},
 }

@@ -13,6 +13,7 @@ func All() []registry.ValidatorInitializer {
 		EnumInitializer{},
 		GtInitializer{},
 		GteInitializer{},
+		LengthInitializer{},
 		LtInitializer{},
 		LteInitializer{},
 		MaxitemsInitializer{},
