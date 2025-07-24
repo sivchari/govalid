@@ -5,7 +5,6 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"log"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -33,8 +32,7 @@ func DiscoverValidators(rulesDir string) ([]ValidatorInfo, error) {
 
 		info, err := analyzeValidatorFile(file)
 		if err != nil {
-			log.Printf("Warning: failed to analyze %s: %v", file, err)
-			continue
+			return nil, fmt.Errorf("failed to analyze file %s: %w", file, err)
 		}
 
 		if info != nil {
