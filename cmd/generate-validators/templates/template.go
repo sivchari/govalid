@@ -1,3 +1,4 @@
+// Package templates provides a set of template functions for use in Go templates.
 package templates
 
 import (
@@ -8,6 +9,7 @@ import (
 	"golang.org/x/text/cases"
 )
 
+// FuncMap provides a set of template functions for use in Go templates.
 var FuncMap = template.FuncMap{
 	"firstLetter": func(s string) string {
 		r, size := utf8.DecodeRuneInString(s)

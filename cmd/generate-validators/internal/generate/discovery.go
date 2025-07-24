@@ -1,3 +1,4 @@
+// Package generate provides functions for discovering and generating validator registry files.
 package generate
 
 import (
@@ -58,6 +59,7 @@ func analyzeValidatorFile(filepath string) (*ValidatorInfo, error) {
 	}
 
 	var validatorType string
+
 	var validateFunc string
 
 	// Find validator struct and Validate function

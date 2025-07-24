@@ -1,3 +1,4 @@
+// Package scaffold provides utilities to generate files from templates.
 package scaffold
 
 import (
@@ -18,7 +19,7 @@ func CreateValidator(markerName, validatorTemplate, rulesDir string) error {
 
 	// Convert marker name to various forms
 	markerLower := strings.ToLower(markerName)
-	
+
 	// Simple inline PascalCase conversion
 	r, size := utf8.DecodeRuneInString(markerLower)
 	if size == 0 {
@@ -56,5 +57,6 @@ func checkFileExists(path string) error {
 	if _, err := os.Stat(path); err == nil {
 		return fmt.Errorf("validator file already exists: %s", path)
 	}
+
 	return nil
 }

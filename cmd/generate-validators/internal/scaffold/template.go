@@ -1,3 +1,4 @@
+// Package scaffold provides utilities to generate files from templates.
 package scaffold
 
 import (

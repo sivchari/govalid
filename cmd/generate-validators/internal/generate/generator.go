@@ -1,3 +1,4 @@
+// Package generate provides functions for discovering and generating validator registry files.
 package generate
 
 import (
@@ -6,8 +7,8 @@ import (
 	"path/filepath"
 )
 
-// GenerateAll generates all registry files from existing validators.
-func GenerateAll(rulesDir, outputDir, registryFile, markersFile string, templates Templates) error {
+// All generates all registry files from existing validators.
+func All(rulesDir, outputDir, registryFile, markersFile string, templates Templates) error {
 	validators, err := DiscoverValidators(rulesDir)
 	if err != nil {
 		return fmt.Errorf("failed to discover validators: %w", err)

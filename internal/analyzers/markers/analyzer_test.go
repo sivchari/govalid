@@ -3,8 +3,9 @@ package markers_test
 import (
 	"testing"
 
-	"github.com/sivchari/govalid/internal/analyzers/markers"
 	"golang.org/x/tools/go/analysis/analysistest"
+
+	"github.com/sivchari/govalid/internal/analyzers/markers"
 )
 
 func Test(t *testing.T) {

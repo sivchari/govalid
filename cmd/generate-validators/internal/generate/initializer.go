@@ -1,3 +1,4 @@
+// Package generate provides functions for discovering and generating validator registry files.
 package generate
 
 import (

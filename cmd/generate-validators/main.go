@@ -39,11 +39,9 @@ const (
 	markersFile  = "internal/markers/markers_generated.go"
 )
 
-
 var (
 	marker = flag.String("marker", "", "Create a new validator with the given marker name (e.g., 'phoneNumber')")
 )
-
 
 func main() {
 	flag.Parse()
@@ -68,7 +66,7 @@ func main() {
 		Markers:      markersTemplate,
 	}
 
-	if err := generate.GenerateAll(rulesDir, outputDir, registryFile, markersFile, templates); err != nil {
+	if err := generate.All(rulesDir, outputDir, registryFile, markersFile, templates); err != nil {
 		log.Fatalf("Failed to generate: %v", err)
 	}
 }
@@ -93,5 +91,3 @@ func changeToProjectRoot() error {
 		dir = parent
 	}
 }
-
-
