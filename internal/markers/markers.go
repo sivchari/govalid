@@ -58,6 +58,10 @@ var (
 	// This marker supports complex validation expressions with access to 'value' (current field) and 'this' (struct instance).
 	// Available for all types and enables cross-field validation and complex business rules.
 	GoValidMarkerCEL = "govalid:cel"
+
+	// GoValidMarkerLength is the marker for checking if a collection's length is equal to a specified length in govalid.
+	// This marker is only available for string types and enhances the maxlength and minlength markers.
+	GoValidMarkerLength = "govalid:length"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
@@ -76,4 +80,5 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerUUID:      {},
 	GoValidMarkerURL:       {},
 	GoValidMarkerCEL:       {},
+	GoValidMarkerLength:    {},
 }

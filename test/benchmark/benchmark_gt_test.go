@@ -6,6 +6,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/go-playground/validator/v10"
+
 	"github.com/sivchari/govalid/test"
 )
 

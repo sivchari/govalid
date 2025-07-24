@@ -21,6 +21,10 @@ golangci-lint-fix: golangci-lint ## Run golangci-lint over the codebase and run 
 fmt: ## Format code with golangci-lint
 	${GOLANGCI_LINT} fmt ./...
 
+.PHONY: fmt-diff
+fmt-diff: ## Show code formatting differences
+	${GOLANGCI_LINT} fmt --diff ./...
+
 # Documentation targets
 .PHONY: docs-dev
 docs-dev: ## Start Hugo development server

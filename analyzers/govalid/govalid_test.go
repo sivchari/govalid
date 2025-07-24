@@ -47,6 +47,7 @@ func Test(t *testing.T) {
 		"uuid",
 		"url",
 		"cel",
+		"length",
 		"nestedstruct/nop",
 		"nestedstruct/inside",
 		"nestedstruct/partial",

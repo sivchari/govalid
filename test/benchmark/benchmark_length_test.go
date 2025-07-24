@@ -5,18 +5,19 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/go-playground/validator/v10"
 	"github.com/gookit/validate"
 
 	"github.com/sivchari/govalid/test"
 )
 
-func BenchmarkGoValidEmail(b *testing.B) {
-	instance := test.Email{Email: "user@example.com"}
+func BenchmarkGoValidLength(b *testing.B) {
+	instance := test.Length{
+		Name: "1234567",
+	}
 	b.ResetTimer()
 	for b.Loop() {
-		err := test.ValidateEmail(&instance)
+		err := test.ValidateLength(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
 		}
@@ -24,9 +25,11 @@ func BenchmarkGoValidEmail(b *testing.B) {
 	b.StopTimer()
 }
 
-func BenchmarkGoPlaygroundEmail(b *testing.B) {
+func BenchmarkGoPlaygroundLength(b *testing.B) {
 	validate := validator.New()
-	instance := test.Email{Email: "user@example.com"}
+	instance := test.Length{
+		Name: "1234567",
+	}
 	b.ResetTimer()
 	for b.Loop() {
 		err := validate.Struct(&instance)
@@ -37,22 +40,22 @@ func BenchmarkGoPlaygroundEmail(b *testing.B) {
 	b.StopTimer()
 }
 
-func BenchmarkGoValidatorEmail(b *testing.B) {
-	testEmail := "user@example.com"
+func BenchmarkGoValidatorLength(b *testing.B) {
+	testString := "1234567"
 	b.ResetTimer()
 	for b.Loop() {
-		if !govalidator.IsEmail(testEmail) {
+		if !govalidator.StringLength(testString, "7", "7") {
 			b.Fatal("validation failed")
 		}
 	}
 	b.StopTimer()
 }
 
-func BenchmarkOzzoValidationEmail(b *testing.B) {
-	testEmail := "user@example.com"
+func BenchmarkOzzoValidationLength(b *testing.B) {
+	testString := "1234567"
 	b.ResetTimer()
 	for b.Loop() {
-		err := validation.Validate(testEmail, is.Email)
+		err := validation.Validate(testString, validation.Length(7, 7))
 		if err != nil {
 			b.Fatal("validation failed:", err)
 		}
@@ -60,12 +63,12 @@ func BenchmarkOzzoValidationEmail(b *testing.B) {
 	b.StopTimer()
 }
 
-func BenchmarkGookitValidateEmail(b *testing.B) {
-	testEmail := "user@example.com"
+func BenchmarkGookitValidateLength(b *testing.B) {
+	testString := "1234567"
 	b.ResetTimer()
 	for b.Loop() {
-		v := validate.New(map[string]any{"email": testEmail})
-		v.StringRule("email", "email")
+		v := validate.New(map[string]any{"name": testString})
+		v.StringRule("name", "rune_len:7")
 		if !v.Validate() {
 			b.Fatal("validation failed:", v.Errors)
 		}

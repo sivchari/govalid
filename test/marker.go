@@ -129,3 +129,8 @@ type CELCrossField struct {
 
 	Budget float64 `json:"budget"`
 }
+
+type Length struct {
+	// +govalid:length=7
+	Name string `json:"name"`
+}

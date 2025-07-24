@@ -133,7 +133,32 @@ jobs:
               comment += `4. Push updates to re-run the tests`;
             }
             
-            // Post comment to PR
+            // Find and delete previous Fuzz Testing Results comments
+            try {
+              const comments = await github.rest.issues.listComments({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+              
+              const fuzzComments = comments.data.filter(comment => 
+                comment.body.includes('🔍 Fuzz Testing Results') && 
+                comment.user.type === 'Bot'
+              );
+              
+              for (const oldComment of fuzzComments) {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: oldComment.id
+                });
+                console.log(`Deleted previous fuzz comment: ${oldComment.id}`);
+              }
+            } catch (error) {
+              console.warn('Failed to delete previous comments:', error.message);
+            }
+            
+            // Post new comment to PR
             try {
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,

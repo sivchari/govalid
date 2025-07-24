@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gostaticanalysis/codegen/singlegenerator"
+
 	"github.com/sivchari/govalid/analyzers/govalid"
 	"github.com/sivchari/govalid/analyzers/markers"
 	"github.com/sivchari/govalid/internal/registry"

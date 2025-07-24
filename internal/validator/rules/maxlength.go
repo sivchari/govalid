@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gostaticanalysis/codegen"
+
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
 )

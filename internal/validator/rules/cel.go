@@ -9,9 +9,10 @@ import (
 
 	"github.com/google/cel-go/cel"
 	"github.com/gostaticanalysis/codegen"
+	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
-	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
 type celValidator struct {

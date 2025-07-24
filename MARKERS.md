@@ -170,6 +170,31 @@ govalid supports the following markers:
   }
   ```
 
+## `govalid:length`
+- **Description**: Ensures that a string field has exactly the specified length (Unicode-aware).
+- **Example**:
+  ```go
+  type User struct {
+      // +govalid:length=7
+      Name string `json:"name"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateUser(t *User) error {
+      if t == nil {
+          return ErrNilUser
+      }
+
+      if utf8.RuneCountInString(t.Name) != 7 {
+          return ErrUserNameLengthValidation
+      }
+
+      return nil
+  }
+  ```
+- **Note**: Uses `utf8.RuneCountInString()` for proper Unicode character counting, ensuring accurate validation for international characters and emojis.
+
 ## `govalid:maxitems`
 - **Description**: Ensures that a collection field's length does not exceed the specified maximum number of items. Supports slice, array, map, and channel types.
 - **Example**:
