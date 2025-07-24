@@ -3,23 +3,19 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
 	// ErrNilEnum is returned when the Enum is nil.
-	ErrNilEnum = errors.New("input Enum is nil")
+	ErrNilEnum                = errors.New("input Enum is nil")
+	ErrEnumRoleEnumValidation = govaliderrors.ValidationError{}
 
-	// ErrEnumRoleEnumValidation is the error returned when the value is not in the allowed enum values [admin, user, guest].
-	ErrEnumRoleEnumValidation = errors.New("field EnumRole must be one of [admin, user, guest]")
+	ErrEnumLevelEnumValidation = govaliderrors.ValidationError{}
 
-	// ErrEnumLevelEnumValidation is the error returned when the value is not in the allowed enum values [1, 2, 3].
-	ErrEnumLevelEnumValidation = errors.New("field EnumLevel must be one of [1, 2, 3]")
+	ErrEnumUserRoleEnumValidation = govaliderrors.ValidationError{}
 
-	// ErrEnumUserRoleEnumValidation is the error returned when the value is not in the allowed enum values [manager, developer, tester].
-	ErrEnumUserRoleEnumValidation = errors.New("field EnumUserRole must be one of [manager, developer, tester]")
-
-	// ErrEnumPriorityEnumValidation is the error returned when the value is not in the allowed enum values [10, 20, 30].
-	ErrEnumPriorityEnumValidation = errors.New("field EnumPriority must be one of [10, 20, 30]")
+	ErrEnumPriorityEnumValidation = govaliderrors.ValidationError{}
 )
 
 func ValidateEnum(t *Enum) error {
@@ -27,21 +23,34 @@ func ValidateEnum(t *Enum) error {
 		return ErrNilEnum
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if t.Role != "admin" && t.Role != "user" && t.Role != "guest" {
-		return ErrEnumRoleEnumValidation
+		err := ErrEnumRoleEnumValidation
+		err.Value = t.Role
+		errs = append(errs, err)
 	}
 
 	if t.Level != 1 && t.Level != 2 && t.Level != 3 {
-		return ErrEnumLevelEnumValidation
+		err := ErrEnumLevelEnumValidation
+		err.Value = t.Level
+		errs = append(errs, err)
 	}
 
 	if t.UserRole != "manager" && t.UserRole != "developer" && t.UserRole != "tester" {
-		return ErrEnumUserRoleEnumValidation
+		err := ErrEnumUserRoleEnumValidation
+		err.Value = t.UserRole
+		errs = append(errs, err)
 	}
 
 	if t.Priority != 10 && t.Priority != 20 && t.Priority != 30 {
-		return ErrEnumPriorityEnumValidation
+		err := ErrEnumPriorityEnumValidation
+		err.Value = t.Priority
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

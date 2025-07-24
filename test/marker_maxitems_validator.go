@@ -3,20 +3,17 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
 	// ErrNilMaxItems is returned when the MaxItems is nil.
-	ErrNilMaxItems = errors.New("input MaxItems is nil")
+	ErrNilMaxItems                     = errors.New("input MaxItems is nil")
+	ErrMaxItemsItemsMaxItemsValidation = govaliderrors.ValidationError{}
 
-	// ErrMaxItemsItemsMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 5.
-	ErrMaxItemsItemsMaxItemsValidation = errors.New("field MaxItemsItems must have a maximum of 5 items")
+	ErrMaxItemsMetadataMaxItemsValidation = govaliderrors.ValidationError{}
 
-	// ErrMaxItemsMetadataMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 3.
-	ErrMaxItemsMetadataMaxItemsValidation = errors.New("field MaxItemsMetadata must have a maximum of 3 items")
-
-	// ErrMaxItemsChanFieldMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 2.
-	ErrMaxItemsChanFieldMaxItemsValidation = errors.New("field MaxItemsChanField must have a maximum of 2 items")
+	ErrMaxItemsChanFieldMaxItemsValidation = govaliderrors.ValidationError{}
 )
 
 func ValidateMaxItems(t *MaxItems) error {
@@ -24,17 +21,28 @@ func ValidateMaxItems(t *MaxItems) error {
 		return ErrNilMaxItems
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if len(t.Items) > 5 {
-		return ErrMaxItemsItemsMaxItemsValidation
+		err := ErrMaxItemsItemsMaxItemsValidation
+		err.Value = t.Items
+		errs = append(errs, err)
 	}
 
 	if len(t.Metadata) > 3 {
-		return ErrMaxItemsMetadataMaxItemsValidation
+		err := ErrMaxItemsMetadataMaxItemsValidation
+		err.Value = t.Metadata
+		errs = append(errs, err)
 	}
 
 	if len(t.ChanField) > 2 {
-		return ErrMaxItemsChanFieldMaxItemsValidation
+		err := ErrMaxItemsChanFieldMaxItemsValidation
+		err.Value = t.ChanField
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

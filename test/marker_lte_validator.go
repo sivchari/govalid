@@ -3,14 +3,13 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
 	// ErrNilLTE is returned when the LTE is nil.
-	ErrNilLTE = errors.New("input LTE is nil")
-
-	// ErrLTEAgeLTEValidation is the error returned when the value of the field is greater than 100.
-	ErrLTEAgeLTEValidation = errors.New("field LTEAge must be less than or equal to 100")
+	ErrNilLTE              = errors.New("input LTE is nil")
+	ErrLTEAgeLTEValidation = govaliderrors.ValidationError{}
 )
 
 func ValidateLTE(t *LTE) error {
@@ -18,9 +17,16 @@ func ValidateLTE(t *LTE) error {
 		return ErrNilLTE
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !(t.Age <= 100) {
-		return ErrLTEAgeLTEValidation
+		err := ErrLTEAgeLTEValidation
+		err.Value = t.Age
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

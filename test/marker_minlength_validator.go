@@ -3,15 +3,14 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"unicode/utf8"
 )
 
 var (
 	// ErrNilMinLength is returned when the MinLength is nil.
-	ErrNilMinLength = errors.New("input MinLength is nil")
-
-	// ErrMinLengthNameMinLengthValidation is the error returned when the length of the field is less than the minimum of 3.
-	ErrMinLengthNameMinLengthValidation = errors.New("field MinLengthName must have a minimum length of 3")
+	ErrNilMinLength                     = errors.New("input MinLength is nil")
+	ErrMinLengthNameMinLengthValidation = govaliderrors.ValidationError{}
 )
 
 func ValidateMinLength(t *MinLength) error {
@@ -19,9 +18,16 @@ func ValidateMinLength(t *MinLength) error {
 		return ErrNilMinLength
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if utf8.RuneCountInString(t.Name) < 3 {
-		return ErrMinLengthNameMinLengthValidation
+		err := ErrMinLengthNameMinLengthValidation
+		err.Value = t.Name
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

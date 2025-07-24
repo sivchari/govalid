@@ -3,17 +3,15 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
 	// ErrNilCELCrossField is returned when the CELCrossField is nil.
-	ErrNilCELCrossField = errors.New("input CELCrossField is nil")
+	ErrNilCELCrossField                = errors.New("input CELCrossField is nil")
+	ErrCELCrossFieldPriceCELValidation = govaliderrors.ValidationError{}
 
-	// ErrCELCrossFieldPriceCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELCrossFieldPriceCELValidation = errors.New("field CELCrossFieldPrice failed CEL validation: value < this.MaxPrice")
-
-	// ErrCELCrossFieldQuantityCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELCrossFieldQuantityCELValidation = errors.New("field CELCrossFieldQuantity failed CEL validation: value * this.Price <= this.Budget")
+	ErrCELCrossFieldQuantityCELValidation = govaliderrors.ValidationError{}
 )
 
 func ValidateCELCrossField(t *CELCrossField) error {
@@ -21,13 +19,22 @@ func ValidateCELCrossField(t *CELCrossField) error {
 		return ErrNilCELCrossField
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !(t.Price < t.MaxPrice) {
-		return ErrCELCrossFieldPriceCELValidation
+		err := ErrCELCrossFieldPriceCELValidation
+		err.Value = t.Price
+		errs = append(errs, err)
 	}
 
 	if !(t.Quantity*t.Price <= t.Budget) {
-		return ErrCELCrossFieldQuantityCELValidation
+		err := ErrCELCrossFieldQuantityCELValidation
+		err.Value = t.Quantity
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

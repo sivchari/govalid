@@ -3,20 +3,17 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
 	// ErrNilRequired is returned when the Required is nil.
-	ErrNilRequired = errors.New("input Required is nil")
+	ErrNilRequired                    = errors.New("input Required is nil")
+	ErrRequiredNameRequiredValidation = govaliderrors.ValidationError{}
 
-	// ErrRequiredNameRequiredValidation is returned when the RequiredName is required but not provided.
-	ErrRequiredNameRequiredValidation = errors.New("field RequiredName is required")
+	ErrRequiredAgeRequiredValidation = govaliderrors.ValidationError{}
 
-	// ErrRequiredAgeRequiredValidation is returned when the RequiredAge is required but not provided.
-	ErrRequiredAgeRequiredValidation = errors.New("field RequiredAge is required")
-
-	// ErrRequiredItemsRequiredValidation is returned when the RequiredItems is required but not provided.
-	ErrRequiredItemsRequiredValidation = errors.New("field RequiredItems is required")
+	ErrRequiredItemsRequiredValidation = govaliderrors.ValidationError{}
 )
 
 func ValidateRequired(t *Required) error {
@@ -24,17 +21,28 @@ func ValidateRequired(t *Required) error {
 		return ErrNilRequired
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if t.Name == "" {
-		return ErrRequiredNameRequiredValidation
+		err := ErrRequiredNameRequiredValidation
+		err.Value = t.Name
+		errs = append(errs, err)
 	}
 
 	if t.Age == 0 {
-		return ErrRequiredAgeRequiredValidation
+		err := ErrRequiredAgeRequiredValidation
+		err.Value = t.Age
+		errs = append(errs, err)
 	}
 
 	if t.Items == nil {
-		return ErrRequiredItemsRequiredValidation
+		err := ErrRequiredItemsRequiredValidation
+		err.Value = t.Items
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

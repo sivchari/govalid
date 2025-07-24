@@ -3,23 +3,19 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
 	// ErrNilCEL is returned when the CEL is nil.
-	ErrNilCEL = errors.New("input CEL is nil")
+	ErrNilCEL              = errors.New("input CEL is nil")
+	ErrCELAgeCELValidation = govaliderrors.ValidationError{}
 
-	// ErrCELAgeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELAgeCELValidation = errors.New("field CELAge failed CEL validation: value >= 18")
+	ErrCELNameCELValidation = govaliderrors.ValidationError{}
 
-	// ErrCELNameCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELNameCELValidation = errors.New("field CELName failed CEL validation: size(value) > 0")
+	ErrCELScoreCELValidation = govaliderrors.ValidationError{}
 
-	// ErrCELScoreCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELScoreCELValidation = errors.New("field CELScore failed CEL validation: value > 0.0")
-
-	// ErrCELIsActiveCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELIsActiveCELValidation = errors.New("field CELIsActive failed CEL validation: value == true")
+	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{}
 )
 
 func ValidateCEL(t *CEL) error {
@@ -27,21 +23,34 @@ func ValidateCEL(t *CEL) error {
 		return ErrNilCEL
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !(t.Age >= 18) {
-		return ErrCELAgeCELValidation
+		err := ErrCELAgeCELValidation
+		err.Value = t.Age
+		errs = append(errs, err)
 	}
 
 	if !(len(t.Name) > 0) {
-		return ErrCELNameCELValidation
+		err := ErrCELNameCELValidation
+		err.Value = t.Name
+		errs = append(errs, err)
 	}
 
 	if !(t.Score > 0) {
-		return ErrCELScoreCELValidation
+		err := ErrCELScoreCELValidation
+		err.Value = t.Score
+		errs = append(errs, err)
 	}
 
 	if !(t.IsActive == true) {
-		return ErrCELIsActiveCELValidation
+		err := ErrCELIsActiveCELValidation
+		err.Value = t.IsActive
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

@@ -6,6 +6,7 @@ package {{.PackageName}}
 import (
 	{{if .Metadata }}
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	{{- range $pkg, $_ := .ImportPackages }}
 	"{{ $pkg }}"
 	{{- end }}
@@ -18,7 +19,7 @@ var (
 {{- range .Metadata -}}
 	{{- range .Validators -}}
 		{{ if ne .Validate "" }}
-			{{.Err}}
+			{{.ErrVariable}} = govaliderrors.ValidationError{}
 		{{ end -}}
 	{{- end -}}
 {{ end -}}
@@ -29,28 +30,41 @@ func Validate{{.TypeName}}(t *{{.TypeName}}) error {
 	    return ErrNil{{.TypeName}}
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	{{ $parentVariable := "" }}
 	{{ range .Metadata -}}
+
 		{{ if ne .ParentVariable "" }}
 	    	{{ $parentVariable = .ParentVariable }}
 		{{ end -}}
+
 		{{ if and (ne $parentVariable "") ( .Validators ) }}
 	    	{{ "{" }}
   			t := t.{{ $parentVariable }}
 		{{ end -}}
+
 		{{ range .Validators }}
 			{{ if ne .Validate "" }}
 				if {{.Validate}} {
-			    	return {{ .ErrVariable }}
+  			  err := {{.ErrVariable}}
+  			  err.Value = t.{{.FieldName}}
+  			  errs = append(errs, err)
 				}
 			{{ end }}
 		{{ end }}
+
+
 		{{ if and (ne $parentVariable "") ( .Validators ) }}
 			{{ "}" }}
 			{{ $parentVariable = "" }}
 		{{ end -}}
+
 	{{ end -}}
 
-	return nil
+  if len(errs) > 0 {
+  	  return errs
+  }
+  return nil
 }
 `
