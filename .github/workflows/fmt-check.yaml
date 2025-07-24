@@ -22,9 +22,4 @@ jobs:
       - name: Check formatting
         run: |
           # Run golangci-lint fmt and check if there are any changes
-          make fmt
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "Code is not formatted properly. Please run 'make fmt' and commit the changes."
-            git diff
-            exit 1
-          fi
+          make fmt-diff
