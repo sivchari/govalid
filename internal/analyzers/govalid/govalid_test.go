@@ -47,6 +47,7 @@ func Test(t *testing.T) {
 		"uuid",
 		"url",
 		"cel",
+		"alpha",
 		"length",
 	}
 
