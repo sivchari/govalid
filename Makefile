@@ -36,8 +36,8 @@ install-govalid: ## Install govalid binary for validation code generation
 	go install ./cmd/govalid
 
 # Generate validation code for test
-.PHONY: generate-valdation-code
-generate-valdation-code: install-govalid ## Generate validation code using govalid
+.PHONY: generate-validation-code
+generate-validation-code: install-govalid ## Generate validation code using govalid
 	go generate ./test/marker.go
 
 # Generate new validator scaffold
