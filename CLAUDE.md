@@ -1,6 +1,6 @@
 # Development Workflow for govalid
 
-This document outlines the efficient development workflow established during MaxLength marker implementation.
+This document outlines the efficient development workflow established with our new automated registry system.
 
 ## 🚀 Implementation Pattern for New Markers
 
@@ -9,44 +9,37 @@ This document outlines the efficient development workflow established during Max
 git checkout -b feature/{marker-name}-marker
 ```
 
-### 2. Core Implementation Steps
+### 2. Automated Validator Creation
 
-#### A. Marker Definition (`internal/markers/markers.go`)
-```go
-// GoValidMarker{MarkerName} is the marker for {description}.
-// This marker is only available for {type} types.
-GoValidMarker{MarkerName} = "govalid:{markername}"
+#### A. One-Command Scaffold and Generation
+```bash
+# Create a new validator AND generate all registry files in one command:
+make generate-validator MARKER=phoneNumber
+
+# This:
+# ✓ Generates scaffold: internal/validator/rules/phonenumber.go
+# ✓ Updates internal/markers/markers_generated.go
+# ✓ Creates internal/validator/registry/initializers/phonenumber.go
+# ✓ Updates internal/validator/registry/initializers/all.go
+# ✓ Updates internal/analyzers/govalid/registry_init.go
 ```
 
-#### B. Validator Implementation (`internal/validator/rules/{markername}.go`)
+#### B. Implement Validator Logic
+Edit the generated file with your validation logic:
 ```go
-type {markerName}Validator struct {
-    pass  *codegen.Pass
-    field *ast.Field
-    {markerName}Value string // or appropriate type
+func (v *phonenumberValidator) Validate() string {
+    // Return Go expression that evaluates to true when validation FAILS
+    return fmt.Sprintf("!isValidPhoneNumber(t.%s)", v.FieldName())
 }
 
-func (v *{markerName}Validator) Validate() string {
-    return fmt.Sprintf("{validation_logic}", v.FieldName(), v.{markerName}Value)
+func (v *phonenumberValidator) Imports() []string {
+    return []string{"regexp"} // Add required imports
 }
-
-func (v *{markerName}Validator) Imports() []string {
-    return []string{} // or required packages like "unicode/utf8"
-}
-
-// Implement all interface methods: FieldName(), Err(), ErrVariable()
-```
-
-#### C. Analyzer Integration (`analyzers/govalid/govalid.go`)
-Add to `makeValidator` function:
-```go
-case markers.GoValidMarker{MarkerName}:
-    v = rules.Validate{MarkerName}(pass, field, marker.Expressions)
 ```
 
 ### 3. Testing Structure
 
-#### A. Golden Tests (`analyzers/govalid/testdata/src/{markername}/`)
+#### A. Golden Tests (`internal/analyzers/govalid/testdata/src/{markername}/`)
 - `{markername}.go` - Test input with marker comments
 - `govalid.golden` - Expected generated output
 
@@ -104,7 +97,7 @@ go install ./cmd/govalid/
 cd test && go generate
 
 # 3. Run golden tests
-cd .. && go test ./analyzers/govalid/ -v
+cd .. && go test ./internal/analyzers/govalid/ -v
 
 # 4. Run unit tests
 cd test && go test ./unit/ -v
@@ -130,6 +123,79 @@ cd test && go test ./benchmark/ -bench=Benchmark.*{MarkerName} -benchmem
 - Update main README.md with marker explanation
 - Update benchmark/README.md with performance results
 - Document any behavior differences from go-playground/validator
+
+## 🆕 New System Architecture
+
+### Registry-Based Validator Discovery
+
+The new system eliminates manual registration through an automated discovery and registry pattern:
+
+```go
+// internal/validator/registry/registry.go
+type Registry interface {
+    Markers() []string
+    Validator(marker string) (ValidatorFactory, error)
+    Init() error
+}
+
+// internal/validator/registry/initializers/
+// Each validator has its own initializer automatically generated
+type PhoneNumberInitializer struct{}
+
+func (p PhoneNumberInitializer) Marker() string {
+    return markers.GoValidMarkerPhoneNumber
+}
+
+func (p PhoneNumberInitializer) Init() registry.ValidatorFactory {
+    return rules.ValidatePhoneNumber
+}
+```
+
+### Automatic Code Generation Flow
+
+```
+make generate-validator MARKER=phonenumber
+                    ↓
+    ┌───────────────────────────────────┐
+    │ Creates scaffold in rules/        │
+    │ • internal/validator/rules/       │
+    │   phonenumber.go                  │
+    └───────────────────────────────────┘
+                    ↓
+    ┌───────────────────────────────────┐
+    │ Automatically discovers all       │
+    │ validators in rules/              │
+    └───────────────────────────────────┘
+                    ↓
+    ┌───────────────────────────────────┐
+    │ Generates:                        │
+    │ • markers_generated.go            │
+    │ • initializers/*.go               │
+    │ • all.go                          │
+    │ • registry_init.go                │
+    └───────────────────────────────────┘
+                    ↓
+    ┌───────────────────────────────────┐
+    │ makeValidator uses registry to    │
+    │ dynamically resolve validators    │
+    └───────────────────────────────────┘
+```
+
+### Template Management
+
+All templates are now externalized and embedded:
+
+```
+cmd/generate-validators/templates/
+├── initializer.go.tmpl      # Validator initializer template
+├── all.go.tmpl              # All initializers aggregation
+├── registry_init.go.tmpl    # Registry initialization
+├── markers.go.tmpl          # Marker definitions
+└── validator.go.tmpl        # Validator scaffold template
+
+internal/analyzers/govalid/templates/
+└── validation.go.tmpl       # Generated validation function template
+```
 
 ## 🔧 Key Technical Patterns
 
@@ -365,11 +431,16 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ## 🔄 Next Markers to Implement
 
 From GitHub issues (in priority order):
-1. MaxItems marker (Issue #7) - Array/slice length validation
-2. MinLength marker (Issue #11) - String minimum length
-3. MinItems marker (Issue #10) - Array/slice minimum length  
-4. GTE marker (Issue #15) - Greater than or equal numeric validation
-5. LTE marker (Issue #16) - Less than or equal numeric validation
-6. Enum marker (Issue #17) - Enumeration validation
+1. MaxItems marker (Issue #7) - Array/slice length validation ✓
+2. MinLength marker (Issue #11) - String minimum length ✓
+3. MinItems marker (Issue #10) - Array/slice minimum length ✓
+4. GTE marker (Issue #15) - Greater than or equal numeric validation ✓
+5. LTE marker (Issue #16) - Less than or equal numeric validation ✓
+6. Enum marker (Issue #17) - Enumeration validation ✓
+
+All basic markers have been implemented! Future work:
+- Custom validators support
+- Performance optimizations
+- Additional complex validators based on user feedback
 
 Follow this pattern for each implementation to maintain consistency and quality.

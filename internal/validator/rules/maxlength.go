@@ -62,7 +62,7 @@ func ValidateMaxLength(pass *codegen.Pass, field *ast.Field, expressions map[str
 		return nil
 	}
 
-	maxLengthValue, ok := expressions[markers.GoValidMarkerMaxLength]
+	maxLengthValue, ok := expressions[markers.GoValidMarkerMaxlength]
 	if !ok {
 		return nil
 	}

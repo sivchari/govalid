@@ -65,7 +65,7 @@ func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[stri
 		return nil
 	}
 
-	minItemsValue, ok := expressions[markers.GoValidMarkerMinItems]
+	minItemsValue, ok := expressions[markers.GoValidMarkerMinitems]
 	if !ok {
 		return nil
 	}

@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/tools/go/analysis/analysistest"
 
-	"github.com/sivchari/govalid/analyzers/markers"
+	"github.com/sivchari/govalid/internal/analyzers/markers"
 )
 
 func Test(t *testing.T) {

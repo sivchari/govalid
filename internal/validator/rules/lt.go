@@ -62,7 +62,7 @@ func ValidateLT(pass *codegen.Pass, field *ast.Field, expressions map[string]str
 		return nil
 	}
 
-	ltValue, ok := expressions[markers.GoValidMarkerLT]
+	ltValue, ok := expressions[markers.GoValidMarkerLt]
 	if !ok {
 		return nil
 	}
