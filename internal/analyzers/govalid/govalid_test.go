@@ -48,6 +48,7 @@ func Test(t *testing.T) {
 		"url",
 		"cel",
 		"length",
+		"alphanum",
 	}
 
 	for _, tc := range markers {
