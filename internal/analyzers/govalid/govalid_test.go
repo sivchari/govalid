@@ -53,6 +53,7 @@ func Test(t *testing.T) {
 		"nestedstruct/nop",
 		"nestedstruct/inside",
 		"nestedstruct/partial",
+		"alphanum",
 	}
 
 	for _, tc := range testCases {

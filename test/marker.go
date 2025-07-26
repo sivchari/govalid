@@ -150,3 +150,14 @@ type Numeric struct {
 	// +govalid:numeric
 	Number string `json:"Number"`
 }
+
+type Alphanum struct {
+	// +govalid:alphanum
+	ProductCode string `json:"product_code"`
+
+	// +govalid:alphanum
+	SerialNumber string `json:"serial_number"`
+
+	// +govalid:alphanum
+	Username string `json:"username"`
+}

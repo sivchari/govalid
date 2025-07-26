@@ -382,6 +382,56 @@ govalid supports the following markers:
   }
   ```
 
+## `govalid:alphanum`
+- **Description**: Ensures that a string field contains only alphanumeric characters (letters and numbers).
+- **Example**:
+  ```go
+  type User struct {
+      // +govalid:alphanum
+      Username string `json:"username"`
+      
+      // +govalid:alphanum
+      ProductCode string `json:"product_code"`
+      
+      // +govalid:alphanum
+      SerialNumber string `json:"serial_number"`
+  }
+  ```
+- **Generated Code**:
+  ```go
+  func ValidateUser(t *User) error {
+      if t == nil {
+          return ErrNilUser
+      }
+
+      isAlphaNumeric = func(s string) bool {
+          for _, r := range s {
+              if (r < 'a' || r > 'z') &&
+                  (r < 'A' || r > 'Z') &&
+                  (r < '0' || r > '9') {
+                  return false
+              }
+          }
+          return s != ""
+      }
+
+      if !isAlphaNumeric(t.Username) {
+          return ErrUsernameAlphanumValidation
+      }
+
+      if !isAlphaNumeric(t.ProductCode) {
+          return ErrProductCodeAlphanumValidation
+      }
+
+      if !isAlphaNumeric(t.SerialNumber) {
+          return ErrSerialNumberAlphanumValidation
+      }
+
+      return nil
+  }
+  ```
+- **Note**: This validator ensures the string contains only letters (a-z, A-Z) and numbers (0-9). The string must not be empty and cannot contain spaces, special characters, or symbols.
+
 ## `govalid:cel`
 - **Description**: Validates fields using Google's Common Expression Language (CEL) for complex validation logic.
 - **Available Variables**: 
