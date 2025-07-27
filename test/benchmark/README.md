@@ -62,6 +62,8 @@ BenchmarkGoPlaygroundUUID-16                 	 4753952	       254.0 ns/op	      
 BenchmarkGoValidatorUUID-16                  	 6066202	       197.6 ns/op	       0 B/op	       0 allocs/op
 BenchmarkOzzoValidationUUID-16               	 5034348	       238.0 ns/op	      24 B/op	       1 allocs/op
 BenchmarkGookitValidateUUID-16               	  113701	     10603 ns/op	   15519 B/op	      74 allocs/op
+BenchmarkGoValidNumeric-12                      405628540        2.935 ns/op           0 B/op          0 allocs/op
+BenchmarkGoPlaygroundNumeric-12                 19612342         61.22 ns/op           0 B/op          0 allocs/op
 ```
 
 ## Performance Comparison

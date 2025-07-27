@@ -40,6 +40,7 @@ func Test(t *testing.T) {
 		"maxitems",
 		"minitems",
 		"minlength",
+		"numeric",
 		"gte",
 		"lte",
 		"enum",

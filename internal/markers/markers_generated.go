@@ -47,23 +47,26 @@ var (
 	// GoValidMarkerUuid is the marker for uuid validation.
 	GoValidMarkerUuid = "govalid:uuid"
 
+	// GoValidMarkerNumeric is the marker for uuid validation
+	GoValidMarkerNumeric = "govalid:numeric"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
-	GoValidMarkerCel: {},
-	GoValidMarkerEmail: {},
-	GoValidMarkerEnum: {},
-	GoValidMarkerGt: {},
-	GoValidMarkerGte: {},
-	GoValidMarkerLength: {},
-	GoValidMarkerLt: {},
-	GoValidMarkerLte: {},
-	GoValidMarkerMaxitems: {},
+	GoValidMarkerCel:       {},
+	GoValidMarkerEmail:     {},
+	GoValidMarkerEnum:      {},
+	GoValidMarkerGt:        {},
+	GoValidMarkerGte:       {},
+	GoValidMarkerLength:    {},
+	GoValidMarkerLt:        {},
+	GoValidMarkerLte:       {},
+	GoValidMarkerMaxitems:  {},
 	GoValidMarkerMaxlength: {},
-	GoValidMarkerMinitems: {},
+	GoValidMarkerMinitems:  {},
 	GoValidMarkerMinlength: {},
-	GoValidMarkerRequired: {},
-	GoValidMarkerUrl: {},
-	GoValidMarkerUuid: {},
+	GoValidMarkerRequired:  {},
+	GoValidMarkerUrl:       {},
+	GoValidMarkerUuid:      {},
+	GoValidMarkerNumeric:   {},
 }
