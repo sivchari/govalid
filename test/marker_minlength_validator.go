@@ -24,6 +24,7 @@ func ValidateMinLength(t *MinLength) error {
 
 	if utf8.RuneCountInString(t.Name) < 3 {
 		err := ErrMinLengthNameMinLengthValidation
+		err.Type = "MinLength"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}

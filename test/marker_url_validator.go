@@ -24,6 +24,7 @@ func ValidateURL(t *URL) error {
 
 	if !validationhelper.IsValidURL(t.URL) {
 		err := ErrURLURLURLValidation
+		err.Type = "URL"
 		err.Value = t.URL
 		errs = append(errs, err)
 	}

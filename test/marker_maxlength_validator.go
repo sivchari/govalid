@@ -24,6 +24,7 @@ func ValidateMaxLength(t *MaxLength) error {
 
 	if utf8.RuneCountInString(t.Name) > 50 {
 		err := ErrMaxLengthNameMaxLengthValidation
+		err.Type = "MaxLength"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}

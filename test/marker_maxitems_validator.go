@@ -29,18 +29,21 @@ func ValidateMaxItems(t *MaxItems) error {
 
 	if len(t.Items) > 5 {
 		err := ErrMaxItemsItemsMaxItemsValidation
+		err.Type = "MaxItems"
 		err.Value = t.Items
 		errs = append(errs, err)
 	}
 
 	if len(t.Metadata) > 3 {
 		err := ErrMaxItemsMetadataMaxItemsValidation
+		err.Type = "MaxItems"
 		err.Value = t.Metadata
 		errs = append(errs, err)
 	}
 
 	if len(t.ChanField) > 2 {
 		err := ErrMaxItemsChanFieldMaxItemsValidation
+		err.Type = "MaxItems"
 		err.Value = t.ChanField
 		errs = append(errs, err)
 	}

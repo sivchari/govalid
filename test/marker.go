@@ -129,3 +129,11 @@ type CELCrossField struct {
 
 	Budget float64 `json:"budget"`
 }
+
+type MultipleErrors struct {
+	// +govalid:required
+	URL string `validate:"required" json:"url"`
+
+	// +govalid:maxlength=1
+	TooLong string `validate:"max=1" json:"too_long"`
+}

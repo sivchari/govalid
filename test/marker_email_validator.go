@@ -24,6 +24,7 @@ func ValidateEmail(t *Email) error {
 
 	if !validationhelper.IsValidEmail(t.Email) {
 		err := ErrEmailEmailEmailValidation
+		err.Type = "Email"
 		err.Value = t.Email
 		errs = append(errs, err)
 	}

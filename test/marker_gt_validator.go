@@ -23,6 +23,7 @@ func ValidateGT(t *GT) error {
 
 	if !(t.Age > 100) {
 		err := ErrGTAgeGTValidation
+		err.Type = "GT"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}

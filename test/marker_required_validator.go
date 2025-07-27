@@ -11,13 +11,13 @@ var (
 	ErrNilRequired = errors.New("input Required is nil")
 
 	// ErrRequiredNameRequiredValidation is returned when the RequiredName is required but not provided.
-	ErrRequiredNameRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredName is required"}
+	ErrRequiredNameRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredName is required", Path: "Required.Name"}
 
 	// ErrRequiredAgeRequiredValidation is returned when the RequiredAge is required but not provided.
-	ErrRequiredAgeRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredAge is required"}
+	ErrRequiredAgeRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredAge is required", Path: "Required.Age"}
 
 	// ErrRequiredItemsRequiredValidation is returned when the RequiredItems is required but not provided.
-	ErrRequiredItemsRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredItems is required"}
+	ErrRequiredItemsRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredItems is required", Path: "Required.Items"}
 )
 
 func ValidateRequired(t *Required) error {
@@ -29,18 +29,21 @@ func ValidateRequired(t *Required) error {
 
 	if t.Name == "" {
 		err := ErrRequiredNameRequiredValidation
+		err.Type = "Required"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}
 
 	if t.Age == 0 {
 		err := ErrRequiredAgeRequiredValidation
+		err.Type = "Required"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
 
 	if t.Items == nil {
 		err := ErrRequiredItemsRequiredValidation
+		err.Type = "Required"
 		err.Value = t.Items
 		errs = append(errs, err)
 	}

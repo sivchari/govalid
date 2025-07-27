@@ -48,6 +48,7 @@ func Validate{{.TypeName}}(t *{{.TypeName}}) error {
 			{{ if ne .Validate "" }}
 				if {{.Validate}} {
   			  err := {{.ErrVariable}}
+					err.Type = "{{$.TypeName}}"
   			  err.Value = t.{{.FieldName}}
   			  errs = append(errs, err)
 				}

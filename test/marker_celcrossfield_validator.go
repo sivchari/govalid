@@ -26,12 +26,14 @@ func ValidateCELCrossField(t *CELCrossField) error {
 
 	if !(t.Price < t.MaxPrice) {
 		err := ErrCELCrossFieldPriceCELValidation
+		err.Type = "CELCrossField"
 		err.Value = t.Price
 		errs = append(errs, err)
 	}
 
 	if !(t.Quantity*t.Price <= t.Budget) {
 		err := ErrCELCrossFieldQuantityCELValidation
+		err.Type = "CELCrossField"
 		err.Value = t.Quantity
 		errs = append(errs, err)
 	}
