@@ -89,8 +89,6 @@ linters:
         # Rules in addition to the recommended configuration above.
         #
         - name: bool-literal-in-expr
-    wsl:
-      ignore-ranges: true
 formatters:
   enable:
     - gofmt
