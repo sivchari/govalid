@@ -23,6 +23,7 @@ const alphanumKey = "%s-alphanum"
 
 func (v *alphanumValidator) Validate() string {
 	fieldName := v.FieldName()
+
 	return fmt.Sprintf("!isAlphaNumeric(t.%s)", fieldName)
 }
 
@@ -53,6 +54,7 @@ func (v *alphanumValidator) Err() string {
 	// Generate isValidAlphanum function only once
 	if !validator.GeneratorMemory["alphanum-function-generated"] {
 		validator.GeneratorMemory["alphanum-function-generated"] = true
+
 		result.WriteString(v.generateValidationFunction())
 	}
 
@@ -79,7 +81,7 @@ func (v *alphanumValidator) Imports() []string {
 }
 
 // ValidateAlphanum creates a new alphanum validator for the given field.
-func ValidateAlphanum(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
+func ValidateAlphanum(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string) validator.Validator {
 	validator.GeneratorMemory[fmt.Sprintf(alphanumKey, structName+field.Names[0].Name)] = false
 
 	typ := pass.TypesInfo.TypeOf(field.Type)
