@@ -167,7 +167,7 @@ For a complete reference of all supported markers, see [MARKERS.md](MARKERS.md).
 - `maxlength`, `minlength` - String length validation
 - `maxitems`, `minitems` - Collection size validation
 - `enum` - Enumeration validation
-- `email`, `url`, `uuid` - Format validation
+- `email`, `url`, `uuid`, `numeric` - Format validation
 
 **Advanced:**
 - `cel` - Common Expression Language support
