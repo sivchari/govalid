@@ -62,8 +62,11 @@ BenchmarkGoPlaygroundUUID-16                 	 4753952	       254.0 ns/op	      
 BenchmarkGoValidatorUUID-16                  	 6066202	       197.6 ns/op	       0 B/op	       0 allocs/op
 BenchmarkOzzoValidationUUID-16               	 5034348	       238.0 ns/op	      24 B/op	       1 allocs/op
 BenchmarkGookitValidateUUID-16               	  113701	     10603 ns/op	   15519 B/op	      74 allocs/op
-BenchmarkGoValidNumeric-12                      405628540        2.935 ns/op           0 B/op          0 allocs/op
-BenchmarkGoPlaygroundNumeric-12                 19612342         61.22 ns/op           0 B/op          0 allocs/op
+BenchmarkGoValidNumeric-12                      351653084        3.438 ns/op           0 B/op          0 allocs/op
+BenchmarkGoPlaygroundNumeric-12                 18947991         61.60 ns/op           0 B/op          0 allocs/op
+BenchmarkGoValidatorNumeric-12                  13556292         87.01 ns/op           0 B/op          0 allocs/op
+BenchmarkOzzoValidationNumeric-12                7795245         149.2 ns/op          40 B/op          2 allocs/op
+BenchmarkGookitValidateNumeric-12                 107311         11131 ns/op       15585 B/op         78 allocs/op
 ```
 
 ## Performance Comparison
