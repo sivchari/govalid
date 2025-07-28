@@ -14,14 +14,12 @@ func BenchmarkGoValidGT(b *testing.B) {
 	instance := test.GT{
 		Age: 150,
 	}
-	b.ResetTimer()
 	for b.Loop() {
 		err := test.ValidateGT(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
 		}
 	}
-	b.StopTimer()
 }
 
 func BenchmarkGoPlaygroundGT(b *testing.B) {
@@ -29,20 +27,17 @@ func BenchmarkGoPlaygroundGT(b *testing.B) {
 	instance := test.GT{
 		Age: 150,
 	}
-	b.ResetTimer()
 	for b.Loop() {
 		err := validate.Struct(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
 		}
 	}
-	b.StopTimer()
 }
 
 func BenchmarkGoValidatorGT(b *testing.B) {
 	testValue := 150
 	testString := strconv.Itoa(testValue)
-	b.ResetTimer()
 	for b.Loop() {
 		// Check if numeric and > 100
 		if !govalidator.IsNumeric(testString) {
@@ -52,5 +47,4 @@ func BenchmarkGoValidatorGT(b *testing.B) {
 			b.Fatal("validation failed - not greater than 100")
 		}
 	}
-	b.StopTimer()
 }
