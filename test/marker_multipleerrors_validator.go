@@ -14,8 +14,8 @@ var (
 	// ErrMultipleErrorsURLRequiredValidation is returned when the MultipleErrorsURL is required but not provided.
 	ErrMultipleErrorsURLRequiredValidation = govaliderrors.ValidationError{Reason: "field MultipleErrorsURL is required", Path: "MultipleErrors.URL"}
 
-	// ErrMultipleErrorsTooLongMaxLengthValidation is the error returned when the length of the field exceeds the maximum of 1.
-	ErrMultipleErrorsTooLongMaxLengthValidation = govaliderrors.ValidationError{Reason: "field MultipleErrorsTooLong must have a maximum length of 1"}
+	// ErrMultipleErrorsTooLongMaxLengthValidation is the error returned when the length of the field exceeds the maximum of %s.
+	ErrMultipleErrorsTooLongMaxLengthValidation = govaliderrors.ValidationError{Reason: "field MultipleErrorsTooLong must have a maximum length of %s", Path: "MultipleErrors.TooLong"}
 )
 
 func ValidateMultipleErrors(t *MultipleErrors) error {

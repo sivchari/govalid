@@ -17,124 +17,124 @@ var (
 	ErrNilCEL = errors.New("input CEL is nil")
 
 	// ErrCELAgeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELAge failed CEL validation: value >= 18"}
+	ErrCELAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELAge failed CEL validation: EXPRESSION", Path: "CEL.Age"}
 
 	// ErrCELScoreCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELScore failed CEL validation: value > 0.0"}
+	ErrCELScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELScore failed CEL validation: EXPRESSION", Path: "CEL.Score"}
 
 	// ErrCELMaxScoreCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELMaxScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELMaxScore failed CEL validation: value <= 100"}
+	ErrCELMaxScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELMaxScore failed CEL validation: EXPRESSION", Path: "CEL.MaxScore"}
 
 	// ErrCELLimitCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELLimitCELValidation = govaliderrors.ValidationError{Reason: "field CELLimit failed CEL validation: value < 1000"}
+	ErrCELLimitCELValidation = govaliderrors.ValidationError{Reason: "field CELLimit failed CEL validation: EXPRESSION", Path: "CEL.Limit"}
 
 	// ErrCELAnswerCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELAnswerCELValidation = govaliderrors.ValidationError{Reason: "field CELAnswer failed CEL validation: value == 42"}
+	ErrCELAnswerCELValidation = govaliderrors.ValidationError{Reason: "field CELAnswer failed CEL validation: EXPRESSION", Path: "CEL.Answer"}
 
 	// ErrCELNonZeroCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELNonZeroCELValidation = govaliderrors.ValidationError{Reason: "field CELNonZero failed CEL validation: value != 0"}
+	ErrCELNonZeroCELValidation = govaliderrors.ValidationError{Reason: "field CELNonZero failed CEL validation: EXPRESSION", Path: "CEL.NonZero"}
 
 	// ErrCELNameCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELNameCELValidation = govaliderrors.ValidationError{Reason: "field CELName failed CEL validation: size(value) > 0"}
+	ErrCELNameCELValidation = govaliderrors.ValidationError{Reason: "field CELName failed CEL validation: EXPRESSION", Path: "CEL.Name"}
 
 	// ErrCELUsernameCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELUsernameCELValidation = govaliderrors.ValidationError{Reason: "field CELUsername failed CEL validation: size(value) >= 3 && size(value) <= 50"}
+	ErrCELUsernameCELValidation = govaliderrors.ValidationError{Reason: "field CELUsername failed CEL validation: EXPRESSION", Path: "CEL.Username"}
 
 	// ErrCELPrefixedNameCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELPrefixedNameCELValidation = govaliderrors.ValidationError{Reason: "field CELPrefixedName failed CEL validation: value.startsWith('prefix_')"}
+	ErrCELPrefixedNameCELValidation = govaliderrors.ValidationError{Reason: "field CELPrefixedName failed CEL validation: EXPRESSION", Path: "CEL.PrefixedName"}
 
 	// ErrCELEmailCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELEmailCELValidation = govaliderrors.ValidationError{Reason: "field CELEmail failed CEL validation: value.endsWith('.com')"}
+	ErrCELEmailCELValidation = govaliderrors.ValidationError{Reason: "field CELEmail failed CEL validation: EXPRESSION", Path: "CEL.Email"}
 
 	// ErrCELEmailAddressCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELEmailAddressCELValidation = govaliderrors.ValidationError{Reason: "field CELEmailAddress failed CEL validation: value.contains('@')"}
+	ErrCELEmailAddressCELValidation = govaliderrors.ValidationError{Reason: "field CELEmailAddress failed CEL validation: EXPRESSION", Path: "CEL.EmailAddress"}
 
 	// ErrCELIsActiveCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{Reason: "field CELIsActive failed CEL validation: value == true"}
+	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{Reason: "field CELIsActive failed CEL validation: EXPRESSION", Path: "CEL.IsActive"}
 
 	// ErrCELMustBeTrueCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELMustBeTrueCELValidation = govaliderrors.ValidationError{Reason: "field CELMustBeTrue failed CEL validation: value != false"}
+	ErrCELMustBeTrueCELValidation = govaliderrors.ValidationError{Reason: "field CELMustBeTrue failed CEL validation: EXPRESSION", Path: "CEL.MustBeTrue"}
 
 	// ErrCELValidAgeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELValidAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELValidAge failed CEL validation: value >= 0 && value <= 120"}
+	ErrCELValidAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELValidAge failed CEL validation: EXPRESSION", Path: "CEL.ValidAge"}
 
 	// ErrCELPercentageCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELPercentageCELValidation = govaliderrors.ValidationError{Reason: "field CELPercentage failed CEL validation: value > 0.0 && value <= 100.0"}
+	ErrCELPercentageCELValidation = govaliderrors.ValidationError{Reason: "field CELPercentage failed CEL validation: EXPRESSION", Path: "CEL.Percentage"}
 
 	// ErrCELPasswordCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELPasswordCELValidation = govaliderrors.ValidationError{Reason: "field CELPassword failed CEL validation: size(value) >= 8 && size(value) <= 256"}
+	ErrCELPasswordCELValidation = govaliderrors.ValidationError{Reason: "field CELPassword failed CEL validation: EXPRESSION", Path: "CEL.Password"}
 
 	// ErrCELMinAgeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELMinAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELMinAge failed CEL validation: value >= this.Age"}
+	ErrCELMinAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELMinAge failed CEL validation: EXPRESSION", Path: "CEL.MinAge"}
 
 	// ErrCELCurrentScoreCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELCurrentScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELCurrentScore failed CEL validation: value <= this.MaxScore"}
+	ErrCELCurrentScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELCurrentScore failed CEL validation: EXPRESSION", Path: "CEL.CurrentScore"}
 
 	// ErrCELLongNameCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELLongNameCELValidation = govaliderrors.ValidationError{Reason: "field CELLongName failed CEL validation: size(value) >= size(this.Name)"}
+	ErrCELLongNameCELValidation = govaliderrors.ValidationError{Reason: "field CELLongName failed CEL validation: EXPRESSION", Path: "CEL.LongName"}
 
 	// ErrCELMiddleValueCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELMiddleValueCELValidation = govaliderrors.ValidationError{Reason: "field CELMiddleValue failed CEL validation: value > this.Age && value < this.Limit"}
+	ErrCELMiddleValueCELValidation = govaliderrors.ValidationError{Reason: "field CELMiddleValue failed CEL validation: EXPRESSION", Path: "CEL.MiddleValue"}
 
 	// ErrCELDoubleAgeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELDoubleAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELDoubleAge failed CEL validation: value >= this.Age * 2"}
+	ErrCELDoubleAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELDoubleAge failed CEL validation: EXPRESSION", Path: "CEL.DoubleAge"}
 
 	// ErrCELHalfScoreCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELHalfScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELHalfScore failed CEL validation: value <= this.MaxScore / 2"}
+	ErrCELHalfScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELHalfScore failed CEL validation: EXPRESSION", Path: "CEL.HalfScore"}
 
 	// ErrCELSumValueCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELSumValueCELValidation = govaliderrors.ValidationError{Reason: "field CELSumValue failed CEL validation: value == this.Age + this.NonZero"}
+	ErrCELSumValueCELValidation = govaliderrors.ValidationError{Reason: "field CELSumValue failed CEL validation: EXPRESSION", Path: "CEL.SumValue"}
 
 	// ErrCELSpecialAgeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELSpecialAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELSpecialAge failed CEL validation: (value >= 18 && value <= 65) || value == 100"}
+	ErrCELSpecialAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELSpecialAge failed CEL validation: EXPRESSION", Path: "CEL.SpecialAge"}
 
 	// ErrCELConditionalValueCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELConditionalValueCELValidation = govaliderrors.ValidationError{Reason: "field CELConditionalValue failed CEL validation: value > 0 || (value == 0 && this.IsActive)"}
+	ErrCELConditionalValueCELValidation = govaliderrors.ValidationError{Reason: "field CELConditionalValue failed CEL validation: EXPRESSION", Path: "CEL.ConditionalValue"}
 
 	// ErrCELProperNameCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELProperNameCELValidation = govaliderrors.ValidationError{Reason: "field CELProperName failed CEL validation: value.matches('^[A-Z][a-z]+$')"}
+	ErrCELProperNameCELValidation = govaliderrors.ValidationError{Reason: "field CELProperName failed CEL validation: EXPRESSION", Path: "CEL.ProperName"}
 
 	// ErrCELItemsCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELItemsCELValidation = govaliderrors.ValidationError{Reason: "field CELItems failed CEL validation: size(value) >= 1 && size(value) <= 10"}
+	ErrCELItemsCELValidation = govaliderrors.ValidationError{Reason: "field CELItems failed CEL validation: EXPRESSION", Path: "CEL.Items"}
 
 	// ErrCELNonEmptySliceCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELNonEmptySliceCELValidation = govaliderrors.ValidationError{Reason: "field CELNonEmptySlice failed CEL validation: size(value) > 0"}
+	ErrCELNonEmptySliceCELValidation = govaliderrors.ValidationError{Reason: "field CELNonEmptySlice failed CEL validation: EXPRESSION", Path: "CEL.NonEmptySlice"}
 
 	// ErrCELPositiveValueCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELPositiveValueCELValidation = govaliderrors.ValidationError{Reason: "field CELPositiveValue failed CEL validation: value > 0"}
+	ErrCELPositiveValueCELValidation = govaliderrors.ValidationError{Reason: "field CELPositiveValue failed CEL validation: EXPRESSION", Path: "CEL.PositiveValue"}
 
 	// ErrCELHasAdminRoleCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELHasAdminRoleCELValidation = govaliderrors.ValidationError{Reason: "field CELHasAdminRole failed CEL validation: 'admin' in value"}
+	ErrCELHasAdminRoleCELValidation = govaliderrors.ValidationError{Reason: "field CELHasAdminRole failed CEL validation: EXPRESSION", Path: "CEL.HasAdminRole"}
 
 	// ErrCELAgeFromStringCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELAgeFromStringCELValidation = govaliderrors.ValidationError{Reason: "field CELAgeFromString failed CEL validation: int(value) >= 18"}
+	ErrCELAgeFromStringCELValidation = govaliderrors.ValidationError{Reason: "field CELAgeFromString failed CEL validation: EXPRESSION", Path: "CEL.AgeFromString"}
 
 	// ErrCELStatusCodeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELStatusCodeCELValidation = govaliderrors.ValidationError{Reason: "field CELStatusCode failed CEL validation: string(value) in ['active', 'inactive', 'pending']"}
+	ErrCELStatusCodeCELValidation = govaliderrors.ValidationError{Reason: "field CELStatusCode failed CEL validation: EXPRESSION", Path: "CEL.StatusCode"}
 
 	// ErrCELProcessingTimeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELProcessingTimeCELValidation = govaliderrors.ValidationError{Reason: "field CELProcessingTime failed CEL validation: value > duration('1h')"}
+	ErrCELProcessingTimeCELValidation = govaliderrors.ValidationError{Reason: "field CELProcessingTime failed CEL validation: EXPRESSION", Path: "CEL.ProcessingTime"}
 
 	// ErrCELAllNonEmptyCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELAllNonEmptyCELValidation = govaliderrors.ValidationError{Reason: "field CELAllNonEmpty failed CEL validation: value.all(item, size(item) > 0)"}
+	ErrCELAllNonEmptyCELValidation = govaliderrors.ValidationError{Reason: "field CELAllNonEmpty failed CEL validation: EXPRESSION", Path: "CEL.AllNonEmpty"}
 
 	// ErrCELHasTargetCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELHasTargetCELValidation = govaliderrors.ValidationError{Reason: "field CELHasTarget failed CEL validation: value.exists(item, item == 'target')"}
+	ErrCELHasTargetCELValidation = govaliderrors.ValidationError{Reason: "field CELHasTarget failed CEL validation: EXPRESSION", Path: "CEL.HasTarget"}
 
 	// ErrCELHasUniqueItemCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELHasUniqueItemCELValidation = govaliderrors.ValidationError{Reason: "field CELHasUniqueItem failed CEL validation: value.exists_one(item, item == 'unique')"}
+	ErrCELHasUniqueItemCELValidation = govaliderrors.ValidationError{Reason: "field CELHasUniqueItem failed CEL validation: EXPRESSION", Path: "CEL.HasUniqueItem"}
 
 	// ErrCELAllPrefixedCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELAllPrefixedCELValidation = govaliderrors.ValidationError{Reason: "field CELAllPrefixed failed CEL validation: value.all(item, item.startsWith('prefix'))"}
+	ErrCELAllPrefixedCELValidation = govaliderrors.ValidationError{Reason: "field CELAllPrefixed failed CEL validation: EXPRESSION", Path: "CEL.AllPrefixed"}
 
 	// ErrCELHasEmailFormatCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELHasEmailFormatCELValidation = govaliderrors.ValidationError{Reason: "field CELHasEmailFormat failed CEL validation: value.exists(item, item.contains('@'))"}
+	ErrCELHasEmailFormatCELValidation = govaliderrors.ValidationError{Reason: "field CELHasEmailFormat failed CEL validation: EXPRESSION", Path: "CEL.HasEmailFormat"}
 
 	// ErrCELFilteredItemsCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELFilteredItemsCELValidation = govaliderrors.ValidationError{Reason: "field CELFilteredItems failed CEL validation: size(value.filter(item, item.startsWith('prefix'))) > 0"}
+	ErrCELFilteredItemsCELValidation = govaliderrors.ValidationError{Reason: "field CELFilteredItems failed CEL validation: EXPRESSION", Path: "CEL.FilteredItems"}
 
 	// ErrCELMappedSizesCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELMappedSizesCELValidation = govaliderrors.ValidationError{Reason: "field CELMappedSizes failed CEL validation: size(value.map(item, size(item))) == size(value)"}
+	ErrCELMappedSizesCELValidation = govaliderrors.ValidationError{Reason: "field CELMappedSizes failed CEL validation: EXPRESSION", Path: "CEL.MappedSizes"}
 )
 
 func ValidateCEL(t *CEL) error {
@@ -146,180 +146,210 @@ func ValidateCEL(t *CEL) error {
 
 	if !(t.Age >= 18) {
 		err := ErrCELAgeCELValidation
+		err.Type = "CEL"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
 
 	if !(t.Score > 0) {
 		err := ErrCELScoreCELValidation
+		err.Type = "CEL"
 		err.Value = t.Score
 		errs = append(errs, err)
 	}
 
 	if !(t.MaxScore <= 100) {
 		err := ErrCELMaxScoreCELValidation
+		err.Type = "CEL"
 		err.Value = t.MaxScore
 		errs = append(errs, err)
 	}
 
 	if !(t.Limit < 1000) {
 		err := ErrCELLimitCELValidation
+		err.Type = "CEL"
 		err.Value = t.Limit
 		errs = append(errs, err)
 	}
 
 	if !(t.Answer == 42) {
 		err := ErrCELAnswerCELValidation
+		err.Type = "CEL"
 		err.Value = t.Answer
 		errs = append(errs, err)
 	}
 
 	if !(t.NonZero != 0) {
 		err := ErrCELNonZeroCELValidation
+		err.Type = "CEL"
 		err.Value = t.NonZero
 		errs = append(errs, err)
 	}
 
 	if !(len(t.Name) > 0) {
 		err := ErrCELNameCELValidation
+		err.Type = "CEL"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}
 
 	if !((len(t.Username) >= 3) && (len(t.Username) <= 50)) {
 		err := ErrCELUsernameCELValidation
+		err.Type = "CEL"
 		err.Value = t.Username
 		errs = append(errs, err)
 	}
 
 	if !(strings.HasPrefix(t.PrefixedName, "prefix_")) {
 		err := ErrCELPrefixedNameCELValidation
+		err.Type = "CEL"
 		err.Value = t.PrefixedName
 		errs = append(errs, err)
 	}
 
 	if !(strings.HasSuffix(t.Email, ".com")) {
 		err := ErrCELEmailCELValidation
+		err.Type = "CEL"
 		err.Value = t.Email
 		errs = append(errs, err)
 	}
 
 	if !(strings.Contains(t.EmailAddress, "@")) {
 		err := ErrCELEmailAddressCELValidation
+		err.Type = "CEL"
 		err.Value = t.EmailAddress
 		errs = append(errs, err)
 	}
 
 	if !(t.IsActive == true) {
 		err := ErrCELIsActiveCELValidation
+		err.Type = "CEL"
 		err.Value = t.IsActive
 		errs = append(errs, err)
 	}
 
 	if !(t.MustBeTrue != false) {
 		err := ErrCELMustBeTrueCELValidation
+		err.Type = "CEL"
 		err.Value = t.MustBeTrue
 		errs = append(errs, err)
 	}
 
 	if !((t.ValidAge >= 0) && (t.ValidAge <= 120)) {
 		err := ErrCELValidAgeCELValidation
+		err.Type = "CEL"
 		err.Value = t.ValidAge
 		errs = append(errs, err)
 	}
 
 	if !((t.Percentage > 0) && (t.Percentage <= 100)) {
 		err := ErrCELPercentageCELValidation
+		err.Type = "CEL"
 		err.Value = t.Percentage
 		errs = append(errs, err)
 	}
 
 	if !((len(t.Password) >= 8) && (len(t.Password) <= 256)) {
 		err := ErrCELPasswordCELValidation
+		err.Type = "CEL"
 		err.Value = t.Password
 		errs = append(errs, err)
 	}
 
 	if !(t.MinAge >= t.Age) {
 		err := ErrCELMinAgeCELValidation
+		err.Type = "CEL"
 		err.Value = t.MinAge
 		errs = append(errs, err)
 	}
 
 	if !(t.CurrentScore <= t.MaxScore) {
 		err := ErrCELCurrentScoreCELValidation
+		err.Type = "CEL"
 		err.Value = t.CurrentScore
 		errs = append(errs, err)
 	}
 
 	if !(len(t.LongName) >= len(t.Name)) {
 		err := ErrCELLongNameCELValidation
+		err.Type = "CEL"
 		err.Value = t.LongName
 		errs = append(errs, err)
 	}
 
 	if !((t.MiddleValue > t.Age) && (t.MiddleValue < t.Limit)) {
 		err := ErrCELMiddleValueCELValidation
+		err.Type = "CEL"
 		err.Value = t.MiddleValue
 		errs = append(errs, err)
 	}
 
 	if !(t.DoubleAge >= t.Age*2) {
 		err := ErrCELDoubleAgeCELValidation
+		err.Type = "CEL"
 		err.Value = t.DoubleAge
 		errs = append(errs, err)
 	}
 
 	if !(t.HalfScore <= t.MaxScore/2) {
 		err := ErrCELHalfScoreCELValidation
+		err.Type = "CEL"
 		err.Value = t.HalfScore
 		errs = append(errs, err)
 	}
 
 	if !(t.SumValue == t.Age+t.NonZero) {
 		err := ErrCELSumValueCELValidation
+		err.Type = "CEL"
 		err.Value = t.SumValue
 		errs = append(errs, err)
 	}
 
 	if !(((t.SpecialAge >= 18) && (t.SpecialAge <= 65)) || (t.SpecialAge == 100)) {
 		err := ErrCELSpecialAgeCELValidation
+		err.Type = "CEL"
 		err.Value = t.SpecialAge
 		errs = append(errs, err)
 	}
 
 	if !((t.ConditionalValue > 0) || ((t.ConditionalValue == 0) && (t.IsActive))) {
 		err := ErrCELConditionalValueCELValidation
+		err.Type = "CEL"
 		err.Value = t.ConditionalValue
 		errs = append(errs, err)
 	}
 
 	if !(regexp.MustCompile("^[A-Z][a-z]+$").MatchString(t.ProperName)) {
 		err := ErrCELProperNameCELValidation
+		err.Type = "CEL"
 		err.Value = t.ProperName
 		errs = append(errs, err)
 	}
 
 	if !((len(t.Items) >= 1) && (len(t.Items) <= 10)) {
 		err := ErrCELItemsCELValidation
+		err.Type = "CEL"
 		err.Value = t.Items
 		errs = append(errs, err)
 	}
 
 	if !(len(t.NonEmptySlice) > 0) {
 		err := ErrCELNonEmptySliceCELValidation
+		err.Type = "CEL"
 		err.Value = t.NonEmptySlice
 		errs = append(errs, err)
 	}
 
 	if !(t.PositiveValue > 0) {
 		err := ErrCELPositiveValueCELValidation
+		err.Type = "CEL"
 		err.Value = t.PositiveValue
 		errs = append(errs, err)
 	}
 
 	if !(slices.Contains(t.HasAdminRole, "admin")) {
 		err := ErrCELHasAdminRoleCELValidation
+		err.Type = "CEL"
 		err.Value = t.HasAdminRole
 		errs = append(errs, err)
 	}
@@ -332,12 +362,14 @@ func ValidateCEL(t *CEL) error {
 		return v
 	}() >= 18) {
 		err := ErrCELAgeFromStringCELValidation
+		err.Type = "CEL"
 		err.Value = t.AgeFromString
 		errs = append(errs, err)
 	}
 
 	if !(slices.Contains([]string{"active", "inactive", "pending"}, fmt.Sprintf("%v", t.StatusCode))) {
 		err := ErrCELStatusCodeCELValidation
+		err.Type = "CEL"
 		err.Value = t.StatusCode
 		errs = append(errs, err)
 	}
@@ -350,6 +382,7 @@ func ValidateCEL(t *CEL) error {
 		return d
 	}()) {
 		err := ErrCELProcessingTimeCELValidation
+		err.Type = "CEL"
 		err.Value = t.ProcessingTime
 		errs = append(errs, err)
 	}
@@ -363,6 +396,7 @@ func ValidateCEL(t *CEL) error {
 		return true
 	}()) {
 		err := ErrCELAllNonEmptyCELValidation
+		err.Type = "CEL"
 		err.Value = t.AllNonEmpty
 		errs = append(errs, err)
 	}
@@ -376,6 +410,7 @@ func ValidateCEL(t *CEL) error {
 		return false
 	}()) {
 		err := ErrCELHasTargetCELValidation
+		err.Type = "CEL"
 		err.Value = t.HasTarget
 		errs = append(errs, err)
 	}
@@ -393,6 +428,7 @@ func ValidateCEL(t *CEL) error {
 		return count == 1
 	}()) {
 		err := ErrCELHasUniqueItemCELValidation
+		err.Type = "CEL"
 		err.Value = t.HasUniqueItem
 		errs = append(errs, err)
 	}
@@ -406,6 +442,7 @@ func ValidateCEL(t *CEL) error {
 		return true
 	}()) {
 		err := ErrCELAllPrefixedCELValidation
+		err.Type = "CEL"
 		err.Value = t.AllPrefixed
 		errs = append(errs, err)
 	}
@@ -419,6 +456,7 @@ func ValidateCEL(t *CEL) error {
 		return false
 	}()) {
 		err := ErrCELHasEmailFormatCELValidation
+		err.Type = "CEL"
 		err.Value = t.HasEmailFormat
 		errs = append(errs, err)
 	}
@@ -433,6 +471,7 @@ func ValidateCEL(t *CEL) error {
 		return result
 	}()) > 0) {
 		err := ErrCELFilteredItemsCELValidation
+		err.Type = "CEL"
 		err.Value = t.FilteredItems
 		errs = append(errs, err)
 	}
@@ -445,6 +484,7 @@ func ValidateCEL(t *CEL) error {
 		return result
 	}()) == len(t.MappedSizes)) {
 		err := ErrCELMappedSizesCELValidation
+		err.Type = "CEL"
 		err.Value = t.MappedSizes
 		errs = append(errs, err)
 	}

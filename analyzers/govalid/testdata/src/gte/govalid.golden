@@ -10,14 +10,14 @@ var (
 	// ErrNilGTE is returned when the GTE is nil.
 	ErrNilGTE = errors.New("input GTE is nil")
 
-	// ErrGTEAgeGTEValidation is the error returned when the value of the field is less than 18.
-	ErrGTEAgeGTEValidation = govaliderrors.ValidationError{Reason: "field GTEAge must be greater than or equal to 18"}
+	// ErrGTEAgeGTEValidation is the error returned when the value of the field is less than %s.
+	ErrGTEAgeGTEValidation = govaliderrors.ValidationError{Reason: "field GTEAge must be greater than or equal to %s", Path: "GTE.Age"}
 
-	// ErrGTEScoreGTEValidation is the error returned when the value of the field is less than 0.
-	ErrGTEScoreGTEValidation = govaliderrors.ValidationError{Reason: "field GTEScore must be greater than or equal to 0"}
+	// ErrGTEScoreGTEValidation is the error returned when the value of the field is less than %s.
+	ErrGTEScoreGTEValidation = govaliderrors.ValidationError{Reason: "field GTEScore must be greater than or equal to %s", Path: "GTE.Score"}
 
-	// ErrGTEValueGTEValidation is the error returned when the value of the field is less than 100.
-	ErrGTEValueGTEValidation = govaliderrors.ValidationError{Reason: "field GTEValue must be greater than or equal to 100"}
+	// ErrGTEValueGTEValidation is the error returned when the value of the field is less than %s.
+	ErrGTEValueGTEValidation = govaliderrors.ValidationError{Reason: "field GTEValue must be greater than or equal to %s", Path: "GTE.Value"}
 )
 
 func ValidateGTE(t *GTE) error {
@@ -29,12 +29,14 @@ func ValidateGTE(t *GTE) error {
 
 	if !(t.Age >= 18) {
 		err := ErrGTEAgeGTEValidation
+		err.Type = "GTE"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
 
 	if !(t.Score >= 0) {
 		err := ErrGTEScoreGTEValidation
+		err.Type = "GTE"
 		err.Value = t.Score
 		errs = append(errs, err)
 	}
@@ -44,6 +46,7 @@ func ValidateGTE(t *GTE) error {
 
 		if !(t.Value >= 100) {
 			err := ErrGTEValueGTEValidation
+			err.Type = "GTE"
 			err.Value = t.Value
 			errs = append(errs, err)
 		}

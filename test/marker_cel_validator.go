@@ -11,16 +11,16 @@ var (
 	ErrNilCEL = errors.New("input CEL is nil")
 
 	// ErrCELAgeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELAge failed CEL validation: value >= 18"}
+	ErrCELAgeCELValidation = govaliderrors.ValidationError{Reason: "field CELAge failed CEL validation: EXPRESSION", Path: "CEL.Age"}
 
 	// ErrCELNameCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELNameCELValidation = govaliderrors.ValidationError{Reason: "field CELName failed CEL validation: size(value) > 0"}
+	ErrCELNameCELValidation = govaliderrors.ValidationError{Reason: "field CELName failed CEL validation: EXPRESSION", Path: "CEL.Name"}
 
 	// ErrCELScoreCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELScore failed CEL validation: value > 0.0"}
+	ErrCELScoreCELValidation = govaliderrors.ValidationError{Reason: "field CELScore failed CEL validation: EXPRESSION", Path: "CEL.Score"}
 
 	// ErrCELIsActiveCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{Reason: "field CELIsActive failed CEL validation: value == true"}
+	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{Reason: "field CELIsActive failed CEL validation: EXPRESSION", Path: "CEL.IsActive"}
 )
 
 func ValidateCEL(t *CEL) error {

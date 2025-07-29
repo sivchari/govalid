@@ -52,19 +52,26 @@ func (r *requiredValidator) FieldName() string {
 
 func (r *requiredValidator) Err() string {
 	key := fmt.Sprintf(requiredKey, r.structName+r.FieldName())
+
+	var result strings.Builder
+
 	if validator.GeneratorMemory[key] {
-		return ""
+		return result.String()
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	pathless := strings.ReplaceAll(`
-	// Err@RequiredValidation is returned when the @ is required but not provided.
-		Err@RequiredValidation = govaliderrors.ValidationError{Reason:"field @ is required",Path:"PATH"}
-	`, "@", r.structName+r.FieldName(),
+	result.WriteString(
+		strings.ReplaceAll(`
+			// Err@RequiredValidation is returned when the @ is required but not provided.
+			Err@RequiredValidation = govaliderrors.ValidationError{Reason:"field @ is required",Path:"PATH"}
+			`,
+			"@",
+			r.structName+r.FieldName(),
+		),
 	)
 
-	return strings.ReplaceAll(pathless, "PATH", fmt.Sprintf("%s.%s", r.structName, r.FieldName()))
+	return strings.ReplaceAll(result.String(), "PATH", fmt.Sprintf("%s.%s", r.structName, r.FieldName()))
 }
 
 func (r *requiredValidator) ErrVariable() string {

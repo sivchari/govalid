@@ -51,17 +51,31 @@ func (e *enumValidator) FieldName() string {
 
 func (e *enumValidator) Err() string {
 	key := fmt.Sprintf(enumKey, e.structName+e.FieldName())
+
+	var result strings.Builder
+
 	if validator.GeneratorMemory[key] {
-		return ""
+		return result.String()
 	}
 
 	validator.GeneratorMemory[key] = true
 
 	enumList := strings.Join(e.enumValues, ", ")
 
-	return fmt.Sprintf(strings.ReplaceAll(`
-	// Err@EnumValidation is the error returned when the value is not in the allowed enum values [%s].
-	Err@EnumValidation = govaliderrors.ValidationError{Reason:"field @ must be one of [%s]"}`, "@", e.structName+e.FieldName()), enumList, enumList)
+	result.WriteString(
+		fmt.Sprintf(
+			strings.ReplaceAll(`
+				// Err@EnumValidation is the error returned when the value is not in the allowed enum values [%s].
+				Err@EnumValidation = govaliderrors.ValidationError{Reason:"field @ must be one of [%s]",Path:"PATH"}
+				`,
+				"@",
+				e.structName+e.FieldName(),
+			),
+			enumList, enumList,
+		),
+	)
+
+	return strings.ReplaceAll(result.String(), "PATH", fmt.Sprintf("%s.%s", e.structName, e.FieldName()))
 }
 
 func (e *enumValidator) ErrVariable() string {

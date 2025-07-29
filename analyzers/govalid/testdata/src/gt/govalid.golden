@@ -10,50 +10,50 @@ var (
 	// ErrNilGT is returned when the GT is nil.
 	ErrNilGT = errors.New("input GT is nil")
 
-	// ErrGTIntGTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTIntGTValidation = govaliderrors.ValidationError{Reason: "field GTInt must be greater than 1"}
+	// ErrGTIntGTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTIntGTValidation = govaliderrors.ValidationError{Reason: "field GTInt must be greater than %s", Path: "GT.Int"}
 
-	// ErrGTInt8GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTInt8GTValidation = govaliderrors.ValidationError{Reason: "field GTInt8 must be greater than 1"}
+	// ErrGTInt8GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTInt8GTValidation = govaliderrors.ValidationError{Reason: "field GTInt8 must be greater than %s", Path: "GT.Int8"}
 
-	// ErrGTInt16GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTInt16GTValidation = govaliderrors.ValidationError{Reason: "field GTInt16 must be greater than 1"}
+	// ErrGTInt16GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTInt16GTValidation = govaliderrors.ValidationError{Reason: "field GTInt16 must be greater than %s", Path: "GT.Int16"}
 
-	// ErrGTInt32GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTInt32GTValidation = govaliderrors.ValidationError{Reason: "field GTInt32 must be greater than 1"}
+	// ErrGTInt32GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTInt32GTValidation = govaliderrors.ValidationError{Reason: "field GTInt32 must be greater than %s", Path: "GT.Int32"}
 
-	// ErrGTInt64GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTInt64GTValidation = govaliderrors.ValidationError{Reason: "field GTInt64 must be greater than 1"}
+	// ErrGTInt64GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTInt64GTValidation = govaliderrors.ValidationError{Reason: "field GTInt64 must be greater than %s", Path: "GT.Int64"}
 
-	// ErrGTFloat32GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTFloat32GTValidation = govaliderrors.ValidationError{Reason: "field GTFloat32 must be greater than 1"}
+	// ErrGTFloat32GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTFloat32GTValidation = govaliderrors.ValidationError{Reason: "field GTFloat32 must be greater than %s", Path: "GT.Float32"}
 
-	// ErrGTFloat64GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTFloat64GTValidation = govaliderrors.ValidationError{Reason: "field GTFloat64 must be greater than 1"}
+	// ErrGTFloat64GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTFloat64GTValidation = govaliderrors.ValidationError{Reason: "field GTFloat64 must be greater than %s", Path: "GT.Float64"}
 
-	// ErrGTUintGTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTUintGTValidation = govaliderrors.ValidationError{Reason: "field GTUint must be greater than 1"}
+	// ErrGTUintGTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTUintGTValidation = govaliderrors.ValidationError{Reason: "field GTUint must be greater than %s", Path: "GT.Uint"}
 
-	// ErrGTUint8GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTUint8GTValidation = govaliderrors.ValidationError{Reason: "field GTUint8 must be greater than 1"}
+	// ErrGTUint8GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTUint8GTValidation = govaliderrors.ValidationError{Reason: "field GTUint8 must be greater than %s", Path: "GT.Uint8"}
 
-	// ErrGTUint16GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTUint16GTValidation = govaliderrors.ValidationError{Reason: "field GTUint16 must be greater than 1"}
+	// ErrGTUint16GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTUint16GTValidation = govaliderrors.ValidationError{Reason: "field GTUint16 must be greater than %s", Path: "GT.Uint16"}
 
-	// ErrGTUint32GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTUint32GTValidation = govaliderrors.ValidationError{Reason: "field GTUint32 must be greater than 1"}
+	// ErrGTUint32GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTUint32GTValidation = govaliderrors.ValidationError{Reason: "field GTUint32 must be greater than %s", Path: "GT.Uint32"}
 
-	// ErrGTUint64GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTUint64GTValidation = govaliderrors.ValidationError{Reason: "field GTUint64 must be greater than 1"}
+	// ErrGTUint64GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTUint64GTValidation = govaliderrors.ValidationError{Reason: "field GTUint64 must be greater than %s", Path: "GT.Uint64"}
 
-	// ErrGTUintptrGTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTUintptrGTValidation = govaliderrors.ValidationError{Reason: "field GTUintptr must be greater than 1"}
+	// ErrGTUintptrGTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTUintptrGTValidation = govaliderrors.ValidationError{Reason: "field GTUintptr must be greater than %s", Path: "GT.Uintptr"}
 
-	// ErrGTComplex64GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTComplex64GTValidation = govaliderrors.ValidationError{Reason: "field GTComplex64 must be greater than 1"}
+	// ErrGTComplex64GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTComplex64GTValidation = govaliderrors.ValidationError{Reason: "field GTComplex64 must be greater than %s", Path: "GT.Complex64"}
 
-	// ErrGTComplex128GTValidation is the error returned when the value of the field is less than the 1.
-	ErrGTComplex128GTValidation = govaliderrors.ValidationError{Reason: "field GTComplex128 must be greater than 1"}
+	// ErrGTComplex128GTValidation is the error returned when the value of the field is less than the %s.
+	ErrGTComplex128GTValidation = govaliderrors.ValidationError{Reason: "field GTComplex128 must be greater than %s", Path: "GT.Complex128"}
 )
 
 func ValidateGT(t *GT) error {
@@ -65,90 +65,105 @@ func ValidateGT(t *GT) error {
 
 	if !(t.Int > 1) {
 		err := ErrGTIntGTValidation
+		err.Type = "GT"
 		err.Value = t.Int
 		errs = append(errs, err)
 	}
 
 	if !(t.Int8 > 1) {
 		err := ErrGTInt8GTValidation
+		err.Type = "GT"
 		err.Value = t.Int8
 		errs = append(errs, err)
 	}
 
 	if !(t.Int16 > 1) {
 		err := ErrGTInt16GTValidation
+		err.Type = "GT"
 		err.Value = t.Int16
 		errs = append(errs, err)
 	}
 
 	if !(t.Int32 > 1) {
 		err := ErrGTInt32GTValidation
+		err.Type = "GT"
 		err.Value = t.Int32
 		errs = append(errs, err)
 	}
 
 	if !(t.Int64 > 1) {
 		err := ErrGTInt64GTValidation
+		err.Type = "GT"
 		err.Value = t.Int64
 		errs = append(errs, err)
 	}
 
 	if !(t.Float32 > 1) {
 		err := ErrGTFloat32GTValidation
+		err.Type = "GT"
 		err.Value = t.Float32
 		errs = append(errs, err)
 	}
 
 	if !(t.Float64 > 1) {
 		err := ErrGTFloat64GTValidation
+		err.Type = "GT"
 		err.Value = t.Float64
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint > 1) {
 		err := ErrGTUintGTValidation
+		err.Type = "GT"
 		err.Value = t.Uint
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint8 > 1) {
 		err := ErrGTUint8GTValidation
+		err.Type = "GT"
 		err.Value = t.Uint8
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint16 > 1) {
 		err := ErrGTUint16GTValidation
+		err.Type = "GT"
 		err.Value = t.Uint16
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint32 > 1) {
 		err := ErrGTUint32GTValidation
+		err.Type = "GT"
 		err.Value = t.Uint32
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint64 > 1) {
 		err := ErrGTUint64GTValidation
+		err.Type = "GT"
 		err.Value = t.Uint64
 		errs = append(errs, err)
 	}
 
 	if !(t.Uintptr > 1) {
 		err := ErrGTUintptrGTValidation
+		err.Type = "GT"
 		err.Value = t.Uintptr
 		errs = append(errs, err)
 	}
 
 	if !(t.Complex64 > 1) {
 		err := ErrGTComplex64GTValidation
+		err.Type = "GT"
 		err.Value = t.Complex64
 		errs = append(errs, err)
 	}
 
 	if !(t.Complex128 > 1) {
 		err := ErrGTComplex128GTValidation
+		err.Type = "GT"
 		err.Value = t.Complex128
 		errs = append(errs, err)
 	}
@@ -158,6 +173,7 @@ func ValidateGT(t *GT) error {
 
 		if !(t.Int > 1) {
 			err := ErrGTIntGTValidation
+			err.Type = "GT"
 			err.Value = t.Int
 			errs = append(errs, err)
 		}

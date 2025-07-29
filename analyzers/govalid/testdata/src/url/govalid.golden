@@ -36,30 +36,35 @@ func ValidateURL(t *URL) error {
 
 	if !validationhelper.IsValidURL(t.WebsiteURL) {
 		err := ErrURLWebsiteURLURLValidation
+		err.Type = "URL"
 		err.Value = t.WebsiteURL
 		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidURL(t.HomepageURL) {
 		err := ErrURLHomepageURLURLValidation
+		err.Type = "URL"
 		err.Value = t.HomepageURL
 		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidURL(t.ApiURL) {
 		err := ErrURLApiURLURLValidation
+		err.Type = "URL"
 		err.Value = t.ApiURL
 		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidURL(t.ProfileURL) {
 		err := ErrURLProfileURLURLValidation
+		err.Type = "URL"
 		err.Value = t.ProfileURL
 		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidURL(t.DownloadURL) {
 		err := ErrURLDownloadURLURLValidation
+		err.Type = "URL"
 		err.Value = t.DownloadURL
 		errs = append(errs, err)
 	}

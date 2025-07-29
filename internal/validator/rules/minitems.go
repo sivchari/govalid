@@ -34,15 +34,26 @@ func (m *minItemsValidator) FieldName() string {
 
 func (m *minItemsValidator) Err() string {
 	key := fmt.Sprintf(minItemsKey, m.structName+m.FieldName())
+
+	var result strings.Builder
+
 	if validator.GeneratorMemory[key] {
-		return ""
+		return result.String()
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	return fmt.Sprintf(strings.ReplaceAll(`
-	// Err@MinItemsValidation is the error returned when the length of the field is less than the minimum of %s.
-	Err@MinItemsValidation = govaliderrors.ValidationError{Reason:"field @ must have a minimum of %s items"}`, "@", m.structName+m.FieldName()), m.minItemsValue, m.minItemsValue)
+	result.WriteString(
+		strings.ReplaceAll(`
+			// Err@MinItemsValidation is the error returned when the length of the field is less than the minimum of %s.
+			Err@MinItemsValidation = govaliderrors.ValidationError{Reason:"field @ must have a minimum of %s items",Path:"PATH"}
+			`,
+			"@",
+			m.structName+m.FieldName(),
+		),
+	)
+
+	return strings.ReplaceAll(result.String(), "PATH", fmt.Sprintf("%s.%s", m.structName, m.FieldName()))
 }
 
 func (m *minItemsValidator) ErrVariable() string {

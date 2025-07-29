@@ -61,15 +61,21 @@ func (c *celValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	result.WriteString(strings.ReplaceAll(`
-	// Err@CELValidation is the error returned when the CEL expression evaluation fails.
-	Err@CELValidation = govaliderrors.ValidationError{Reason:"field @ failed CEL validation: EXPRESSION"}`, "@", c.structName+fieldName))
+	result.WriteString(
+		strings.ReplaceAll(`
+			// Err@CELValidation is the error returned when the CEL expression evaluation fails.
+			Err@CELValidation = govaliderrors.ValidationError{Reason:"field @ failed CEL validation: EXPRESSION",Path:"PATH"}
+			`,
+			"@",
+			c.structName+c.FieldName(),
+		),
+	)
 
 	// Replace EXPRESSION placeholder with the actual CEL expression
 	errorString := result.String()
 	errorString = strings.ReplaceAll(errorString, "EXPRESSION", c.expression)
 
-	return errorString
+	return strings.ReplaceAll(result.String(), "PATH", fmt.Sprintf("%s.%s", c.structName, c.FieldName()))
 }
 
 func (c *celValidator) ErrVariable() string {
