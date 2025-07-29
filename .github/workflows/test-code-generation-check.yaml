@@ -1,0 +1,29 @@
+name: Test Code Generation Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - uses: actions/setup-go@v5
+      with:
+        go-version-file: 'go.mod'
+    
+    - run: make generate-validation-code
+    
+    - name: Check for changes
+      run: |
+        if [[ -n $(git status --porcelain) ]]; then
+          echo "Error: Test code is not up to date. Run 'make generate-validation-code'"
+          git diff
+          exit 1
+        fi
