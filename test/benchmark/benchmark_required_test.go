@@ -17,14 +17,12 @@ func BenchmarkGoValidRequired(b *testing.B) {
 		Age:   1,
 		Items: []string{"test"},
 	}
-	b.ResetTimer()
 	for b.Loop() {
 		err := test.ValidateRequired(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
 		}
 	}
-	b.StopTimer()
 }
 
 func BenchmarkGoPlaygroundRequired(b *testing.B) {
@@ -34,19 +32,16 @@ func BenchmarkGoPlaygroundRequired(b *testing.B) {
 		Age:   1,
 		Items: []string{"test"},
 	}
-	b.ResetTimer()
 	for b.Loop() {
 		err := validate.Struct(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
 		}
 	}
-	b.StopTimer()
 }
 
 func BenchmarkGoValidatorRequired(b *testing.B) {
 	testString := "test"
-	b.ResetTimer()
 	for b.Loop() {
 		// Check if string is not empty
 		if len(testString) == 0 {
@@ -57,24 +52,20 @@ func BenchmarkGoValidatorRequired(b *testing.B) {
 			b.Fatal("validation failed")
 		}
 	}
-	b.StopTimer()
 }
 
 func BenchmarkOzzoValidationRequired(b *testing.B) {
 	testString := "test"
-	b.ResetTimer()
 	for b.Loop() {
 		err := validation.Validate(testString, validation.Required)
 		if err != nil {
 			b.Fatal("validation failed:", err)
 		}
 	}
-	b.StopTimer()
 }
 
 func BenchmarkGookitValidateRequired(b *testing.B) {
 	testString := "test"
-	b.ResetTimer()
 	for b.Loop() {
 		v := validate.New(map[string]any{"test": testString})
 		v.StringRule("test", "required")
@@ -82,5 +73,4 @@ func BenchmarkGookitValidateRequired(b *testing.B) {
 			b.Fatal("validation failed:", v.Errors)
 		}
 	}
-	b.StopTimer()
 }

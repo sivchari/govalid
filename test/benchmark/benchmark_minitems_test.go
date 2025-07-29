@@ -16,15 +16,12 @@ func BenchmarkGoValidMinItems(b *testing.B) {
 	}
 	instance.ChanField <- 1
 	instance.ChanField <- 2
-
-	b.ResetTimer()
 	for b.Loop() {
 		err := test.ValidateMinItems(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
 		}
 	}
-	b.StopTimer()
 }
 
 func BenchmarkGoPlaygroundMinItems(b *testing.B) {
@@ -36,13 +33,10 @@ func BenchmarkGoPlaygroundMinItems(b *testing.B) {
 	}
 	instance.ChanField <- 1
 	instance.ChanField <- 2
-
-	b.ResetTimer()
 	for b.Loop() {
 		err := validate.Struct(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
 		}
 	}
-	b.StopTimer()
 }

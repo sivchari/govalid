@@ -143,5 +143,5 @@ type CELCrossField struct {
 
 type Length struct {
 	// +govalid:length=7
-	Name string `json:"name"`
+	Name string `validate:"len=7" json:"name"`
 }
