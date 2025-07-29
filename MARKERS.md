@@ -456,7 +456,7 @@ govalid supports the following markers:
       }
 
       if !validationhelper.IsNumeric(t.Phone) {
-          return ErrPhoneNumericValidation
+          return ErrPayloadPhoneNumericValidation
       }
 
       return nil
