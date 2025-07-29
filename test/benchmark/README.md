@@ -62,6 +62,11 @@ BenchmarkGoPlaygroundUUID-16                 	 4753952	       254.0 ns/op	      
 BenchmarkGoValidatorUUID-16                  	 6066202	       197.6 ns/op	       0 B/op	       0 allocs/op
 BenchmarkOzzoValidationUUID-16               	 5034348	       238.0 ns/op	      24 B/op	       1 allocs/op
 BenchmarkGookitValidateUUID-16               	  113701	     10603 ns/op	   15519 B/op	      74 allocs/op
+BenchmarkGoValidAlphanum-12                  	95256775	        12.59 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoPlaygroundAlphanum-12             	21947889	        55.36 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoValidatorAlphanum-12              	21758839	        55.74 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOzzoValidationAlphanum-12           	  267644	      4329 ns/op	    8721 B/op	      136 allocs/op
+BenchmarkGookitValidateAlphanum-12           	  151220	      7729 ns/op	   15232 B/op	       72 allocs/op
 ```
 
 ## Performance Comparison
@@ -81,6 +86,7 @@ BenchmarkGookitValidateUUID-16               	  113701	     10603 ns/op	   15519
 | Required | 1.935ns | 85.51 | **44.2x faster** | 0 allocs/op | 0 allocs/op |
 | URL | 42.54ns | 287.9 | **6.8x faster** | 0 allocs/op | 1 allocs + 144 B/op |
 | UUID | 37.69ns | 254.0 | **6.7x faster** | 0 allocs/op | 0 allocs/op |
+| Alphanum | 12.59ns | 55.36 | **4.4x faster** | 0 allocs/op | 0 allocs/op |
 | Enum | 2.242ns | N/A (govalid exclusive) | **govalid exclusive** | 0 allocs/op | N/A |
 
 ## govalid-Exclusive Features
