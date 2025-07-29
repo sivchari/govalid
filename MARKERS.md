@@ -451,9 +451,9 @@ govalid supports the following markers:
     }
 
     if !validationhelper.IsValidAlpha(t.FirstName) {
-        return errFirstNameAlphaValidation
+        return ErrUserFirstNameAlphaValidation
     }
 
-    return
+    return nil
   }
   ```

@@ -112,7 +112,7 @@ type CEL struct {
 	// +govalid:cel=string(value) in ['active', 'inactive', 'pending']
 	StatusCode int
 
-	// Timestamp comparison - temporarily commented out due to struct comparison issues
+	// Timestamp comparison - temporarily commented out due to struct comparison issues  
 	// BirthDate time.Time
 
 	// +govalid:cel=value > duration('1h')

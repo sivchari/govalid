@@ -11,7 +11,7 @@ var (
 	ErrNilLength = errors.New("input Length is nil")
 
 	// ErrLengthNameLengthValidation is the error returned when the length of the field is not exactly 7.
-	ErrLengthNameLengthValidation = errors.New("field LengthName length must be exactly 7")
+	ErrLengthNameLengthValidation = errors.New("field LengthName must have exactly length of 7")
 )
 
 func ValidateLength(t *Length) error {
