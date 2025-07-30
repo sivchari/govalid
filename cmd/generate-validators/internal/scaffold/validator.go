@@ -69,18 +69,18 @@ func CreateGovalidTest(markerName, testTemplate, testDir string) error {
 
 	// Convert marker name to various forms
 	markerLower := strings.ToLower(markerName)
-	
+
 	// Simple inline PascalCase conversion
 	r, size := utf8.DecodeRuneInString(markerLower)
 	if size == 0 {
 		return errors.New("marker name cannot be empty")
 	}
-	
+
 	titleCaseName := strings.ToUpper(string(r)) + markerLower[size:]
 
-	// Generate test file path  
+	// Generate test file path
 	testPath := filepath.Join(testDir, markerLower+"_test.go")
-	
+
 	// Use a map for template data
 	data := map[string]string{
 		"Name":          markerLower,

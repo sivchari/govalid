@@ -50,7 +50,7 @@ func All(rulesDir, outputDir, registryFile, markersFile string, templates Templa
 		if err := os.MkdirAll(testDir, 0o750); err != nil {
 			return fmt.Errorf("failed to create test directory: %w", err)
 		}
-		
+
 		if err := generateGovalidTests(validators, testDir, templates.GovalidTest); err != nil {
 			return fmt.Errorf("failed to generate test files: %w", err)
 		}
