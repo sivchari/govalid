@@ -8,7 +8,7 @@ import (
 )
 
 // All generates all registry files from existing validators.
-func All(rulesDir, outputDir, registryFile, markersFile string, templates Templates) error {
+func All(rulesDir, outputDir, registryFile, markersFile string, templates *Templates) error {
 	validators, err := DiscoverValidators(rulesDir)
 	if err != nil {
 		return fmt.Errorf("failed to discover validators: %w", err)
@@ -54,6 +54,7 @@ func All(rulesDir, outputDir, registryFile, markersFile string, templates Templa
 		if err := generateGovalidTests(validators, testDir, templates.GovalidTest); err != nil {
 			return fmt.Errorf("failed to generate test files: %w", err)
 		}
+
 		fmt.Printf("✓ Generated test files for %d validators\n", len(validators))
 	}
 

@@ -67,7 +67,7 @@ func main() {
 	}
 
 	// Generate all files from existing validators
-	templates := generate.Templates{
+	templates := &generate.Templates{
 		Initializer:  initializerTemplate,
 		All:          allTemplate,
 		RegistryInit: registryInitTemplate,
