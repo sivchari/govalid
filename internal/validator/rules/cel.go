@@ -50,32 +50,26 @@ func (c *celValidator) FieldName() string {
 
 func (c *celValidator) Err() string {
 	fieldName := c.FieldName()
-
-	var result strings.Builder
-
-	// Generate error variable only once per field
 	key := fmt.Sprintf(celKey, c.structName+fieldName)
+
 	if validator.GeneratorMemory[key] {
-		return result.String()
+		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	result.WriteString(
-		strings.ReplaceAll(`
+	const template = `
 			// Err@CELValidation is the error returned when the CEL expression evaluation fails.
 			Err@CELValidation = govaliderrors.ValidationError{Reason:"field @ failed CEL validation: EXPRESSION",Path:"PATH"}
-			`,
-			"@",
-			c.structName+c.FieldName(),
-		),
+			`
+
+	replacer := strings.NewReplacer(
+		"@", c.structName+fieldName,
+		"EXPRESSION", c.expression,
+		"PATH", fmt.Sprintf("%s.%s", c.structName, fieldName),
 	)
 
-	// Replace EXPRESSION placeholder with the actual CEL expression
-	errorString := result.String()
-	errorString = strings.ReplaceAll(errorString, "EXPRESSION", c.expression)
-
-	return strings.ReplaceAll(result.String(), "PATH", fmt.Sprintf("%s.%s", c.structName, c.FieldName()))
+	return replacer.Replace(template)
 }
 
 func (c *celValidator) ErrVariable() string {

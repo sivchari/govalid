@@ -3,6 +3,7 @@ package length
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"unicode/utf8"
 )
 
@@ -11,10 +12,10 @@ var (
 	ErrNilLength = errors.New("input Length is nil")
 
 	// ErrLengthStringLengthValidation is the error returned when the length of the field is not exactly 7.
-	ErrLengthStringLengthValidation = errors.New("field LengthString length must be exactly 7")
+	ErrLengthStringLengthValidation = govaliderrors.ValidationError{Reason: "field LengthString length must be exactly 7", Path: "Length.String"}
 
 	// ErrLengthNameLengthValidation is the error returned when the length of the field is not exactly 10.
-	ErrLengthNameLengthValidation = errors.New("field LengthName length must be exactly 10")
+	ErrLengthNameLengthValidation = govaliderrors.ValidationError{Reason: "field LengthName length must be exactly 10", Path: "Length.Name"}
 )
 
 func ValidateLength(t *Length) error {
@@ -22,18 +23,29 @@ func ValidateLength(t *Length) error {
 		return ErrNilLength
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if utf8.RuneCountInString(t.String) != 7 {
-		return ErrLengthStringLengthValidation
+		err := ErrLengthStringLengthValidation
+		err.Type = "Length"
+		err.Value = t.String
+		errs = append(errs, err)
 	}
 
 	{
 		t := t.Struct
 
 		if utf8.RuneCountInString(t.Name) != 10 {
-			return ErrLengthNameLengthValidation
+			err := ErrLengthNameLengthValidation
+			err.Type = "Length"
+			err.Value = t.Name
+			errs = append(errs, err)
 		}
 
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }
