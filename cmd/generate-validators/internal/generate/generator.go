@@ -43,6 +43,20 @@ func All(rulesDir, outputDir, registryFile, markersFile string, templates Templa
 		return fmt.Errorf("failed to generate markers file: %w", err)
 	}
 
+	// Generate test files
+	testDir := "internal/analyzers/govalid/tests"
+	if templates.GovalidTest != "" {
+		// Create test directory if it doesn't exist
+		if err := os.MkdirAll(testDir, 0o750); err != nil {
+			return fmt.Errorf("failed to create test directory: %w", err)
+		}
+		
+		if err := generateGovalidTests(validators, testDir, templates.GovalidTest); err != nil {
+			return fmt.Errorf("failed to generate test files: %w", err)
+		}
+		fmt.Printf("✓ Generated test files for %d validators\n", len(validators))
+	}
+
 	fmt.Printf("✓ Generated initializers for %d validators\n", len(validators))
 
 	return nil
@@ -54,4 +68,5 @@ type Templates struct {
 	All          string
 	RegistryInit string
 	Markers      string
+	GovalidTest  string
 }
