@@ -73,7 +73,7 @@ func ValidateGT(pass *codegen.Pass, field *ast.Field, expressions map[string]str
 		return nil
 	}
 
-	gtValue, ok := expressions[markers.GoValidMarkerGT]
+	gtValue, ok := expressions[markers.GoValidMarkerGt]
 	if !ok {
 		return nil
 	}

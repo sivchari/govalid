@@ -6,9 +6,9 @@ import (
 
 	"github.com/gostaticanalysis/codegen/singlegenerator"
 
-	"github.com/sivchari/govalid/analyzers/govalid"
-	"github.com/sivchari/govalid/analyzers/markers"
-	"github.com/sivchari/govalid/internal/registry"
+	"github.com/sivchari/govalid/internal/analyzers/govalid"
+	"github.com/sivchari/govalid/internal/analyzers/markers"
+	"github.com/sivchari/govalid/internal/analyzers/registry"
 )
 
 func main() {

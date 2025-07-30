@@ -73,7 +73,7 @@ func ValidateMinLength(pass *codegen.Pass, field *ast.Field, expressions map[str
 		return nil
 	}
 
-	minLengthValue, ok := expressions[markers.GoValidMarkerMinLength]
+	minLengthValue, ok := expressions[markers.GoValidMarkerMinlength]
 	if !ok {
 		return nil
 	}

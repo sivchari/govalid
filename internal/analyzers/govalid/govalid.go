@@ -16,11 +16,10 @@ import (
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
 
-	"github.com/sivchari/govalid/analyzers/markers"
+	"github.com/sivchari/govalid/internal/analyzers/markers"
 	govaliderrors "github.com/sivchari/govalid/internal/errors"
-	govalidmarkers "github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
-	"github.com/sivchari/govalid/internal/validator/rules"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 const (
@@ -176,46 +175,17 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 	return analyzed
 }
 
-//nolint:cyclop //nolint:gocritic // This case will be removed.
 func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Field, structName string) []validator.Validator {
 	validators := make([]validator.Validator, 0)
 
 	for _, marker := range markers {
-		var v validator.Validator
-
-		switch marker.Identifier {
-		case govalidmarkers.GoValidMarkerRequired:
-			v = rules.ValidateRequired(pass, field, structName)
-		case govalidmarkers.GoValidMarkerLT:
-			v = rules.ValidateLT(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerGT:
-			v = rules.ValidateGT(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerMaxLength:
-			v = rules.ValidateMaxLength(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerMaxItems:
-			v = rules.ValidateMaxItems(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerMinItems:
-			v = rules.ValidateMinItems(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerMinLength:
-			v = rules.ValidateMinLength(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerGTE:
-			v = rules.ValidateGTE(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerLTE:
-			v = rules.ValidateLTE(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerEnum:
-			v = rules.ValidateEnum(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerEmail:
-			v = rules.ValidateEmail(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerUUID:
-			v = rules.ValidateUUID(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerURL:
-			v = rules.ValidateURL(pass, field, marker.Expressions, structName)
-		case govalidmarkers.GoValidMarkerCEL:
-			v = rules.ValidateCEL(pass, field, marker.Expressions, structName)
-		default:
+		factory, err := registry.Validator(marker.Identifier)
+		if err != nil {
+			// Validator not found, skip
 			continue
 		}
 
+		v := factory(pass, field, marker.Expressions, structName)
 		if v == nil {
 			continue
 		}
@@ -246,7 +216,7 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 		"trimDots": func(s string) string {
 			return strings.ReplaceAll(s, ".", "")
 		},
-	}).Parse(tmpl)
+	}).Parse(ValidationTemplate)
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %w", err)
 	}

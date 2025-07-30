@@ -44,12 +44,15 @@ func (m *maxItemsValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	result.WriteString(
-		strings.ReplaceAll(`
+		fmt.Sprintf(
+			strings.ReplaceAll(`
 			// Err@MaxItemsValidation is the error returned when the length of the field exceeds the maximum of %s.
 			Err@MaxItemsValidation = govaliderrors.ValidationError{Reason:"field @ must have a maximum of %s items",Path:"PATH"}
 			`,
-			"@",
-			m.structName+m.FieldName(),
+				"@",
+				m.structName+m.FieldName(),
+			),
+			m.maxItemsValue, m.maxItemsValue,
 		),
 	)
 
@@ -76,7 +79,7 @@ func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[stri
 		return nil
 	}
 
-	maxItemsValue, ok := expressions[markers.GoValidMarkerMaxItems]
+	maxItemsValue, ok := expressions[markers.GoValidMarkerMaxitems]
 	if !ok {
 		return nil
 	}

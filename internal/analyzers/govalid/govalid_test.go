@@ -6,9 +6,9 @@ import (
 
 	"github.com/gostaticanalysis/codegen/codegentest"
 
-	"github.com/sivchari/govalid/analyzers/govalid"
-	"github.com/sivchari/govalid/analyzers/markers"
-	"github.com/sivchari/govalid/internal/registry"
+	"github.com/sivchari/govalid/internal/analyzers/govalid"
+	"github.com/sivchari/govalid/internal/analyzers/markers"
+	"github.com/sivchari/govalid/internal/analyzers/registry"
 )
 
 var update bool
@@ -47,6 +47,7 @@ func Test(t *testing.T) {
 		"uuid",
 		"url",
 		"cel",
+		"length",
 	}
 
 	for _, tc := range markers {

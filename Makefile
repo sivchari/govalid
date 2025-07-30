@@ -21,6 +21,10 @@ golangci-lint-fix: golangci-lint ## Run golangci-lint over the codebase and run 
 fmt: ## Format code with golangci-lint
 	${GOLANGCI_LINT} fmt ./...
 
+.PHONY: fmt-diff
+fmt-diff: ## Show code formatting differences
+	${GOLANGCI_LINT} fmt --diff ./...
+
 # Documentation targets
 .PHONY: docs-dev
 docs-dev: ## Start Hugo development server
@@ -32,9 +36,14 @@ install-govalid: ## Install govalid binary for validation code generation
 	go install ./cmd/govalid
 
 # Generate validation code for test
-.PHONY: gen-valdation-code
-gen-valdation-code: install-govalid ## Generate validation code using govalid
+.PHONY: generate-validation-code
+generate-validation-code: install-govalid ## Generate validation code using govalid
 	go generate ./test/marker.go
+
+# Generate new validator scaffold
+.PHONY: generate-validator
+generate-validator: ## Generate a new validator scaffold and all registry files. Usage: make generate-validator MARKER=phoneNumber
+	go run cmd/generate-validators/main.go -marker=$(MARKER)
 
 # Test targets
 .PHONY: test

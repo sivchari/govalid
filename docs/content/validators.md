@@ -80,6 +80,29 @@ if utf8.RuneCountInString(t.Username) > 50 {
 }
 ```
 
+### `govalid:length=N`
+
+Ensures that a string field has exactly the specified length (Unicode-aware).
+
+**Supported Types:** `string`
+
+**Example:**
+```go
+type User struct {
+    // +govalid:length=7
+    Name string `json:"name"`
+}
+```
+
+**Generated Code:**
+```go
+if utf8.RuneCountInString(t.Name) != 7 {
+    return ErrNameLengthValidation
+}
+```
+
+**Note:** Unlike `minlength` and `maxlength`, this validator requires the exact character count. It's perfect for fixed-length fields like postal codes, phone numbers, or product codes.
+
 ### `govalid:email`
 
 Ensures that a string field is a valid email address using HTML5-compliant validation.
