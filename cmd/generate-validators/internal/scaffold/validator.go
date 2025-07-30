@@ -60,3 +60,39 @@ func checkFileExists(path string) error {
 
 	return nil
 }
+
+// CreateGovalidTest creates a new govalid test file for the given marker.
+func CreateGovalidTest(markerName, testTemplate, testDir string) error {
+	if markerName == "" {
+		return errors.New("marker name cannot be empty")
+	}
+
+	// Convert marker name to various forms
+	markerLower := strings.ToLower(markerName)
+	
+	// Simple inline PascalCase conversion
+	r, size := utf8.DecodeRuneInString(markerLower)
+	if size == 0 {
+		return errors.New("marker name cannot be empty")
+	}
+	
+	titleCaseName := strings.ToUpper(string(r)) + markerLower[size:]
+
+	// Generate test file path  
+	testPath := filepath.Join(testDir, markerLower+"_test.go")
+	
+	// Use a map for template data
+	data := map[string]string{
+		"Name":          markerLower,
+		"TitleCaseName": titleCaseName,
+	}
+
+	// Create test file
+	if err := generateFromTemplate(testTemplate, data, testPath); err != nil {
+		return fmt.Errorf("failed to generate test file: %w", err)
+	}
+
+	fmt.Printf("✓ Created test file: %s\n", testPath)
+
+	return nil
+}
