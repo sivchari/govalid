@@ -434,6 +434,30 @@ govalid supports the following markers:
   ```
 - **Note**: CEL validation follows govalid's zero-reflection philosophy. Cross-field validation (accessing other struct fields) is not supported.
 
+## `govalid:alpha`
+- **Description**: Ensures that a string field is alphabetical, i.e. all its characters belong to the english alphabet.
+- **Example**:
+  ```go
+    type User struct {
+        // +govalid:alpha
+        FirstName string `json:"first_name"`
+    }
+    ```
+- **Generated Code**:
+  ```go
+  func ValidateUser(t *User) error {
+    if t == nil {
+        return ErrNilUser
+    }
+
+    if !validationhelper.IsValidAlpha(t.FirstName) {
+        return ErrUserFirstNameAlphaValidation
+    }
+
+    return nil
+  }
+  ```
+
 ## `govalid:numeric`
 
 - **Description**: Ensures that a string field contains only digit characters (`0`–`9`). Leading zeros are allowed. Negative signs, decimal points, or scientific notation are **not** accepted.

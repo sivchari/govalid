@@ -37,8 +37,6 @@ BenchmarkGoValidMaxItems-16                  	479873872	         2.520 ns/op	   
 BenchmarkGoPlaygroundMaxItems-16             	14759504	        80.30 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidMaxLength-16                 	77328928	        15.67 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoPlaygroundMaxLength-16            	16308603	        73.50 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoValidLength-12                    	208483179	        5.718 ns/op	       0 B/op	       0 allocs/op
-BenchmarkGoPlaygroundLength-12               	26671827	        46.01 ns/op	       0 B/op	       0 allocs/op
 BenchmarkGoValidatorMaxLength-16             	 7367277	       161.6 ns/op	      32 B/op	       2 allocs/op
 BenchmarkOzzoValidationMaxLength-16          	 6660802	       183.4 ns/op	     432 B/op	       4 allocs/op
 BenchmarkGookitValidateMaxLength-16          	  115408	     10276 ns/op	   15632 B/op	      80 allocs/op
@@ -80,7 +78,6 @@ BenchmarkGookitValidateNumeric-12                 107311         11131 ns/op    
 | LTE | 1.969ns | 61.91 | **31.4x faster** | 0 allocs/op | 0 allocs/op |
 | MaxItems | 2.520ns | 80.30 | **31.9x faster** | 0 allocs/op | 0 allocs/op |
 | MaxLength | 15.67ns | 73.50 | **4.7x faster** | 0 allocs/op | 0 allocs/op |
-| Length | 5.718ns | 46.01 | **8.0x faster** | 0 allocs/op | 0 allocs/op |
 | MinItems | 2.785ns | 79.81 | **28.7x faster** | 0 allocs/op | 0 allocs/op |
 | MinLength | 11.60ns | 67.51 | **5.8x faster** | 0 allocs/op | 0 allocs/op |
 | Required | 1.935ns | 85.51 | **44.2x faster** | 0 allocs/op | 0 allocs/op |
