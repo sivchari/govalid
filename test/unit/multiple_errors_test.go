@@ -10,7 +10,7 @@ import (
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
-func TeserrtMultipleErrorsValidation(t *testing.T) {
+func TestMultipleErrorsValidation(t *testing.T) {
 	tests := []struct {
 		name           string
 		data           test.MultipleErrors
@@ -58,6 +58,7 @@ func TeserrtMultipleErrorsValidation(t *testing.T) {
 				if err != nil {
 					t.Errorf("execution expected no errors returned %#v", err)
 				}
+				return
 			}
 
 			if err == nil && tt.expectedErrors <= 0 {
