@@ -65,6 +65,17 @@ type MinItems struct {
 	ChanField chan int `json:"chan_field"`
 }
 
+type Alpha struct {
+	// +govalid:alpha
+	FirstName string `validate:"alpha" json:"first_name"`
+
+	// +govalid:alpha
+	LastName string `validate:"alpha" json:"last_name"`
+
+	// +govalid:alpha
+	CountryCode string `validate:"alpha" json:"country_code"`
+}
+
 // Custom types for enum testing
 type UserRole string
 type Priority int
@@ -132,7 +143,12 @@ type CELCrossField struct {
 
 type Length struct {
 	// +govalid:length=7
-	Name string `json:"name"`
+	Name string `validate:"len=7" json:"name"`
+}
+
+type Numeric struct {
+	// +govalid:numeric
+	Number string `json:"Number"`
 }
 
 type MultipleErrors struct {

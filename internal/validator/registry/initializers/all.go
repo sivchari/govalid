@@ -8,6 +8,7 @@ import (
 // All returns all built-in validator initializers.
 func All() []registry.ValidatorInitializer {
 	return []registry.ValidatorInitializer{
+		AlphaInitializer{},
 		CelInitializer{},
 		EmailInitializer{},
 		EnumInitializer{},
@@ -20,6 +21,7 @@ func All() []registry.ValidatorInitializer {
 		MaxlengthInitializer{},
 		MinitemsInitializer{},
 		MinlengthInitializer{},
+		NumericInitializer{},
 		RequiredInitializer{},
 		UrlInitializer{},
 		UuidInitializer{},

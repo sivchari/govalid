@@ -16,7 +16,6 @@ func BenchmarkGoValidCELConcurrent(b *testing.B) {
 		IsActive: true,
 	}
 
-	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			err := test.ValidateCEL(&instance)
@@ -25,7 +24,6 @@ func BenchmarkGoValidCELConcurrent(b *testing.B) {
 			}
 		}
 	})
-	b.StopTimer()
 }
 
 // BenchmarkGoValidCELMultipleExpressions tests performance with different expressions
@@ -37,22 +35,19 @@ func BenchmarkGoValidCELMultipleExpressions(b *testing.B) {
 		IsActive: true,
 	}
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		// Test the same validation multiple times to benefit from caching
 		err := test.ValidateCEL(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
 		}
 	}
-	b.StopTimer()
 }
 
 // BenchmarkGoValidCELCacheEffectiveness measures cache hit performance
 func BenchmarkGoValidCELCacheEffectiveness(b *testing.B) {
 	var wg sync.WaitGroup
 	goroutines := 10
-	iterations := b.N / goroutines
 
 	instance := test.CEL{
 		Age:      25,
@@ -61,12 +56,11 @@ func BenchmarkGoValidCELCacheEffectiveness(b *testing.B) {
 		IsActive: true,
 	}
 
-	b.ResetTimer()
-	for g := 0; g < goroutines; g++ {
+	for range goroutines {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for i := 0; i < iterations; i++ {
+			for b.Loop() {
 				err := test.ValidateCEL(&instance)
 				if err != nil {
 					b.Error("unexpected error:", err)
@@ -76,5 +70,4 @@ func BenchmarkGoValidCELCacheEffectiveness(b *testing.B) {
 		}()
 	}
 	wg.Wait()
-	b.StopTimer()
 }

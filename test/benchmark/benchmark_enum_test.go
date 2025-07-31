@@ -16,12 +16,10 @@ func BenchmarkGoValidEnum(b *testing.B) {
 		UserRole: "manager",
 		Priority: 10,
 	}
-	b.ResetTimer()
 	for b.Loop() {
 		err := test.ValidateEnum(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
 		}
 	}
-	b.StopTimer()
 }
