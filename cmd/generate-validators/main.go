@@ -31,12 +31,16 @@ var markersTemplate string
 //go:embed templates/validator.go.tmpl
 var validatorTemplate string
 
+//go:embed templates/govalid_test.go.tmpl
+var govalidTestTemplate string
+
 // Fixed paths.
 const (
-	rulesDir     = "internal/validator/rules"
-	outputDir    = "internal/validator/registry/initializers"
-	registryFile = "internal/analyzers/govalid/registry_init.go"
-	markersFile  = "internal/markers/markers_generated.go"
+	rulesDir       = "internal/validator/rules"
+	outputDir      = "internal/validator/registry/initializers"
+	registryFile   = "internal/analyzers/govalid/registry_init.go"
+	markersFile    = "internal/markers/markers_generated.go"
+	govalidTestDir = "internal/analyzers/govalid/tests"
 )
 
 var (
@@ -56,14 +60,19 @@ func main() {
 		if err := scaffold.CreateValidator(*marker, validatorTemplate, rulesDir); err != nil {
 			log.Fatalf("Failed to scaffold validator: %v", err)
 		}
+		// Also create the test file
+		if err := scaffold.CreateGovalidTest(*marker, govalidTestTemplate, govalidTestDir); err != nil {
+			log.Fatalf("Failed to scaffold test file: %v", err)
+		}
 	}
 
 	// Generate all files from existing validators
-	templates := generate.Templates{
+	templates := &generate.Templates{
 		Initializer:  initializerTemplate,
 		All:          allTemplate,
 		RegistryInit: registryInitTemplate,
 		Markers:      markersTemplate,
+		GovalidTest:  govalidTestTemplate,
 	}
 
 	if err := generate.All(rulesDir, outputDir, registryFile, markersFile, templates); err != nil {

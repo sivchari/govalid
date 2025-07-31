@@ -1,7 +1,6 @@
-package govalid_test
+package tests
 
 import (
-	"flag"
 	"testing"
 
 	"github.com/gostaticanalysis/codegen/codegentest"
@@ -11,13 +10,7 @@ import (
 	"github.com/sivchari/govalid/internal/analyzers/registry"
 )
 
-var update bool
-
-func init() {
-	flag.BoolVar(&update, "update", false, "update golden files")
-}
-
-func Test(t *testing.T) {
+func TestNestedStruct(t *testing.T) {
 	registry := registry.NewRegistry(
 		registry.AddAnalyzers(markers.Initializer()),
 		registry.AddGenerators(govalid.Initializer()),
@@ -33,23 +26,6 @@ func Test(t *testing.T) {
 	}
 
 	testCases := []string{
-		"required",
-		"lt",
-		"gt",
-		"maxlength",
-		"maxitems",
-		"minitems",
-		"minlength",
-		"numeric",
-		"gte",
-		"lte",
-		"enum",
-		"email",
-		"uuid",
-		"url",
-		"cel",
-		"alpha",
-		"length",
 		"nestedstruct/nop",
 		"nestedstruct/inside",
 		"nestedstruct/partial",
