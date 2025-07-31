@@ -41,11 +41,12 @@ func (v *{{.MarkerName}}Validator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-	  // Err@{{.StructName}}Validation is returned when the @ fails {{.MarkerName}} validation.
-	  Err@{{.StructName}}Validation = errors.New("{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field @ failed {{.MarkerName}} validation{{end}}")`, "@", v.structName+v.FieldName())
+	  // [ERRVARIABLE] is returned when the @ fails {{.MarkerName}} validation.
+	  [ERRVARIABLE] = errors.New("{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field @ failed {{.MarkerName}} validation{{end}}")`, "@", v.structName+v.FieldName())
 	`
 
 	replacer := strings.NewReplacer(
+		"[ERRVARIABLE]", v.ErrVariable(),
 		"@", v.structName+v.FieldName(),
 		"PATH", fmt.Sprintf("%s.%s", v.structName+v.FieldName()),
 	)
