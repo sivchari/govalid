@@ -11,8 +11,8 @@ var (
 	// ErrNilMinLength is returned when the MinLength is nil.
 	ErrNilMinLength = errors.New("input MinLength is nil")
 
-	// ErrMinLengthNameMinLengthValidation is the error returned when the length of the field is less than the minimum of %s.
-	ErrMinLengthNameMinLengthValidation = govaliderrors.ValidationError{Reason: "field MinLengthName must have a minimum length of %s", Path: "MinLength.Name"}
+	// ErrMinLengthNameMinLengthValidation is the error returned when the length of the field is less than the minimum of 3.
+	ErrMinLengthNameMinLengthValidation = govaliderrors.ValidationError{Reason: "field MinLengthName must have a minimum length of 3", Path: "MinLength.Name"}
 )
 
 func ValidateMinLength(t *MinLength) error {

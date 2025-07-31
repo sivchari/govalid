@@ -10,50 +10,50 @@ var (
 	// ErrNilLT is returned when the LT is nil.
 	ErrNilLT = errors.New("input LT is nil")
 
-	// ErrLTIntLTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTIntLTValidation = govaliderrors.ValidationError{Reason: "field LTInt must be less than %s", Path: "LT.Int"}
+	// ErrLTIntLTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTIntLTValidation = govaliderrors.ValidationError{Reason: "field LTInt must be less than 1", Path: "LT.Int"}
 
-	// ErrLTInt8LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTInt8LTValidation = govaliderrors.ValidationError{Reason: "field LTInt8 must be less than %s", Path: "LT.Int8"}
+	// ErrLTInt8LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTInt8LTValidation = govaliderrors.ValidationError{Reason: "field LTInt8 must be less than 1", Path: "LT.Int8"}
 
-	// ErrLTInt16LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTInt16LTValidation = govaliderrors.ValidationError{Reason: "field LTInt16 must be less than %s", Path: "LT.Int16"}
+	// ErrLTInt16LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTInt16LTValidation = govaliderrors.ValidationError{Reason: "field LTInt16 must be less than 1", Path: "LT.Int16"}
 
-	// ErrLTInt32LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTInt32LTValidation = govaliderrors.ValidationError{Reason: "field LTInt32 must be less than %s", Path: "LT.Int32"}
+	// ErrLTInt32LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTInt32LTValidation = govaliderrors.ValidationError{Reason: "field LTInt32 must be less than 1", Path: "LT.Int32"}
 
-	// ErrLTInt64LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTInt64LTValidation = govaliderrors.ValidationError{Reason: "field LTInt64 must be less than %s", Path: "LT.Int64"}
+	// ErrLTInt64LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTInt64LTValidation = govaliderrors.ValidationError{Reason: "field LTInt64 must be less than 1", Path: "LT.Int64"}
 
-	// ErrLTFloat32LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTFloat32LTValidation = govaliderrors.ValidationError{Reason: "field LTFloat32 must be less than %s", Path: "LT.Float32"}
+	// ErrLTFloat32LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTFloat32LTValidation = govaliderrors.ValidationError{Reason: "field LTFloat32 must be less than 1", Path: "LT.Float32"}
 
-	// ErrLTFloat64LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTFloat64LTValidation = govaliderrors.ValidationError{Reason: "field LTFloat64 must be less than %s", Path: "LT.Float64"}
+	// ErrLTFloat64LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTFloat64LTValidation = govaliderrors.ValidationError{Reason: "field LTFloat64 must be less than 1", Path: "LT.Float64"}
 
-	// ErrLTUintLTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTUintLTValidation = govaliderrors.ValidationError{Reason: "field LTUint must be less than %s", Path: "LT.Uint"}
+	// ErrLTUintLTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTUintLTValidation = govaliderrors.ValidationError{Reason: "field LTUint must be less than 1", Path: "LT.Uint"}
 
-	// ErrLTUint8LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTUint8LTValidation = govaliderrors.ValidationError{Reason: "field LTUint8 must be less than %s", Path: "LT.Uint8"}
+	// ErrLTUint8LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTUint8LTValidation = govaliderrors.ValidationError{Reason: "field LTUint8 must be less than 1", Path: "LT.Uint8"}
 
-	// ErrLTUint16LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTUint16LTValidation = govaliderrors.ValidationError{Reason: "field LTUint16 must be less than %s", Path: "LT.Uint16"}
+	// ErrLTUint16LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTUint16LTValidation = govaliderrors.ValidationError{Reason: "field LTUint16 must be less than 1", Path: "LT.Uint16"}
 
-	// ErrLTUint32LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTUint32LTValidation = govaliderrors.ValidationError{Reason: "field LTUint32 must be less than %s", Path: "LT.Uint32"}
+	// ErrLTUint32LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTUint32LTValidation = govaliderrors.ValidationError{Reason: "field LTUint32 must be less than 1", Path: "LT.Uint32"}
 
-	// ErrLTUint64LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTUint64LTValidation = govaliderrors.ValidationError{Reason: "field LTUint64 must be less than %s", Path: "LT.Uint64"}
+	// ErrLTUint64LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTUint64LTValidation = govaliderrors.ValidationError{Reason: "field LTUint64 must be less than 1", Path: "LT.Uint64"}
 
-	// ErrLTUintptrLTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTUintptrLTValidation = govaliderrors.ValidationError{Reason: "field LTUintptr must be less than %s", Path: "LT.Uintptr"}
+	// ErrLTUintptrLTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTUintptrLTValidation = govaliderrors.ValidationError{Reason: "field LTUintptr must be less than 1", Path: "LT.Uintptr"}
 
-	// ErrLTComplex64LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTComplex64LTValidation = govaliderrors.ValidationError{Reason: "field LTComplex64 must be less than %s", Path: "LT.Complex64"}
+	// ErrLTComplex64LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTComplex64LTValidation = govaliderrors.ValidationError{Reason: "field LTComplex64 must be less than 1", Path: "LT.Complex64"}
 
-	// ErrLTComplex128LTValidation is the error returned when the value of the field is greater than the %s.
-	ErrLTComplex128LTValidation = govaliderrors.ValidationError{Reason: "field LTComplex128 must be less than %s", Path: "LT.Complex128"}
+	// ErrLTComplex128LTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTComplex128LTValidation = govaliderrors.ValidationError{Reason: "field LTComplex128 must be less than 1", Path: "LT.Complex128"}
 )
 
 func ValidateLT(t *LT) error {

@@ -34,28 +34,24 @@ func (l *lengthValidator) FieldName() string {
 func (l *lengthValidator) Err() string {
 	key := fmt.Sprintf(lengthKey, l.structName+l.FieldName())
 
-	var result strings.Builder
-
 	if validator.GeneratorMemory[key] {
-		return result.String()
+		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	result.WriteString(
-		fmt.Sprintf(
-			strings.ReplaceAll(`
-			// Err@LengthValidation is the error returned when the length of the field is not exactly %s.
-			Err@LengthValidation = govaliderrors.ValidationError{Reason:"field @ length must be exactly %s",Path:"PATH"}
-			`,
-				"@",
-				l.structName+l.FieldName(),
-			),
-			l.lengthValue, l.lengthValue,
-		),
+	const errTemplate = `
+		// Err@LengthValidation is the error returned when the length of the field is not exactly [VALUE].
+		Err@LengthValidation = govaliderrors.ValidationError{Reason:"field @ length must be exactly [VALUE]",Path:"PATH"}
+	`
+
+	replacer := strings.NewReplacer(
+		"@", l.structName+l.FieldName(),
+		"PATH", fmt.Sprintf("%s.%s", l.structName, l.FieldName()),
+		"[VALUE]", l.lengthValue,
 	)
 
-	return strings.ReplaceAll(result.String(), "PATH", fmt.Sprintf("%s.%s", l.structName, l.FieldName()))
+	return replacer.Replace(errTemplate)
 }
 
 func (l *lengthValidator) ErrVariable() string {

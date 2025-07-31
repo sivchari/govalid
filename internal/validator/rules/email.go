@@ -35,27 +35,25 @@ func (e *emailValidator) FieldName() string {
 func (e *emailValidator) Err() string {
 	fieldName := e.FieldName()
 
-	var result strings.Builder
-
 	// No need to generate inline function - using external helper
 	key := fmt.Sprintf(emailKey, e.structName+fieldName)
 	if validator.GeneratorMemory[key] {
-		return result.String()
+		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	result.WriteString(
-		strings.ReplaceAll(`
-			// Err@EmailValidation is the error returned when the field is not a valid email address.
-			Err@EmailValidation = govaliderrors.ValidationError{Reason:"field @ must be a valid email address",Path:"PATH"}
-			`,
-			"@",
-			e.structName+e.FieldName(),
-		),
+	const errTemplate = `
+		// Err@EmailValidation is the error returned when the field is not a valid email address.
+		Err@EmailValidation = govaliderrors.ValidationError{Reason:"field @ must be a valid email address",Path:"PATH"}
+	`
+
+	replacer := strings.NewReplacer(
+		"@", e.structName+fieldName,
+		"PATH", fmt.Sprintf("%s.%s", e.structName, fieldName),
 	)
 
-	return strings.ReplaceAll(result.String(), "PATH", fmt.Sprintf("%s.%s", e.structName, e.FieldName()))
+	return replacer.Replace(errTemplate)
 }
 
 func (e *emailValidator) ErrVariable() string {

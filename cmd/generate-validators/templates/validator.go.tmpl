@@ -34,17 +34,23 @@ func (v *{{.MarkerName}}Validator) FieldName() string {
 func (v *{{.MarkerName}}Validator) Err() string {
 	key := fmt.Sprintf({{.MarkerName}}Key, v.structName+v.FieldName())
 
-  var result strings.Builder
-
 	if validator.GeneratorMemory[key] {
-		return result.String()
+		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	return strings.ReplaceAll(`
-	// Err@{{.StructName}}Validation is returned when the @ fails {{.MarkerName}} validation.
-	Err@{{.StructName}}Validation = errors.New("{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field @ failed {{.MarkerName}} validation{{end}}")`, "@", v.structName+v.FieldName())
+	const errTemplate = `
+	  // Err@{{.StructName}}Validation is returned when the @ fails {{.MarkerName}} validation.
+	  Err@{{.StructName}}Validation = errors.New("{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field @ failed {{.MarkerName}} validation{{end}}")`, "@", v.structName+v.FieldName())
+	`
+
+	replacer := strings.NewReplacer(
+		"@", v.structName+v.FieldName(),
+		"PATH", fmt.Sprintf("%s.%s", v.structName+v.FieldName()),
+	)
+
+	return replacer.Replace(errTemplate)
 }
 
 func (v *{{.MarkerName}}Validator) ErrVariable() string {

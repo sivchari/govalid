@@ -35,25 +35,24 @@ func (m *minLengthValidator) FieldName() string {
 func (m *minLengthValidator) Err() string {
 	key := fmt.Sprintf(minLengthKey, m.structName+m.FieldName())
 
-	var result strings.Builder
-
 	if validator.GeneratorMemory[key] {
-		return result.String()
+		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	result.WriteString(
-		strings.ReplaceAll(`
-			// Err@MinLengthValidation is the error returned when the length of the field is less than the minimum of %s.
-			Err@MinLengthValidation = govaliderrors.ValidationError{Reason:"field @ must have a minimum length of %s",Path:"PATH"}
-			`,
-			"@",
-			m.structName+m.FieldName(),
-		),
+	const errTemplate = `
+		// Err@MinLengthValidation is the error returned when the length of the field is less than the minimum of [VALUE].
+		Err@MinLengthValidation = govaliderrors.ValidationError{Reason:"field @ must have a minimum length of [VALUE]",Path:"PATH"}
+	`
+
+	replacer := strings.NewReplacer(
+		"@", m.structName+m.FieldName(),
+		"PATH", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[VALUE]", m.minLengthValue,
 	)
 
-	return strings.ReplaceAll(result.String(), "PATH", fmt.Sprintf("%s.%s", m.structName, m.FieldName()))
+	return replacer.Replace(errTemplate)
 }
 
 func (m *minLengthValidator) ErrVariable() string {

@@ -10,8 +10,8 @@ var (
 	// ErrNilGT is returned when the GT is nil.
 	ErrNilGT = errors.New("input GT is nil")
 
-	// ErrGTAgeGTValidation is the error returned when the value of the field is less than the %s.
-	ErrGTAgeGTValidation = govaliderrors.ValidationError{Reason: "field GTAge must be greater than %s", Path: "GT.Age"}
+	// ErrGTAgeGTValidation is the error returned when the value of the field is less than the 100.
+	ErrGTAgeGTValidation = govaliderrors.ValidationError{Reason: "field GTAge must be greater than 100", Path: "GT.Age"}
 )
 
 func ValidateGT(t *GT) error {

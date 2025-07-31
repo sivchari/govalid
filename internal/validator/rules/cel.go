@@ -58,7 +58,7 @@ func (c *celValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	const template = `
+	const errTemplate = `
 			// Err@CELValidation is the error returned when the CEL expression evaluation fails.
 			Err@CELValidation = govaliderrors.ValidationError{Reason:"field @ failed CEL validation: EXPRESSION",Path:"PATH"}
 			`
@@ -69,7 +69,7 @@ func (c *celValidator) Err() string {
 		"PATH", fmt.Sprintf("%s.%s", c.structName, fieldName),
 	)
 
-	return replacer.Replace(template)
+	return replacer.Replace(errTemplate)
 }
 
 func (c *celValidator) ErrVariable() string {
