@@ -44,12 +44,13 @@ func (e *emailValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-		// Err@EmailValidation is the error returned when the field is not a valid email address.
-		Err@EmailValidation = govaliderrors.ValidationError{Reason:"field @ must be a valid email address",Path:"PATH"}
+		// [ERRVARIABLE] is the error returned when the field is not a valid email address.
+		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must be a valid email address",Path:"PATH"}
 	`
 
 	replacer := strings.NewReplacer(
-		"@", e.structName+fieldName,
+		"[ERRVARIABLE]", e.ErrVariable(),
+		"@", fieldName,
 		"PATH", fmt.Sprintf("%s.%s", e.structName, fieldName),
 	)
 

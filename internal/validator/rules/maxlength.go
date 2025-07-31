@@ -42,12 +42,13 @@ func (m *maxLengthValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-		// Err@MaxLengthValidation is the error returned when the length of the field exceeds the maximum of [VALUE].
-		Err@MaxLengthValidation = govaliderrors.ValidationError{Reason:"field @ must have a maximum length of [VALUE]",Path:"PATH"}
+		// [ERRVARIABLE] is the error returned when the length of the field exceeds the maximum of [VALUE].
+		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must have a maximum length of [VALUE]",Path:"PATH"}
 	`
 
 	replacer := strings.NewReplacer(
-		"@", m.structName+m.FieldName(),
+		"[ERRVARIABLE]", m.ErrVariable(),
+		"@", m.FieldName(),
 		"PATH", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
 		"[VALUE]", m.maxLengthValue,
 	)

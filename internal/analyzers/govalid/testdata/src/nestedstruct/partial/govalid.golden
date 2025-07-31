@@ -3,14 +3,15 @@ package partial
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
 	// ErrNilPartial is returned when the Partial is nil.
 	ErrNilPartial = errors.New("input Partial is nil")
 
-	// ErrPartialNameRequiredValidation is returned when the PartialName is required but not provided.
-	ErrPartialNameRequiredValidation = errors.New("field PartialName is required")
+	// ErrPartialNameRequiredValidation is returned when the Name is required but not provided.
+	ErrPartialNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "Partial.Name"}
 )
 
 func ValidatePartial(t *Partial) error {
@@ -18,9 +19,17 @@ func ValidatePartial(t *Partial) error {
 		return ErrNilPartial
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if t.Name == "" {
-		return ErrPartialNameRequiredValidation
+		err := ErrPartialNameRequiredValidation
+		err.Type = "Partial"
+		err.Value = t.Name
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

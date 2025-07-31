@@ -10,47 +10,47 @@ var (
 	// ErrNilRequired is returned when the Required is nil.
 	ErrNilRequired = errors.New("input Required is nil")
 
-	// ErrRequiredStringRequiredValidation is returned when the RequiredString is required but not provided.
-	ErrRequiredStringRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredString is required", Path: "Required.String"}
+	// ErrRequiredStringRequiredValidation is returned when the String is required but not provided.
+	ErrRequiredStringRequiredValidation = govaliderrors.ValidationError{Reason: "field String is required", Path: "Required.String"}
 
-	// ErrRequiredIntRequiredValidation is returned when the RequiredInt is required but not provided.
-	ErrRequiredIntRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredInt is required", Path: "Required.Int"}
+	// ErrRequiredIntRequiredValidation is returned when the Int is required but not provided.
+	ErrRequiredIntRequiredValidation = govaliderrors.ValidationError{Reason: "field Int is required", Path: "Required.Int"}
 
-	// ErrRequiredArrayRequiredValidation is returned when the RequiredArray is required but not provided.
-	ErrRequiredArrayRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredArray is required", Path: "Required.Array"}
+	// ErrRequiredArrayRequiredValidation is returned when the Array is required but not provided.
+	ErrRequiredArrayRequiredValidation = govaliderrors.ValidationError{Reason: "field Array is required", Path: "Required.Array"}
 
-	// ErrRequiredSliceRequiredValidation is returned when the RequiredSlice is required but not provided.
-	ErrRequiredSliceRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredSlice is required", Path: "Required.Slice"}
+	// ErrRequiredSliceRequiredValidation is returned when the Slice is required but not provided.
+	ErrRequiredSliceRequiredValidation = govaliderrors.ValidationError{Reason: "field Slice is required", Path: "Required.Slice"}
 
-	// ErrRequiredMapRequiredValidation is returned when the RequiredMap is required but not provided.
-	ErrRequiredMapRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredMap is required", Path: "Required.Map"}
+	// ErrRequiredMapRequiredValidation is returned when the Map is required but not provided.
+	ErrRequiredMapRequiredValidation = govaliderrors.ValidationError{Reason: "field Map is required", Path: "Required.Map"}
 
-	// ErrRequiredInterfaceRequiredValidation is returned when the RequiredInterface is required but not provided.
-	ErrRequiredInterfaceRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredInterface is required", Path: "Required.Interface"}
+	// ErrRequiredInterfaceRequiredValidation is returned when the Interface is required but not provided.
+	ErrRequiredInterfaceRequiredValidation = govaliderrors.ValidationError{Reason: "field Interface is required", Path: "Required.Interface"}
 
-	// ErrRequiredAnyRequiredValidation is returned when the RequiredAny is required but not provided.
-	ErrRequiredAnyRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredAny is required", Path: "Required.Any"}
+	// ErrRequiredAnyRequiredValidation is returned when the Any is required but not provided.
+	ErrRequiredAnyRequiredValidation = govaliderrors.ValidationError{Reason: "field Any is required", Path: "Required.Any"}
 
-	// ErrRequiredPointerRequiredValidation is returned when the RequiredPointer is required but not provided.
-	ErrRequiredPointerRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredPointer is required", Path: "Required.Pointer"}
+	// ErrRequiredPointerRequiredValidation is returned when the Pointer is required but not provided.
+	ErrRequiredPointerRequiredValidation = govaliderrors.ValidationError{Reason: "field Pointer is required", Path: "Required.Pointer"}
 
-	// ErrRequiredEntireRequiredStructNameRequiredValidation is returned when the RequiredEntireRequiredStructName is required but not provided.
-	ErrRequiredEntireRequiredStructNameRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredEntireRequiredStructName is required", Path: "Required.EntireRequiredStructName"}
+	// ErrRequiredEntireRequiredStructNameRequiredValidation is returned when the EntireRequiredStructName is required but not provided.
+	ErrRequiredEntireRequiredStructNameRequiredValidation = govaliderrors.ValidationError{Reason: "field EntireRequiredStructName is required", Path: "Required.EntireRequiredStructName"}
 
-	// ErrRequiredPartialStructStringRequiredValidation is returned when the RequiredPartialStructString is required but not provided.
-	ErrRequiredPartialStructStringRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredPartialStructString is required", Path: "Required.PartialStructString"}
+	// ErrRequiredPartialStructStringRequiredValidation is returned when the PartialStructString is required but not provided.
+	ErrRequiredPartialStructStringRequiredValidation = govaliderrors.ValidationError{Reason: "field PartialStructString is required", Path: "Required.PartialStructString"}
 
-	// ErrRequiredNested2StringRequiredValidation is returned when the RequiredNested2String is required but not provided.
-	ErrRequiredNested2StringRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredNested2String is required", Path: "Required.Nested2String"}
+	// ErrRequiredNested2StringRequiredValidation is returned when the Nested2String is required but not provided.
+	ErrRequiredNested2StringRequiredValidation = govaliderrors.ValidationError{Reason: "field Nested2String is required", Path: "Required.Nested2String"}
 
-	// ErrRequiredChannelRequiredValidation is returned when the RequiredChannel is required but not provided.
-	ErrRequiredChannelRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredChannel is required", Path: "Required.Channel"}
+	// ErrRequiredChannelRequiredValidation is returned when the Channel is required but not provided.
+	ErrRequiredChannelRequiredValidation = govaliderrors.ValidationError{Reason: "field Channel is required", Path: "Required.Channel"}
 
-	// ErrRequiredFuncRequiredValidation is returned when the RequiredFunc is required but not provided.
-	ErrRequiredFuncRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredFunc is required", Path: "Required.Func"}
+	// ErrRequiredFuncRequiredValidation is returned when the Func is required but not provided.
+	ErrRequiredFuncRequiredValidation = govaliderrors.ValidationError{Reason: "field Func is required", Path: "Required.Func"}
 
-	// ErrRequiredNamedRequiredValidation is returned when the RequiredNamed is required but not provided.
-	ErrRequiredNamedRequiredValidation = govaliderrors.ValidationError{Reason: "field RequiredNamed is required", Path: "Required.Named"}
+	// ErrRequiredNamedRequiredValidation is returned when the Named is required but not provided.
+	ErrRequiredNamedRequiredValidation = govaliderrors.ValidationError{Reason: "field Named is required", Path: "Required.Named"}
 )
 
 func ValidateRequired(t *Required) error {

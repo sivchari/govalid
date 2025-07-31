@@ -110,17 +110,20 @@ func (u *uuidValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	result.WriteString(
-		strings.ReplaceAll(`
-			// Err@UUIDValidation is the error returned when the field is not a valid UUID.
-			Err@UUIDValidation = govaliderrors.ValidationError{Reason:"field @ must be a valid UUID",Path:"PATH"}
-			`,
-			"@",
-			u.structName+u.FieldName(),
-		),
+	const errTemplate = `
+		// [ERRVARIABLE] is the error returned when the field is not a valid UUID.
+		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must be a valid UUID",Path:"PATH"}
+	`
+
+	replacer := strings.NewReplacer(
+		"[ERRVARIABLE]", u.ErrVariable(),
+		"@", u.FieldName(),
+		"PATH", fmt.Sprintf("%s.%s", u.structName, u.FieldName()),
 	)
 
-	return strings.ReplaceAll(result.String(), "PATH", fmt.Sprintf("%s.%s", u.structName, u.FieldName()))
+	result.WriteString(replacer.Replace(errTemplate))
+
+	return result.String()
 }
 
 func (u *uuidValidator) ErrVariable() string {

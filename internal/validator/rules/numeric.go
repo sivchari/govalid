@@ -38,9 +38,18 @@ func (m *numericValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	return strings.ReplaceAll(`
-	// Err@NumericValidation is the error returned when the field is not numeric.
-	Err@NumericValidation = errors.New("field @ must be numeric")`, "@", m.structName+m.FieldName())
+	const errTemplate = `
+		// [ERRVARIABLE] is the error returned when the field @ is not numeric.
+		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must be numeric",Path:"PATH"}
+	`
+
+	replacer := strings.NewReplacer(
+		"[ERRVARIABLE]", m.ErrVariable(),
+		"@", m.FieldName(),
+		"PATH", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+	)
+
+	return replacer.Replace(errTemplate)
 }
 
 func (m *numericValidator) ErrVariable() string {

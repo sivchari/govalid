@@ -11,10 +11,10 @@ var (
 	ErrNilCELCrossField = errors.New("input CELCrossField is nil")
 
 	// ErrCELCrossFieldPriceCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELCrossFieldPriceCELValidation = govaliderrors.ValidationError{Reason: "field CELCrossFieldPrice failed CEL validation: value < this.MaxPrice", Path: "CELCrossField.Price"}
+	ErrCELCrossFieldPriceCELValidation = govaliderrors.ValidationError{Reason: "field Price failed CEL validation: value < this.MaxPrice", Path: "CELCrossField.Price"}
 
 	// ErrCELCrossFieldQuantityCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELCrossFieldQuantityCELValidation = govaliderrors.ValidationError{Reason: "field CELCrossFieldQuantity failed CEL validation: value * this.Price <= this.Budget", Path: "CELCrossField.Quantity"}
+	ErrCELCrossFieldQuantityCELValidation = govaliderrors.ValidationError{Reason: "field Quantity failed CEL validation: value * this.Price <= this.Budget", Path: "CELCrossField.Quantity"}
 )
 
 func ValidateCELCrossField(t *CELCrossField) error {

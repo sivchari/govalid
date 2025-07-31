@@ -3,6 +3,7 @@ package alpha
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
 
@@ -10,14 +11,14 @@ var (
 	// ErrNilAlpha is returned when the Alpha is nil.
 	ErrNilAlpha = errors.New("input Alpha is nil")
 
-	// ErrAlphaFirstNameAlphaValidation is the error returned when field AlphaFirstName is not alphabetic.
-	ErrAlphaFirstNameAlphaValidation = errors.New("field AlphaFirstName must be alphabetic")
+	// ErrAlphaFirstNameAlphaValidation is the error returned when field FirstName is not alphabetic.
+	ErrAlphaFirstNameAlphaValidation = govaliderrors.ValidationError{Reason: "field FirstName must be alphabetic", Path: "Alpha.AlphaFirstName"}
 
-	// ErrAlphaLastNameAlphaValidation is the error returned when field AlphaLastName is not alphabetic.
-	ErrAlphaLastNameAlphaValidation = errors.New("field AlphaLastName must be alphabetic")
+	// ErrAlphaLastNameAlphaValidation is the error returned when field LastName is not alphabetic.
+	ErrAlphaLastNameAlphaValidation = govaliderrors.ValidationError{Reason: "field LastName must be alphabetic", Path: "Alpha.AlphaLastName"}
 
-	// ErrAlphaCountryCodeAlphaValidation is the error returned when field AlphaCountryCode is not alphabetic.
-	ErrAlphaCountryCodeAlphaValidation = errors.New("field AlphaCountryCode must be alphabetic")
+	// ErrAlphaCountryCodeAlphaValidation is the error returned when field CountryCode is not alphabetic.
+	ErrAlphaCountryCodeAlphaValidation = govaliderrors.ValidationError{Reason: "field CountryCode must be alphabetic", Path: "Alpha.AlphaCountryCode"}
 )
 
 func ValidateAlpha(t *Alpha) error {
@@ -25,17 +26,31 @@ func ValidateAlpha(t *Alpha) error {
 		return ErrNilAlpha
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !validationhelper.IsValidAlpha(t.FirstName) {
-		return ErrAlphaFirstNameAlphaValidation
+		err := ErrAlphaFirstNameAlphaValidation
+		err.Type = "Alpha"
+		err.Value = t.FirstName
+		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidAlpha(t.LastName) {
-		return ErrAlphaLastNameAlphaValidation
+		err := ErrAlphaLastNameAlphaValidation
+		err.Type = "Alpha"
+		err.Value = t.LastName
+		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidAlpha(t.CountryCode) {
-		return ErrAlphaCountryCodeAlphaValidation
+		err := ErrAlphaCountryCodeAlphaValidation
+		err.Type = "Alpha"
+		err.Value = t.CountryCode
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

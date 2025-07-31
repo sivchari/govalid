@@ -3,14 +3,15 @@ package inside
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
 	// ErrNilInside is returned when the Inside is nil.
 	ErrNilInside = errors.New("input Inside is nil")
 
-	// ErrInsideXRequiredValidation is returned when the InsideX is required but not provided.
-	ErrInsideXRequiredValidation = errors.New("field InsideX is required")
+	// ErrInsideXRequiredValidation is returned when the X is required but not provided.
+	ErrInsideXRequiredValidation = govaliderrors.ValidationError{Reason: "field X is required", Path: "Inside.X"}
 )
 
 func ValidateInside(t *Inside) error {
@@ -18,14 +19,22 @@ func ValidateInside(t *Inside) error {
 		return ErrNilInside
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	{
 		t := t.A
 
 		if t.X == "" {
-			return ErrInsideXRequiredValidation
+			err := ErrInsideXRequiredValidation
+			err.Type = "Inside"
+			err.Value = t.X
+			errs = append(errs, err)
 		}
 
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

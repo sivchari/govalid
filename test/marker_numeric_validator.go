@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
 
@@ -10,8 +11,8 @@ var (
 	// ErrNilNumeric is returned when the Numeric is nil.
 	ErrNilNumeric = errors.New("input Numeric is nil")
 
-	// ErrNumericNumberNumericValidation is the error returned when the field is not numeric.
-	ErrNumericNumberNumericValidation = errors.New("field NumericNumber must be numeric")
+	// ErrNumericNumberNumericValidation is the error returned when the field Number is not numeric.
+	ErrNumericNumberNumericValidation = govaliderrors.ValidationError{Reason: "field Number must be numeric", Path: "Numeric.Number"}
 )
 
 func ValidateNumeric(t *Numeric) error {
@@ -19,9 +20,17 @@ func ValidateNumeric(t *Numeric) error {
 		return ErrNilNumeric
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !validationhelper.IsNumeric(t.Number) {
-		return ErrNumericNumberNumericValidation
+		err := ErrNumericNumberNumericValidation
+		err.Type = "Numeric"
+		err.Value = t.Number
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

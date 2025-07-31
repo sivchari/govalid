@@ -12,7 +12,7 @@ var (
 	ErrNilURL = errors.New("input URL is nil")
 
 	// ErrURLURLURLValidation is the error returned when the field is not a valid URL.
-	ErrURLURLURLValidation = govaliderrors.ValidationError{Reason: "field URLURL must be a valid URL"}
+	ErrURLURLURLValidation = govaliderrors.ValidationError{Reason: "field URL must be a valid URL", Path: "URL.URL"}
 )
 
 func ValidateURL(t *URL) error {

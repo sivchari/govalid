@@ -42,12 +42,13 @@ func (m *minLengthValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-		// Err@MinLengthValidation is the error returned when the length of the field is less than the minimum of [VALUE].
-		Err@MinLengthValidation = govaliderrors.ValidationError{Reason:"field @ must have a minimum length of [VALUE]",Path:"PATH"}
+		// [ERRVARIABLE] is the error returned when the length of the field is less than the minimum of [VALUE].
+		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must have a minimum length of [VALUE]",Path:"PATH"}
 	`
 
 	replacer := strings.NewReplacer(
-		"@", m.structName+m.FieldName(),
+		"[ERRVARIABLE]", m.ErrVariable(),
+		"@", m.FieldName(),
 		"PATH", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
 		"[VALUE]", m.minLengthValue,
 	)

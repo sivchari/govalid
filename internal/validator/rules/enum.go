@@ -61,13 +61,13 @@ func (e *enumValidator) Err() string {
 	enumList := strings.Join(e.enumValues, ", ")
 
 	const errTemplate = `
-		// Err@EnumValidation is the error returned when the value is not in the allowed enum values [ENUM_LIST].
-		Err@EnumValidation = govaliderrors.ValidationError{Reason:"field @ must be one of [ENUM_LIST]",Path:"PATH"}
+		// [ERRVARIABLE] is the error returned when the value is not in the allowed enum values [ENUM_LIST].
+		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must be one of [ENUM_LIST]",Path:"PATH"}
 	`
 
-	// Use a single, efficient replacer for all substitutions.
 	replacer := strings.NewReplacer(
-		"@", e.structName+e.FieldName(),
+		"[ERRVARIABLE]", e.ErrVariable(),
+		"@", e.FieldName(),
 		"ENUM_LIST", enumList,
 		"PATH", fmt.Sprintf("%s.%s", e.structName, e.FieldName()),
 	)
