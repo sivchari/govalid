@@ -38,6 +38,7 @@ func (m *maxItemsValidator) Err() string {
 	if validator.GeneratorMemory[key] {
 		return ""
 	}
+
 	validator.GeneratorMemory[key] = true
 
 	const template = `
