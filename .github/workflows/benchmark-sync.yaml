@@ -1,0 +1,61 @@
+name: Sync Benchmarks on push to main
+on:
+  push:
+    branches:
+      - main
+jobs:
+  sync-benchmarks:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./scripts
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      
+      - name: Check if benchmarks are synced
+        id: check-sync
+        run: |
+          ./check-benchmark-sync.sh | grep -q "days old"; then
+            if [ $? -eq 0 ]; then
+              echo "Benchmarks are out of sync, proceeding with sync."
+              echo "sync_needed=true" >> $GITHUB_OUTPUT
+            else
+              echo "Benchmarks are already up to date."
+              echo "sync_needed=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run benchmark sync script
+        id: sync-benchmarks
+        if: steps.check-sync.outputs.sync_needed == 'true'
+        run: ./sync-benchmarks.sh
+      - name: Commit and push changes
+        id: commit-changes
+        run: |
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "github-actions@example.com"
+          git add -A
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to commit"
+            echo "committed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          git commit -m "Sync benchmark results"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Notify completion
+        run: |
+          if [ "${{ steps.commit-changes.outputs.committed }}" = "true" ]; then
+            echo "Benchmark sync completed successfully."
+          else
+            echo "Benchmark sync did not make any changes."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
