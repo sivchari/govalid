@@ -24,7 +24,7 @@ func ValidateLength(t *Length) error {
 
 	if utf8.RuneCountInString(t.Name) != 7 {
 		err := ErrLengthNameLengthValidation
-		err.Type = "Length"
+		err.Type = "length"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}

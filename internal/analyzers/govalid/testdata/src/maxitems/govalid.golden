@@ -35,28 +35,28 @@ func ValidateMaxItems(t *MaxItems) error {
 
 	if len(t.Slice) > 5 {
 		err := ErrMaxItemsSliceMaxItemsValidation
-		err.Type = "MaxItems"
+		err.Type = "maxitems"
 		err.Value = t.Slice
 		errs = append(errs, err)
 	}
 
 	if len(t.Array) > 3 {
 		err := ErrMaxItemsArrayMaxItemsValidation
-		err.Type = "MaxItems"
+		err.Type = "maxitems"
 		err.Value = t.Array
 		errs = append(errs, err)
 	}
 
 	if len(t.MapField) > 4 {
 		err := ErrMaxItemsMapFieldMaxItemsValidation
-		err.Type = "MaxItems"
+		err.Type = "maxitems"
 		err.Value = t.MapField
 		errs = append(errs, err)
 	}
 
 	if len(t.ChanField) > 2 {
 		err := ErrMaxItemsChanFieldMaxItemsValidation
-		err.Type = "MaxItems"
+		err.Type = "maxitems"
 		err.Value = t.ChanField
 		errs = append(errs, err)
 	}
@@ -66,7 +66,7 @@ func ValidateMaxItems(t *MaxItems) error {
 
 		if len(t.Items) > 2 {
 			err := ErrMaxItemsItemsMaxItemsValidation
-			err.Type = "MaxItems"
+			err.Type = "maxitems"
 			err.Value = t.Items
 			errs = append(errs, err)
 		}

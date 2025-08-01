@@ -29,21 +29,21 @@ func ValidateMinItems(t *MinItems) error {
 
 	if len(t.Items) < 2 {
 		err := ErrMinItemsItemsMinItemsValidation
-		err.Type = "MinItems"
+		err.Type = "minitems"
 		err.Value = t.Items
 		errs = append(errs, err)
 	}
 
 	if len(t.Metadata) < 1 {
 		err := ErrMinItemsMetadataMinItemsValidation
-		err.Type = "MinItems"
+		err.Type = "minitems"
 		err.Value = t.Metadata
 		errs = append(errs, err)
 	}
 
 	if len(t.ChanField) < 1 {
 		err := ErrMinItemsChanFieldMinItemsValidation
-		err.Type = "MinItems"
+		err.Type = "minitems"
 		err.Value = t.ChanField
 		errs = append(errs, err)
 	}

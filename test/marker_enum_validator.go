@@ -32,28 +32,28 @@ func ValidateEnum(t *Enum) error {
 
 	if t.Role != "admin" && t.Role != "user" && t.Role != "guest" {
 		err := ErrEnumRoleEnumValidation
-		err.Type = "Enum"
+		err.Type = "enum"
 		err.Value = t.Role
 		errs = append(errs, err)
 	}
 
 	if t.Level != 1 && t.Level != 2 && t.Level != 3 {
 		err := ErrEnumLevelEnumValidation
-		err.Type = "Enum"
+		err.Type = "enum"
 		err.Value = t.Level
 		errs = append(errs, err)
 	}
 
 	if t.UserRole != "manager" && t.UserRole != "developer" && t.UserRole != "tester" {
 		err := ErrEnumUserRoleEnumValidation
-		err.Type = "Enum"
+		err.Type = "enum"
 		err.Value = t.UserRole
 		errs = append(errs, err)
 	}
 
 	if t.Priority != 10 && t.Priority != 20 && t.Priority != 30 {
 		err := ErrEnumPriorityEnumValidation
-		err.Type = "Enum"
+		err.Type = "enum"
 		err.Value = t.Priority
 		errs = append(errs, err)
 	}

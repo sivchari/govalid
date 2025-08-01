@@ -23,7 +23,7 @@ func ValidateLTE(t *LTE) error {
 
 	if !(t.Age <= 100) {
 		err := ErrLTEAgeLTEValidation
-		err.Type = "LTE"
+		err.Type = "lte"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}

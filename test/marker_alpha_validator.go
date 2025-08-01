@@ -30,21 +30,21 @@ func ValidateAlpha(t *Alpha) error {
 
 	if !validationhelper.IsValidAlpha(t.FirstName) {
 		err := ErrAlphaFirstNameAlphaValidation
-		err.Type = "Alpha"
+		err.Type = "alpha"
 		err.Value = t.FirstName
 		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidAlpha(t.LastName) {
 		err := ErrAlphaLastNameAlphaValidation
-		err.Type = "Alpha"
+		err.Type = "alpha"
 		err.Value = t.LastName
 		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidAlpha(t.CountryCode) {
 		err := ErrAlphaCountryCodeAlphaValidation
-		err.Type = "Alpha"
+		err.Type = "alpha"
 		err.Value = t.CountryCode
 		errs = append(errs, err)
 	}

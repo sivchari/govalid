@@ -29,21 +29,21 @@ func ValidateRequired(t *Required) error {
 
 	if t.Name == "" {
 		err := ErrRequiredNameRequiredValidation
-		err.Type = "Required"
+		err.Type = "required"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}
 
 	if t.Age == 0 {
 		err := ErrRequiredAgeRequiredValidation
-		err.Type = "Required"
+		err.Type = "required"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
 
 	if t.Items == nil {
 		err := ErrRequiredItemsRequiredValidation
-		err.Type = "Required"
+		err.Type = "required"
 		err.Value = t.Items
 		errs = append(errs, err)
 	}

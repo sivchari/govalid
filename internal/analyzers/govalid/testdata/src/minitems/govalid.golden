@@ -35,28 +35,28 @@ func ValidateMinItems(t *MinItems) error {
 
 	if len(t.Slice) < 2 {
 		err := ErrMinItemsSliceMinItemsValidation
-		err.Type = "MinItems"
+		err.Type = "minitems"
 		err.Value = t.Slice
 		errs = append(errs, err)
 	}
 
 	if len(t.Array) < 3 {
 		err := ErrMinItemsArrayMinItemsValidation
-		err.Type = "MinItems"
+		err.Type = "minitems"
 		err.Value = t.Array
 		errs = append(errs, err)
 	}
 
 	if len(t.MapField) < 1 {
 		err := ErrMinItemsMapFieldMinItemsValidation
-		err.Type = "MinItems"
+		err.Type = "minitems"
 		err.Value = t.MapField
 		errs = append(errs, err)
 	}
 
 	if len(t.ChanField) < 2 {
 		err := ErrMinItemsChanFieldMinItemsValidation
-		err.Type = "MinItems"
+		err.Type = "minitems"
 		err.Value = t.ChanField
 		errs = append(errs, err)
 	}
@@ -66,7 +66,7 @@ func ValidateMinItems(t *MinItems) error {
 
 		if len(t.Items) < 1 {
 			err := ErrMinItemsItemsMinItemsValidation
-			err.Type = "MinItems"
+			err.Type = "minitems"
 			err.Value = t.Items
 			errs = append(errs, err)
 		}

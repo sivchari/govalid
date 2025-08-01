@@ -32,28 +32,28 @@ func ValidateCEL(t *CEL) error {
 
 	if !(t.Age >= 18) {
 		err := ErrCELAgeCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
 
 	if !(len(t.Name) > 0) {
 		err := ErrCELNameCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}
 
 	if !(t.Score > 0) {
 		err := ErrCELScoreCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Score
 		errs = append(errs, err)
 	}
 
 	if !(t.IsActive == true) {
 		err := ErrCELIsActiveCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.IsActive
 		errs = append(errs, err)
 	}

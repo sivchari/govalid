@@ -27,14 +27,14 @@ func ValidateMultipleErrors(t *MultipleErrors) error {
 
 	if t.URL == "" {
 		err := ErrMultipleErrorsURLRequiredValidation
-		err.Type = "MultipleErrors"
+		err.Type = "multipleerrors"
 		err.Value = t.URL
 		errs = append(errs, err)
 	}
 
 	if utf8.RuneCountInString(t.TooLong) > 1 {
 		err := ErrMultipleErrorsTooLongMaxLengthValidation
-		err.Type = "MultipleErrors"
+		err.Type = "multipleerrors"
 		err.Value = t.TooLong
 		errs = append(errs, err)
 	}

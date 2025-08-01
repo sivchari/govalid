@@ -23,7 +23,7 @@ func ValidatePartial(t *Partial) error {
 
 	if t.Name == "" {
 		err := ErrPartialNameRequiredValidation
-		err.Type = "Partial"
+		err.Type = "partial"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}

@@ -26,7 +26,7 @@ func ValidateInside(t *Inside) error {
 
 		if t.X == "" {
 			err := ErrInsideXRequiredValidation
-			err.Type = "Inside"
+			err.Type = "inside"
 			err.Value = t.X
 			errs = append(errs, err)
 		}

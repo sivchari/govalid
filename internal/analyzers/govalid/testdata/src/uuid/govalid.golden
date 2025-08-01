@@ -64,7 +64,7 @@ func ValidateUUID(t *UUID) error {
 
 	if !isValidUUID(t.UUID) {
 		err := ErrUUIDUUIDUUIDValidation
-		err.Type = "UUID"
+		err.Type = "uuid"
 		err.Value = t.UUID
 		errs = append(errs, err)
 	}

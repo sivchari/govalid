@@ -29,14 +29,14 @@ func ValidateLTE(t *LTE) error {
 
 	if !(t.Age <= 100) {
 		err := ErrLTEAgeLTEValidation
-		err.Type = "LTE"
+		err.Type = "lte"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
 
 	if !(t.Score <= 10.5) {
 		err := ErrLTEScoreLTEValidation
-		err.Type = "LTE"
+		err.Type = "lte"
 		err.Value = t.Score
 		errs = append(errs, err)
 	}
@@ -46,7 +46,7 @@ func ValidateLTE(t *LTE) error {
 
 		if !(t.Value <= 50) {
 			err := ErrLTEValueLTEValidation
-			err.Type = "LTE"
+			err.Type = "lte"
 			err.Value = t.Value
 			errs = append(errs, err)
 		}

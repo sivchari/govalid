@@ -65,105 +65,105 @@ func ValidateLT(t *LT) error {
 
 	if !(t.Int < 1) {
 		err := ErrLTIntLTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Int
 		errs = append(errs, err)
 	}
 
 	if !(t.Int8 < 1) {
 		err := ErrLTInt8LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Int8
 		errs = append(errs, err)
 	}
 
 	if !(t.Int16 < 1) {
 		err := ErrLTInt16LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Int16
 		errs = append(errs, err)
 	}
 
 	if !(t.Int32 < 1) {
 		err := ErrLTInt32LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Int32
 		errs = append(errs, err)
 	}
 
 	if !(t.Int64 < 1) {
 		err := ErrLTInt64LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Int64
 		errs = append(errs, err)
 	}
 
 	if !(t.Float32 < 1) {
 		err := ErrLTFloat32LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Float32
 		errs = append(errs, err)
 	}
 
 	if !(t.Float64 < 1) {
 		err := ErrLTFloat64LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Float64
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint < 1) {
 		err := ErrLTUintLTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Uint
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint8 < 1) {
 		err := ErrLTUint8LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Uint8
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint16 < 1) {
 		err := ErrLTUint16LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Uint16
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint32 < 1) {
 		err := ErrLTUint32LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Uint32
 		errs = append(errs, err)
 	}
 
 	if !(t.Uint64 < 1) {
 		err := ErrLTUint64LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Uint64
 		errs = append(errs, err)
 	}
 
 	if !(t.Uintptr < 1) {
 		err := ErrLTUintptrLTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Uintptr
 		errs = append(errs, err)
 	}
 
 	if !(t.Complex64 < 1) {
 		err := ErrLTComplex64LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Complex64
 		errs = append(errs, err)
 	}
 
 	if !(t.Complex128 < 1) {
 		err := ErrLTComplex128LTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Complex128
 		errs = append(errs, err)
 	}
@@ -173,7 +173,7 @@ func ValidateLT(t *LT) error {
 
 		if !(t.Int < 1) {
 			err := ErrLTIntLTValidation
-			err.Type = "LT"
+			err.Type = "lt"
 			err.Value = t.Int
 			errs = append(errs, err)
 		}

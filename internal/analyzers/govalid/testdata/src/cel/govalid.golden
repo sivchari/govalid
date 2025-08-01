@@ -146,210 +146,210 @@ func ValidateCEL(t *CEL) error {
 
 	if !(t.Age >= 18) {
 		err := ErrCELAgeCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
 
 	if !(t.Score > 0) {
 		err := ErrCELScoreCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Score
 		errs = append(errs, err)
 	}
 
 	if !(t.MaxScore <= 100) {
 		err := ErrCELMaxScoreCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.MaxScore
 		errs = append(errs, err)
 	}
 
 	if !(t.Limit < 1000) {
 		err := ErrCELLimitCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Limit
 		errs = append(errs, err)
 	}
 
 	if !(t.Answer == 42) {
 		err := ErrCELAnswerCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Answer
 		errs = append(errs, err)
 	}
 
 	if !(t.NonZero != 0) {
 		err := ErrCELNonZeroCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.NonZero
 		errs = append(errs, err)
 	}
 
 	if !(len(t.Name) > 0) {
 		err := ErrCELNameCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}
 
 	if !((len(t.Username) >= 3) && (len(t.Username) <= 50)) {
 		err := ErrCELUsernameCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Username
 		errs = append(errs, err)
 	}
 
 	if !(strings.HasPrefix(t.PrefixedName, "prefix_")) {
 		err := ErrCELPrefixedNameCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.PrefixedName
 		errs = append(errs, err)
 	}
 
 	if !(strings.HasSuffix(t.Email, ".com")) {
 		err := ErrCELEmailCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Email
 		errs = append(errs, err)
 	}
 
 	if !(strings.Contains(t.EmailAddress, "@")) {
 		err := ErrCELEmailAddressCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.EmailAddress
 		errs = append(errs, err)
 	}
 
 	if !(t.IsActive == true) {
 		err := ErrCELIsActiveCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.IsActive
 		errs = append(errs, err)
 	}
 
 	if !(t.MustBeTrue != false) {
 		err := ErrCELMustBeTrueCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.MustBeTrue
 		errs = append(errs, err)
 	}
 
 	if !((t.ValidAge >= 0) && (t.ValidAge <= 120)) {
 		err := ErrCELValidAgeCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.ValidAge
 		errs = append(errs, err)
 	}
 
 	if !((t.Percentage > 0) && (t.Percentage <= 100)) {
 		err := ErrCELPercentageCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Percentage
 		errs = append(errs, err)
 	}
 
 	if !((len(t.Password) >= 8) && (len(t.Password) <= 256)) {
 		err := ErrCELPasswordCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Password
 		errs = append(errs, err)
 	}
 
 	if !(t.MinAge >= t.Age) {
 		err := ErrCELMinAgeCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.MinAge
 		errs = append(errs, err)
 	}
 
 	if !(t.CurrentScore <= t.MaxScore) {
 		err := ErrCELCurrentScoreCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.CurrentScore
 		errs = append(errs, err)
 	}
 
 	if !(len(t.LongName) >= len(t.Name)) {
 		err := ErrCELLongNameCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.LongName
 		errs = append(errs, err)
 	}
 
 	if !((t.MiddleValue > t.Age) && (t.MiddleValue < t.Limit)) {
 		err := ErrCELMiddleValueCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.MiddleValue
 		errs = append(errs, err)
 	}
 
 	if !(t.DoubleAge >= t.Age*2) {
 		err := ErrCELDoubleAgeCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.DoubleAge
 		errs = append(errs, err)
 	}
 
 	if !(t.HalfScore <= t.MaxScore/2) {
 		err := ErrCELHalfScoreCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.HalfScore
 		errs = append(errs, err)
 	}
 
 	if !(t.SumValue == t.Age+t.NonZero) {
 		err := ErrCELSumValueCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.SumValue
 		errs = append(errs, err)
 	}
 
 	if !(((t.SpecialAge >= 18) && (t.SpecialAge <= 65)) || (t.SpecialAge == 100)) {
 		err := ErrCELSpecialAgeCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.SpecialAge
 		errs = append(errs, err)
 	}
 
 	if !((t.ConditionalValue > 0) || ((t.ConditionalValue == 0) && (t.IsActive))) {
 		err := ErrCELConditionalValueCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.ConditionalValue
 		errs = append(errs, err)
 	}
 
 	if !(regexp.MustCompile("^[A-Z][a-z]+$").MatchString(t.ProperName)) {
 		err := ErrCELProperNameCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.ProperName
 		errs = append(errs, err)
 	}
 
 	if !((len(t.Items) >= 1) && (len(t.Items) <= 10)) {
 		err := ErrCELItemsCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.Items
 		errs = append(errs, err)
 	}
 
 	if !(len(t.NonEmptySlice) > 0) {
 		err := ErrCELNonEmptySliceCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.NonEmptySlice
 		errs = append(errs, err)
 	}
 
 	if !(t.PositiveValue > 0) {
 		err := ErrCELPositiveValueCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.PositiveValue
 		errs = append(errs, err)
 	}
 
 	if !(slices.Contains(t.HasAdminRole, "admin")) {
 		err := ErrCELHasAdminRoleCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.HasAdminRole
 		errs = append(errs, err)
 	}
@@ -362,14 +362,14 @@ func ValidateCEL(t *CEL) error {
 		return v
 	}() >= 18) {
 		err := ErrCELAgeFromStringCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.AgeFromString
 		errs = append(errs, err)
 	}
 
 	if !(slices.Contains([]string{"active", "inactive", "pending"}, fmt.Sprintf("%v", t.StatusCode))) {
 		err := ErrCELStatusCodeCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.StatusCode
 		errs = append(errs, err)
 	}
@@ -382,7 +382,7 @@ func ValidateCEL(t *CEL) error {
 		return d
 	}()) {
 		err := ErrCELProcessingTimeCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.ProcessingTime
 		errs = append(errs, err)
 	}
@@ -396,7 +396,7 @@ func ValidateCEL(t *CEL) error {
 		return true
 	}()) {
 		err := ErrCELAllNonEmptyCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.AllNonEmpty
 		errs = append(errs, err)
 	}
@@ -410,7 +410,7 @@ func ValidateCEL(t *CEL) error {
 		return false
 	}()) {
 		err := ErrCELHasTargetCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.HasTarget
 		errs = append(errs, err)
 	}
@@ -428,7 +428,7 @@ func ValidateCEL(t *CEL) error {
 		return count == 1
 	}()) {
 		err := ErrCELHasUniqueItemCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.HasUniqueItem
 		errs = append(errs, err)
 	}
@@ -442,7 +442,7 @@ func ValidateCEL(t *CEL) error {
 		return true
 	}()) {
 		err := ErrCELAllPrefixedCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.AllPrefixed
 		errs = append(errs, err)
 	}
@@ -456,7 +456,7 @@ func ValidateCEL(t *CEL) error {
 		return false
 	}()) {
 		err := ErrCELHasEmailFormatCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.HasEmailFormat
 		errs = append(errs, err)
 	}
@@ -471,7 +471,7 @@ func ValidateCEL(t *CEL) error {
 		return result
 	}()) > 0) {
 		err := ErrCELFilteredItemsCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.FilteredItems
 		errs = append(errs, err)
 	}
@@ -484,7 +484,7 @@ func ValidateCEL(t *CEL) error {
 		return result
 	}()) == len(t.MappedSizes)) {
 		err := ErrCELMappedSizesCELValidation
-		err.Type = "CEL"
+		err.Type = "cel"
 		err.Value = t.MappedSizes
 		errs = append(errs, err)
 	}

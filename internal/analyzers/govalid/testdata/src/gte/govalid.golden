@@ -29,14 +29,14 @@ func ValidateGTE(t *GTE) error {
 
 	if !(t.Age >= 18) {
 		err := ErrGTEAgeGTEValidation
-		err.Type = "GTE"
+		err.Type = "gte"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
 
 	if !(t.Score >= 0) {
 		err := ErrGTEScoreGTEValidation
-		err.Type = "GTE"
+		err.Type = "gte"
 		err.Value = t.Score
 		errs = append(errs, err)
 	}
@@ -46,7 +46,7 @@ func ValidateGTE(t *GTE) error {
 
 		if !(t.Value >= 100) {
 			err := ErrGTEValueGTEValidation
-			err.Type = "GTE"
+			err.Type = "gte"
 			err.Value = t.Value
 			errs = append(errs, err)
 		}

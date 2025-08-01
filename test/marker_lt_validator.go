@@ -23,7 +23,7 @@ func ValidateLT(t *LT) error {
 
 	if !(t.Age < 10) {
 		err := ErrLTAgeLTValidation
-		err.Type = "LT"
+		err.Type = "lt"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}

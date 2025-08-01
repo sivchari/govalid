@@ -23,7 +23,7 @@ func ValidateGTE(t *GTE) error {
 
 	if !(t.Age >= 18) {
 		err := ErrGTEAgeGTEValidation
-		err.Type = "GTE"
+		err.Type = "gte"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}

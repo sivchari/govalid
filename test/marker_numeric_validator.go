@@ -24,7 +24,7 @@ func ValidateNumeric(t *Numeric) error {
 
 	if !validationhelper.IsNumeric(t.Number) {
 		err := ErrNumericNumberNumericValidation
-		err.Type = "Numeric"
+		err.Type = "numeric"
 		err.Value = t.Number
 		errs = append(errs, err)
 	}
