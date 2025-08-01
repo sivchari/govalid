@@ -34,29 +34,33 @@ func (u *urlValidator) FieldName() string {
 func (u *urlValidator) Err() string {
 	fieldName := u.FieldName()
 
-	var result strings.Builder
-
 	// No need to generate inline function - using external helper
 	key := fmt.Sprintf(urlKey, u.structName+fieldName)
 	if validator.GeneratorMemory[key] {
-		return result.String()
+		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	result.WriteString(strings.ReplaceAll(`
-	// Err@URLValidation is the error returned when the field is not a valid URL.
-	Err@URLValidation = errors.New("field @ must be a valid URL")`, `@`, u.structName+fieldName))
+	const errTemplate = `
+		// [@ERRVARIABLE] is the error returned when the field is not a valid URL.
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid URL",Path:"[@PATH]"}
+	`
 
-	return result.String()
+	replacer := strings.NewReplacer(
+		"[@ERRVARIABLE]", u.ErrVariable(),
+		"[@FIELD]", u.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", u.structName, u.FieldName()),
+	)
+
+	return replacer.Replace(errTemplate)
 }
 
 func (u *urlValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@URLValidation", `@`, u.structName+u.FieldName())
+	return strings.ReplaceAll("Err[@PATH]URLValidation", `[@PATH]`, u.structName+u.FieldName())
 }
 
 func (u *urlValidator) Imports() []string {
-	// Import validation helper package
 	return []string{"github.com/sivchari/govalid/validation/validationhelper"}
 }
 

@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
 
@@ -11,7 +12,7 @@ var (
 	ErrNilEmail = errors.New("input Email is nil")
 
 	// ErrEmailEmailEmailValidation is the error returned when the field is not a valid email address.
-	ErrEmailEmailEmailValidation = errors.New("field EmailEmail must be a valid email address")
+	ErrEmailEmailEmailValidation = govaliderrors.ValidationError{Reason: "field Email must be a valid email address", Path: "Email.Email"}
 )
 
 func ValidateEmail(t *Email) error {
@@ -19,9 +20,17 @@ func ValidateEmail(t *Email) error {
 		return ErrNilEmail
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !validationhelper.IsValidEmail(t.Email) {
-		return ErrEmailEmailEmailValidation
+		err := ErrEmailEmailEmailValidation
+		err.Type = "email"
+		err.Value = t.Email
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

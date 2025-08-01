@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"unicode/utf8"
 )
 
@@ -11,7 +12,7 @@ var (
 	ErrNilLength = errors.New("input Length is nil")
 
 	// ErrLengthNameLengthValidation is the error returned when the length of the field is not exactly 7.
-	ErrLengthNameLengthValidation = errors.New("field LengthName length must be exactly 7")
+	ErrLengthNameLengthValidation = govaliderrors.ValidationError{Reason: "field Name length must be exactly 7", Path: "Length.Name"}
 )
 
 func ValidateLength(t *Length) error {
@@ -19,9 +20,17 @@ func ValidateLength(t *Length) error {
 		return ErrNilLength
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if utf8.RuneCountInString(t.Name) != 7 {
-		return ErrLengthNameLengthValidation
+		err := ErrLengthNameLengthValidation
+		err.Type = "length"
+		err.Value = t.Name
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

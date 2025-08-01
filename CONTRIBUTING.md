@@ -94,13 +94,23 @@ func (v *phonenumberValidator) Err() string {
 
     validator.GeneratorMemory[key] = true
 
-    return strings.ReplaceAll(`
-    // Err@PhonenumberValidation is returned when the @ fails phonenumber validation.
-    Err@PhonenumberValidation = errors.New("field @ must be a valid phone number")`, "@", v.structName+v.FieldName())
+	  const errTemplate = `
+	  	// [@ERRVARIABLE] is returned when the [@FIELD] fails phonenumber validation.
+	  	[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@PATH] must be a valid phone number",Path:"[@PATH]"}
+	  `
+
+	  replacer := strings.NewReplacer(
+	  	"[@ERRVARIABLE]", c.ErrVariable(),
+	  	"[@FIELD]", fieldName,
+	  	"[@PATH]", fmt.Sprintf("%s.%s", c.structName, fieldName),
+	  	"[@EXPRESSION]", c.expression,
+	  )
+
+	  return replacer.Replace(errTemplate)
 }
 
 func (v *phonenumberValidator) ErrVariable() string {
-    return strings.ReplaceAll("Err@PhonenumberValidation", "@", v.structName+v.FieldName())
+    return strings.ReplaceAll("Err[@PATH]PhonenumberValidation", "[@PATH]", v.structName+v.FieldName())
 }
 
 func (v *phonenumberValidator) Imports() []string {

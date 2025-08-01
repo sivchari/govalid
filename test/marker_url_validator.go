@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
 
@@ -11,7 +12,7 @@ var (
 	ErrNilURL = errors.New("input URL is nil")
 
 	// ErrURLURLURLValidation is the error returned when the field is not a valid URL.
-	ErrURLURLURLValidation = errors.New("field URLURL must be a valid URL")
+	ErrURLURLURLValidation = govaliderrors.ValidationError{Reason: "field URL must be a valid URL", Path: "URL.URL"}
 )
 
 func ValidateURL(t *URL) error {
@@ -19,9 +20,17 @@ func ValidateURL(t *URL) error {
 		return ErrNilURL
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !validationhelper.IsValidURL(t.URL) {
-		return ErrURLURLURLValidation
+		err := ErrURLURLURLValidation
+		err.Type = "url"
+		err.Value = t.URL
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

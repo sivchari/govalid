@@ -34,19 +34,30 @@ func (m *maxLengthValidator) FieldName() string {
 
 func (m *maxLengthValidator) Err() string {
 	key := fmt.Sprintf(maxLengthKey, m.structName+m.FieldName())
+
 	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	return fmt.Sprintf(strings.ReplaceAll(`
-	// Err@MaxLengthValidation is the error returned when the length of the field exceeds the maximum of %s.
-	Err@MaxLengthValidation = errors.New("field @ must have a maximum length of %s")`, "@", m.structName+m.FieldName()), m.maxLengthValue, m.maxLengthValue)
+	const errTemplate = `
+		// [@ERRVARIABLE] is the error returned when the length of the field exceeds the maximum of [@VALUE].
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a maximum length of [@VALUE]",Path:"[@PATH]"}
+	`
+
+	replacer := strings.NewReplacer(
+		"[@ERRVARIABLE]", m.ErrVariable(),
+		"[@FIELD]", m.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[@VALUE]", m.maxLengthValue,
+	)
+
+	return replacer.Replace(errTemplate)
 }
 
 func (m *maxLengthValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@MaxLengthValidation", "@", m.structName+m.FieldName())
+	return strings.ReplaceAll("Err[@PATH]MaxLengthValidation", "[@PATH]", m.structName+m.FieldName())
 }
 
 func (m *maxLengthValidator) Imports() []string {

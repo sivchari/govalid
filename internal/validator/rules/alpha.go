@@ -37,13 +37,22 @@ func (v *alphaValidator) Err() string {
 
 	validator.GeneratorMemory[fmt.Sprintf(alphaKey, v.FieldName())] = true
 
-	return strings.ReplaceAll(`
-    // Err@AlphaValidation is the error returned when field @ is not alphabetic.
-    Err@AlphaValidation = errors.New("field @ must be alphabetic")`, "@", v.structName+v.FieldName())
+	const errTemplate = `
+		// [@ERRVARIABLE] is the error returned when field [@FIELD] is not alphabetic.
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be alphabetic",Path:"[@PATH]"}
+	`
+
+	replacer := strings.NewReplacer(
+		"[@ERRVARIABLE]", v.ErrVariable(),
+		"[@FIELD]", v.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", v.structName, v.structName+v.FieldName()),
+	)
+
+	return replacer.Replace(errTemplate)
 }
 
 func (v *alphaValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@AlphaValidation", "@", v.structName+v.FieldName())
+	return strings.ReplaceAll("Err[@PATH]AlphaValidation", "[@PATH]", v.structName+v.FieldName())
 }
 
 func (v *alphaValidator) Imports() []string {

@@ -34,19 +34,30 @@ func (m *ltValidator) FieldName() string {
 
 func (m *ltValidator) Err() string {
 	key := fmt.Sprintf(ltKey, m.structName+m.FieldName())
+
 	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	return fmt.Sprintf(strings.ReplaceAll(`
-	// Err@LTValidation is the error returned when the value of the field is greater than the %s.
-	Err@LTValidation = errors.New("field @ must be less than %s")`, "@", m.structName+m.FieldName()), m.ltValue, m.ltValue)
+	const errTemplate = `
+		// [@ERRVARIABLE] is the error returned when the value of the field is greater than the [@VALUE].
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be less than [@VALUE]",Path:"[@PATH]"}
+	`
+
+	replacer := strings.NewReplacer(
+		"[@ERRVARIABLE]", m.ErrVariable(),
+		"[@FIELD]", m.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[@VALUE]", m.ltValue,
+	)
+
+	return replacer.Replace(errTemplate)
 }
 
 func (m *ltValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@LTValidation", "@", m.structName+m.FieldName())
+	return strings.ReplaceAll("Err[@PATH]LTValidation", "[@PATH]", m.structName+m.FieldName())
 }
 
 func (m *ltValidator) Imports() []string {

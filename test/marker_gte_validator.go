@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
@@ -10,7 +11,7 @@ var (
 	ErrNilGTE = errors.New("input GTE is nil")
 
 	// ErrGTEAgeGTEValidation is the error returned when the value of the field is less than 18.
-	ErrGTEAgeGTEValidation = errors.New("field GTEAge must be greater than or equal to 18")
+	ErrGTEAgeGTEValidation = govaliderrors.ValidationError{Reason: "field Age must be greater than or equal to 18", Path: "GTE.Age"}
 )
 
 func ValidateGTE(t *GTE) error {
@@ -18,9 +19,17 @@ func ValidateGTE(t *GTE) error {
 		return ErrNilGTE
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if !(t.Age >= 18) {
-		return ErrGTEAgeGTEValidation
+		err := ErrGTEAgeGTEValidation
+		err.Type = "gte"
+		err.Value = t.Age
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
@@ -10,13 +11,13 @@ var (
 	ErrNilMinItems = errors.New("input MinItems is nil")
 
 	// ErrMinItemsItemsMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
-	ErrMinItemsItemsMinItemsValidation = errors.New("field MinItemsItems must have a minimum of 2 items")
+	ErrMinItemsItemsMinItemsValidation = govaliderrors.ValidationError{Reason: "field Items must have a minimum of 2 items", Path: "MinItems.Items"}
 
 	// ErrMinItemsMetadataMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
-	ErrMinItemsMetadataMinItemsValidation = errors.New("field MinItemsMetadata must have a minimum of 1 items")
+	ErrMinItemsMetadataMinItemsValidation = govaliderrors.ValidationError{Reason: "field Metadata must have a minimum of 1 items", Path: "MinItems.Metadata"}
 
 	// ErrMinItemsChanFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
-	ErrMinItemsChanFieldMinItemsValidation = errors.New("field MinItemsChanField must have a minimum of 1 items")
+	ErrMinItemsChanFieldMinItemsValidation = govaliderrors.ValidationError{Reason: "field ChanField must have a minimum of 1 items", Path: "MinItems.ChanField"}
 )
 
 func ValidateMinItems(t *MinItems) error {
@@ -24,17 +25,31 @@ func ValidateMinItems(t *MinItems) error {
 		return ErrNilMinItems
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if len(t.Items) < 2 {
-		return ErrMinItemsItemsMinItemsValidation
+		err := ErrMinItemsItemsMinItemsValidation
+		err.Type = "minitems"
+		err.Value = t.Items
+		errs = append(errs, err)
 	}
 
 	if len(t.Metadata) < 1 {
-		return ErrMinItemsMetadataMinItemsValidation
+		err := ErrMinItemsMetadataMinItemsValidation
+		err.Type = "minitems"
+		err.Value = t.Metadata
+		errs = append(errs, err)
 	}
 
 	if len(t.ChanField) < 1 {
-		return ErrMinItemsChanFieldMinItemsValidation
+		err := ErrMinItemsChanFieldMinItemsValidation
+		err.Type = "minitems"
+		err.Value = t.ChanField
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

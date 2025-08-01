@@ -3,20 +3,21 @@ package test
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
 	// ErrNilRequired is returned when the Required is nil.
 	ErrNilRequired = errors.New("input Required is nil")
 
-	// ErrRequiredNameRequiredValidation is returned when the RequiredName is required but not provided.
-	ErrRequiredNameRequiredValidation = errors.New("field RequiredName is required")
+	// ErrRequiredNameRequiredValidation is returned when the Name is required but not provided.
+	ErrRequiredNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "Required.Name"}
 
-	// ErrRequiredAgeRequiredValidation is returned when the RequiredAge is required but not provided.
-	ErrRequiredAgeRequiredValidation = errors.New("field RequiredAge is required")
+	// ErrRequiredAgeRequiredValidation is returned when the Age is required but not provided.
+	ErrRequiredAgeRequiredValidation = govaliderrors.ValidationError{Reason: "field Age is required", Path: "Required.Age"}
 
-	// ErrRequiredItemsRequiredValidation is returned when the RequiredItems is required but not provided.
-	ErrRequiredItemsRequiredValidation = errors.New("field RequiredItems is required")
+	// ErrRequiredItemsRequiredValidation is returned when the Items is required but not provided.
+	ErrRequiredItemsRequiredValidation = govaliderrors.ValidationError{Reason: "field Items is required", Path: "Required.Items"}
 )
 
 func ValidateRequired(t *Required) error {
@@ -24,17 +25,31 @@ func ValidateRequired(t *Required) error {
 		return ErrNilRequired
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if t.Name == "" {
-		return ErrRequiredNameRequiredValidation
+		err := ErrRequiredNameRequiredValidation
+		err.Type = "required"
+		err.Value = t.Name
+		errs = append(errs, err)
 	}
 
 	if t.Age == 0 {
-		return ErrRequiredAgeRequiredValidation
+		err := ErrRequiredAgeRequiredValidation
+		err.Type = "required"
+		err.Value = t.Age
+		errs = append(errs, err)
 	}
 
 	if t.Items == nil {
-		return ErrRequiredItemsRequiredValidation
+		err := ErrRequiredItemsRequiredValidation
+		err.Type = "required"
+		err.Value = t.Items
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }

@@ -34,19 +34,30 @@ func (m *minItemsValidator) FieldName() string {
 
 func (m *minItemsValidator) Err() string {
 	key := fmt.Sprintf(minItemsKey, m.structName+m.FieldName())
+
 	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
-	return fmt.Sprintf(strings.ReplaceAll(`
-	// Err@MinItemsValidation is the error returned when the length of the field is less than the minimum of %s.
-	Err@MinItemsValidation = errors.New("field @ must have a minimum of %s items")`, "@", m.structName+m.FieldName()), m.minItemsValue, m.minItemsValue)
+	const errTemplate = `
+		// [@ERRVARIABLE] is the error returned when the length of the field is less than the minimum of [@VALUE].
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a minimum of [@VALUE] items",Path:"[@PATH]"}
+	`
+
+	replacer := strings.NewReplacer(
+		"[@ERRVARIABLE]", m.ErrVariable(),
+		"[@FIELD]", m.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[@VALUE]", m.minItemsValue,
+	)
+
+	return replacer.Replace(errTemplate)
 }
 
 func (m *minItemsValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@MinItemsValidation", "@", m.structName+m.FieldName())
+	return strings.ReplaceAll("Err[@PATH]MinItemsValidation", "[@PATH]", m.structName+m.FieldName())
 }
 
 func (m *minItemsValidator) Imports() []string {

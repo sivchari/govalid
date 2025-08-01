@@ -150,3 +150,11 @@ type Numeric struct {
 	// +govalid:numeric
 	Number string `json:"Number"`
 }
+
+type MultipleErrors struct {
+	// +govalid:required
+	URL string `validate:"required" json:"url"`
+
+	// +govalid:maxlength=1
+	TooLong string `validate:"max=1" json:"too_long"`
+}

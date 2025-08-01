@@ -219,6 +219,7 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 		"trimDots": func(s string) string {
 			return strings.ReplaceAll(s, ".", "")
 		},
+		"lower": strings.ToLower,
 	}).Parse(ValidationTemplate)
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %w", err)
