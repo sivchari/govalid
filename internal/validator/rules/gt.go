@@ -42,22 +42,22 @@ func (m *gtValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-		// [ERRVARIABLE] is the error returned when the value of the field is less than the [VALUE].
-		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must be greater than [VALUE]",Path:"PATH"}
+		// [@ERRVARIABLE] is the error returned when the value of the field is less than the [@VALUE].
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be greater than [@VALUE]",Path:"[@PATH]"}
 	`
 
 	replacer := strings.NewReplacer(
-		"[ERRVARIABLE]", m.ErrVariable(),
-		"@", m.FieldName(),
-		"PATH", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
-		"[VALUE]", m.gtValue,
+		"[@ERRVARIABLE]", m.ErrVariable(),
+		"[@FIELD]", m.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[@VALUE]", m.gtValue,
 	)
 
 	return replacer.Replace(errTemplate)
 }
 
 func (m *gtValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@GTValidation", "@", m.structName+m.FieldName())
+	return strings.ReplaceAll("Err[@PATH]GTValidation", "[@PATH]", m.structName+m.FieldName())
 }
 
 func (m *gtValidator) Imports() []string {

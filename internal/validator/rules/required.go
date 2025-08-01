@@ -60,21 +60,21 @@ func (r *requiredValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-		// [ERRVARIABLE] is returned when the @ is required but not provided.
-		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ is required",Path:"PATH"}
+		// [@ERRVARIABLE] is returned when the [@FIELD] is required but not provided.
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] is required",Path:"[@PATH]"}
 	`
 
 	replacer := strings.NewReplacer(
-		"[ERRVARIABLE]", r.ErrVariable(),
-		"@", r.FieldName(),
-		"PATH", fmt.Sprintf("%s.%s", r.structName, r.FieldName()),
+		"[@ERRVARIABLE]", r.ErrVariable(),
+		"[@FIELD]", r.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", r.structName, r.FieldName()),
 	)
 
 	return replacer.Replace(errTemplate)
 }
 
 func (r *requiredValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@RequiredValidation", "@", r.structName+r.FieldName())
+	return strings.ReplaceAll("Err[@PATH]RequiredValidation", "[@PATH]", r.structName+r.FieldName())
 }
 
 func (r *requiredValidator) Imports() []string {

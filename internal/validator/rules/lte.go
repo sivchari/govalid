@@ -42,22 +42,22 @@ func (m *lteValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-		// [ERRVARIABLE] is the error returned when the value of the field is greater than [VALUE].
-		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must be less than or equal to [VALUE]",Path:"PATH"}
+		// [@ERRVARIABLE] is the error returned when the value of the field is greater than [@VALUE].
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be less than or equal to [@VALUE]",Path:"[@PATH]"}
 	`
 
 	replacer := strings.NewReplacer(
-		"[ERRVARIABLE]", m.ErrVariable(),
-		"@", m.FieldName(),
-		"PATH", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
-		"[VALUE]", m.lteValue,
+		"[@ERRVARIABLE]", m.ErrVariable(),
+		"[@FIELD]", m.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[@VALUE]", m.lteValue,
 	)
 
 	return replacer.Replace(errTemplate)
 }
 
 func (m *lteValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@LTEValidation", "@", m.structName+m.FieldName())
+	return strings.ReplaceAll("Err[@PATH]LTEValidation", "[@PATH]", m.structName+m.FieldName())
 }
 
 func (m *lteValidator) Imports() []string {

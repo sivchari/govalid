@@ -286,7 +286,7 @@ type requiredValidator struct {
 
 // Error variable generation uses struct name prefix
 func (r *requiredValidator) ErrVariable() string {
-    return strings.ReplaceAll("Err@RequiredValidation", "@", r.structName+r.FieldName())
+    return strings.ReplaceAll("Err[@PATH]RequiredValidation", "[@PATH]", r.structName+r.FieldName())
 }
 ```
 

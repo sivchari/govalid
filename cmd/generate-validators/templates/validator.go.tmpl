@@ -41,21 +41,21 @@ func (v *{{.MarkerName}}Validator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-	  // [ERRVARIABLE] is returned when the @ fails {{.MarkerName}} validation.
-	  [ERRVARIABLE] = errors.New("{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field @ failed {{.MarkerName}} validation{{end}}")`, "@", v.structName+v.FieldName())
+	  // [@ERRVARIABLE] is returned when the [@FIELD] fails {{.MarkerName}} validation.
+	  [@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field [@FIELD] failed {{.MarkerName}} validation{{end}}",Path:"[@PATH]"}
 	`
 
 	replacer := strings.NewReplacer(
-		"[ERRVARIABLE]", v.ErrVariable(),
-		"@", v.structName+v.FieldName(),
-		"PATH", fmt.Sprintf("%s.%s", v.structName+v.FieldName()),
+		"[@ERRVARIABLE]", v.ErrVariable(),
+		"[@FIELD]", v.structName+v.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", v.structName+v.FieldName()),
 	)
 
 	return replacer.Replace(errTemplate)
 }
 
 func (v *{{.MarkerName}}Validator) ErrVariable() string {
-	return strings.ReplaceAll("Err@{{.StructName}}Validation", "@", v.structName+v.FieldName())
+	return strings.ReplaceAll("Err[@PATH]{{.StructName}}Validation", "[@PATH]", v.structName+v.FieldName())
 }
 
 func (v *{{.MarkerName}}Validator) Imports() []string {

@@ -10,17 +10,17 @@ var (
 	// ErrNilEnum is returned when the Enum is nil.
 	ErrNilEnum = errors.New("input Enum is nil")
 
-	// ErrEnumRoleEnumValidation is the error returned when the value is not in the allowed enum values [admin, user, guest].
-	ErrEnumRoleEnumValidation = govaliderrors.ValidationError{Reason: "field Role must be one of [admin, user, guest]", Path: "Enum.Role"}
+	// ErrEnumRoleEnumValidation is the error returned when the value is not in the allowed enum values admin, user, guest.
+	ErrEnumRoleEnumValidation = govaliderrors.ValidationError{Reason: "field Role must be one of admin, user, guest", Path: "Enum.Role"}
 
-	// ErrEnumLevelEnumValidation is the error returned when the value is not in the allowed enum values [1, 2, 3].
-	ErrEnumLevelEnumValidation = govaliderrors.ValidationError{Reason: "field Level must be one of [1, 2, 3]", Path: "Enum.Level"}
+	// ErrEnumLevelEnumValidation is the error returned when the value is not in the allowed enum values 1, 2, 3.
+	ErrEnumLevelEnumValidation = govaliderrors.ValidationError{Reason: "field Level must be one of 1, 2, 3", Path: "Enum.Level"}
 
-	// ErrEnumUserRoleEnumValidation is the error returned when the value is not in the allowed enum values [manager, developer, tester].
-	ErrEnumUserRoleEnumValidation = govaliderrors.ValidationError{Reason: "field UserRole must be one of [manager, developer, tester]", Path: "Enum.UserRole"}
+	// ErrEnumUserRoleEnumValidation is the error returned when the value is not in the allowed enum values manager, developer, tester.
+	ErrEnumUserRoleEnumValidation = govaliderrors.ValidationError{Reason: "field UserRole must be one of manager, developer, tester", Path: "Enum.UserRole"}
 
-	// ErrEnumPriorityEnumValidation is the error returned when the value is not in the allowed enum values [10, 20, 30].
-	ErrEnumPriorityEnumValidation = govaliderrors.ValidationError{Reason: "field Priority must be one of [10, 20, 30]", Path: "Enum.Priority"}
+	// ErrEnumPriorityEnumValidation is the error returned when the value is not in the allowed enum values 10, 20, 30.
+	ErrEnumPriorityEnumValidation = govaliderrors.ValidationError{Reason: "field Priority must be one of 10, 20, 30", Path: "Enum.Priority"}
 )
 
 func ValidateEnum(t *Enum) error {

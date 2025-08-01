@@ -59,22 +59,22 @@ func (c *celValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-		// [ERRVARIABLE] is the error returned when the CEL expression evaluation fails.
-		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ failed CEL validation: EXPRESSION",Path:"PATH"}
+		// [@ERRVARIABLE] is the error returned when the CEL expression evaluation fails.
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] failed CEL validation: [@EXPRESSION]",Path:"[@PATH]"}
 	`
 
 	replacer := strings.NewReplacer(
-		"[ERRVARIABLE]", c.ErrVariable(),
-		"@", fieldName,
-		"PATH", fmt.Sprintf("%s.%s", c.structName, fieldName),
-		"EXPRESSION", c.expression,
+		"[@ERRVARIABLE]", c.ErrVariable(),
+		"[@FIELD]", fieldName,
+		"[@PATH]", fmt.Sprintf("%s.%s", c.structName, fieldName),
+		"[@EXPRESSION]", c.expression,
 	)
 
 	return replacer.Replace(errTemplate)
 }
 
 func (c *celValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@CELValidation", "@", c.structName+c.FieldName())
+	return strings.ReplaceAll("Err[@PATH]CELValidation", "[@PATH]", c.structName+c.FieldName())
 }
 
 func (c *celValidator) Imports() []string {

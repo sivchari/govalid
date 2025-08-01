@@ -43,21 +43,21 @@ func (u *urlValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-		// [ERRVARIABLE] is the error returned when the field is not a valid URL.
-		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must be a valid URL",Path:"PATH"}
+		// [@ERRVARIABLE] is the error returned when the field is not a valid URL.
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid URL",Path:"[@PATH]"}
 	`
 
 	replacer := strings.NewReplacer(
-		"[ERRVARIABLE]", u.ErrVariable(),
-		"@", u.FieldName(),
-		"PATH", fmt.Sprintf("%s.%s", u.structName, u.FieldName()),
+		"[@ERRVARIABLE]", u.ErrVariable(),
+		"[@FIELD]", u.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", u.structName, u.FieldName()),
 	)
 
 	return replacer.Replace(errTemplate)
 }
 
 func (u *urlValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@URLValidation", `@`, u.structName+u.FieldName())
+	return strings.ReplaceAll("Err[@PATH]URLValidation", `[@PATH]`, u.structName+u.FieldName())
 }
 
 func (u *urlValidator) Imports() []string {

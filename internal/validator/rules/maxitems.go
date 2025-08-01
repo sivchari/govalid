@@ -42,22 +42,22 @@ func (m *maxItemsValidator) Err() string {
 	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
-		// [ERRVARIABLE] is the error returned when the length of the field exceeds the maximum of [VALUE].
-		[ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field @ must have a maximum of [VALUE] items",Path:"PATH"}
+		// [@ERRVARIABLE] is the error returned when the length of the field exceeds the maximum of [@VALUE].
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a maximum of [@VALUE] items",Path:"[@PATH]"}
 	`
 
 	replacer := strings.NewReplacer(
-		"[ERRVARIABLE]", m.ErrVariable(),
-		"@", m.FieldName(),
-		"PATH", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
-		"[VALUE]", m.maxItemsValue,
+		"[@ERRVARIABLE]", m.ErrVariable(),
+		"[@FIELD]", m.FieldName(),
+		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[@VALUE]", m.maxItemsValue,
 	)
 
 	return replacer.Replace(errTemplate)
 }
 
 func (m *maxItemsValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err@MaxItemsValidation", "@", m.structName+m.FieldName())
+	return strings.ReplaceAll("Err[@PATH]MaxItemsValidation", "[@PATH]", m.structName+m.FieldName())
 }
 
 func (m *maxItemsValidator) Imports() []string {
