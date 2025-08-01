@@ -1,11 +1,9 @@
 package benchmark
 
 import (
-	"regexp"
 	"testing"
 
 	"github.com/asaskevich/govalidator"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-playground/validator/v10"
 	"github.com/gookit/validate"
 
@@ -51,17 +49,6 @@ func BenchmarkGoValidatorNumeric(b *testing.B) {
 	for b.Loop() {
 		if !govalidator.IsNumeric(testNumeric) {
 			b.Fatal("validation failed")
-		}
-	}
-}
-
-func BenchmarkOzzoValidationNumeric(b *testing.B) {
-	testNumeric := "123456"
-	re := regexp.MustCompile(`^\d+$`)
-	for b.Loop() {
-		err := validation.Validate(testNumeric, validation.Match(re))
-		if err != nil {
-			b.Fatal("validation failed:", err)
 		}
 	}
 }
