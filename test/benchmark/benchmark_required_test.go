@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/asaskevich/govalidator"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-playground/validator/v10"
 	"github.com/gookit/validate"
 
@@ -50,16 +49,6 @@ func BenchmarkGoValidatorRequired(b *testing.B) {
 		// Or use govalidator.IsNull for empty check
 		if govalidator.IsNull(testString) {
 			b.Fatal("validation failed")
-		}
-	}
-}
-
-func BenchmarkOzzoValidationRequired(b *testing.B) {
-	testString := "test"
-	for b.Loop() {
-		err := validation.Validate(testString, validation.Required)
-		if err != nil {
-			b.Fatal("validation failed:", err)
 		}
 	}
 }

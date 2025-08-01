@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/asaskevich/govalidator"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-playground/validator/v10"
 	"github.com/gookit/validate"
 
@@ -41,16 +40,6 @@ func BenchmarkGoValidatorLength(b *testing.B) {
 	for b.Loop() {
 		if !govalidator.StringLength(testString, "7", "7") {
 			b.Fatal("validation failed")
-		}
-	}
-}
-
-func BenchmarkOzzoValidationLength(b *testing.B) {
-	testString := "1234567"
-	for b.Loop() {
-		err := validation.Validate(testString, validation.Length(7, 7))
-		if err != nil {
-			b.Fatal("validation failed:", err)
 		}
 	}
 }

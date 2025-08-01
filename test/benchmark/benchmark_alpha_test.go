@@ -1,11 +1,9 @@
 package benchmark
 
 import (
-	"regexp"
 	"testing"
 
 	"github.com/asaskevich/govalidator"
-	ozzovalidation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-playground/validator/v10"
 	"github.com/gookit/validate"
 
@@ -29,25 +27,6 @@ func BenchmarkGoPlaygroundAlpha(b *testing.B) {
 		err := validate.Struct(&instance)
 		if err != nil {
 			b.Fatal("unexpected error:", err)
-		}
-	}
-}
-
-func BenchmarkOzzoValidationAlpha(b *testing.B) {
-	instance := test.Alpha{FirstName: "John", LastName: "Doe", CountryCode: "US"}
-	alphaRegexp := regexp.MustCompile(`^[A-Za-z]+$`)
-	for b.Loop() {
-		err := ozzovalidation.Validate(instance.FirstName, ozzovalidation.Match(alphaRegexp))
-		if err != nil {
-			b.Fatal("validation failed")
-		}
-		err = ozzovalidation.Validate(instance.LastName, ozzovalidation.Match(alphaRegexp))
-		if err != nil {
-			b.Fatal("validation failed")
-		}
-		err = ozzovalidation.Validate(instance.CountryCode, ozzovalidation.Match(alphaRegexp))
-		if err != nil {
-			b.Fatal("validation failed")
 		}
 	}
 }
