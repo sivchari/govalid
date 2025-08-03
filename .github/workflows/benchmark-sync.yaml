@@ -20,16 +20,13 @@ jobs:
       - name: Check if benchmarks are synced
         id: check-sync
         run: |
-          ./check-benchmark-sync.sh | grep -q "days old"; then
-            if [ $? -eq 0 ]; then
+          if ./check-benchmark-sync.sh | grep -q "days old"; then
               echo "Benchmarks are out of sync, proceeding with sync."
               echo "sync_needed=true" >> $GITHUB_OUTPUT
             else
               echo "Benchmarks are already up to date."
               echo "sync_needed=false" >> $GITHUB_OUTPUT
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run benchmark sync script
         id: sync-benchmarks
@@ -57,5 +54,3 @@ jobs:
           else
             echo "Benchmark sync did not make any changes."
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
