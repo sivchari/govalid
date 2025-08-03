@@ -134,7 +134,7 @@ func (c *celValidator) needsTimeImport() bool {
 
 // ValidateCEL creates a new celValidator for fields with CEL marker.
 // This validator supports all field types since CEL can handle various data types.
-func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	celExpression, ok := expressions[markers.GoValidMarkerCel]
 	if !ok {
 		return nil

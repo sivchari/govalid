@@ -67,7 +67,7 @@ func (m *minItemsValidator) Imports() []string {
 }
 
 // ValidateMinItems creates a new minItemsValidator if the field type supports len() and the minitems marker is present.
-func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a type that supports len() (exclude strings - use minlength instead)

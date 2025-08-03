@@ -65,7 +65,7 @@ func (m *numericValidator) Imports() []string {
 }
 
 // ValidateNumeric creates a new numericValidator if the 'numeric' marker is present and field is string.
-func ValidateNumeric(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateNumeric(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type

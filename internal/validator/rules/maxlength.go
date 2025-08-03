@@ -67,7 +67,7 @@ func (m *maxLengthValidator) Imports() []string {
 }
 
 // ValidateMaxLength creates a new maxLengthValidator if the field type is string and the maxlength marker is present.
-func ValidateMaxLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateMaxLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 

@@ -63,7 +63,7 @@ func (v *alphaValidator) Imports() []string {
 }
 
 // ValidateAlpha creates a new alphaValidator for string types.
-func ValidateAlpha(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateAlpha(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type

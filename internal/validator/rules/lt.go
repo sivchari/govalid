@@ -67,7 +67,7 @@ func (m *ltValidator) Imports() []string {
 }
 
 // ValidateLT creates a new ltValidator if the field type is numeric and the min marker is present.
-func ValidateLT(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateLT(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 

@@ -67,7 +67,7 @@ func (m *maxItemsValidator) Imports() []string {
 }
 
 // ValidateMaxItems creates a new maxItemsValidator if the field type supports len() and the maxitems marker is present.
-func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a type that supports len() (exclude strings - use maxlength instead)

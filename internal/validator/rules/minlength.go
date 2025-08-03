@@ -67,7 +67,7 @@ func (m *minLengthValidator) Imports() []string {
 }
 
 // ValidateMinLength creates a new minLengthValidator if the field type is string and the minlength marker is present.
-func ValidateMinLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateMinLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 

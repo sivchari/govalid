@@ -137,7 +137,7 @@ func (u *uuidValidator) Imports() []string {
 }
 
 // ValidateUUID creates a new uuidValidator for string types.
-func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type

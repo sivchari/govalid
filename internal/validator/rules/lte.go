@@ -67,7 +67,7 @@ func (m *lteValidator) Imports() []string {
 }
 
 // ValidateLTE creates a new lteValidator if the field type is numeric and the lte marker is present.
-func ValidateLTE(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateLTE(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 

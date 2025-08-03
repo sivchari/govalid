@@ -86,7 +86,7 @@ func (e *enumValidator) Imports() []string {
 }
 
 // ValidateEnum creates a new enumValidator for string, numeric, and custom types.
-func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	enumValue, ok := expressions[markers.GoValidMarkerEnum]

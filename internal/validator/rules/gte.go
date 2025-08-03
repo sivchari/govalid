@@ -67,7 +67,7 @@ func (m *gteValidator) Imports() []string {
 }
 
 // ValidateGTE creates a new gteValidator if the field type is numeric and the gte marker is present.
-func ValidateGTE(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateGTE(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 

@@ -66,7 +66,7 @@ func (l *lengthValidator) Imports() []string {
 }
 
 // ValidateLength creates a new lengthValidator if the field type is string and the length marker is present.
-func ValidateLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
+func ValidateLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 

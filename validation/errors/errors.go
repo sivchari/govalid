@@ -42,6 +42,7 @@ func (e ValidationErrors) Is(target error) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -60,5 +61,6 @@ func (e ValidationError) Is(target error) bool {
 	if ve, ok := target.(ValidationError); ok {
 		return e.Path == ve.Path && e.Type == ve.Type && e.Reason == ve.Reason
 	}
+
 	return false
 }
