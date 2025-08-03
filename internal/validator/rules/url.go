@@ -15,6 +15,7 @@ type urlValidator struct {
 	pass       *codegen.Pass
 	field      *ast.Field
 	structName string
+	ruleName   string
 }
 
 var _ validator.Validator = (*urlValidator)(nil)
@@ -44,13 +45,14 @@ func (u *urlValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the field is not a valid URL.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid URL",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid URL",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", u.ErrVariable(),
-		"[@FIELD]", u.FieldName(),
-		"[@PATH]", fmt.Sprintf("%s.%s", u.structName, u.FieldName()),
+		"[@FIELD]", fieldName,
+		"[@PATH]", fmt.Sprintf("%s.%s", u.structName, fieldName),
+		"[@TYPE]", u.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -65,7 +67,7 @@ func (u *urlValidator) Imports() []string {
 }
 
 // ValidateURL creates a new urlValidator for string types.
-func ValidateURL(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string) validator.Validator {
+func ValidateURL(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type
@@ -78,5 +80,6 @@ func ValidateURL(pass *codegen.Pass, field *ast.Field, _ map[string]string, stru
 		pass:       pass,
 		field:      field,
 		structName: structName,
+		ruleName:   ruleName,
 	}
 }

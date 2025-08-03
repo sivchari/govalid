@@ -21,6 +21,7 @@ type enumValidator struct {
 	isNumeric  bool
 	isCustom   bool
 	structName string
+	ruleName   string
 }
 
 var _ validator.Validator = (*enumValidator)(nil)
@@ -62,7 +63,7 @@ func (e *enumValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the value is not in the allowed enum values [@ENUM_LIST].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be one of [@ENUM_LIST]",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be one of [@ENUM_LIST]",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
@@ -70,6 +71,7 @@ func (e *enumValidator) Err() string {
 		"[@FIELD]", e.FieldName(),
 		"[@PATH]", fmt.Sprintf("%s.%s", e.structName, e.FieldName()),
 		"[@ENUM_LIST]", enumList,
+		"[@TYPE]", e.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -84,7 +86,7 @@ func (e *enumValidator) Imports() []string {
 }
 
 // ValidateEnum creates a new enumValidator for string, numeric, and custom types.
-func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
+func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	enumValue, ok := expressions[markers.GoValidMarkerEnum]
@@ -107,6 +109,7 @@ func ValidateEnum(pass *codegen.Pass, field *ast.Field, expressions map[string]s
 		field:      field,
 		enumValues: enumValues,
 		structName: structName,
+		ruleName:   ruleName,
 	}
 
 	// Determine the type and set appropriate flags

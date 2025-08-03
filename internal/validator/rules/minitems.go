@@ -18,6 +18,7 @@ type minItemsValidator struct {
 	field         *ast.Field
 	minItemsValue string
 	structName    string
+	ruleName      string
 }
 
 var _ validator.Validator = (*minItemsValidator)(nil)
@@ -43,7 +44,7 @@ func (m *minItemsValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the length of the field is less than the minimum of [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a minimum of [@VALUE] items",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a minimum of [@VALUE] items",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
@@ -51,6 +52,7 @@ func (m *minItemsValidator) Err() string {
 		"[@FIELD]", m.FieldName(),
 		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
 		"[@VALUE]", m.minItemsValue,
+		"[@TYPE]", m.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -65,7 +67,7 @@ func (m *minItemsValidator) Imports() []string {
 }
 
 // ValidateMinItems creates a new minItemsValidator if the field type supports len() and the minitems marker is present.
-func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
+func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a type that supports len() (exclude strings - use minlength instead)
@@ -86,5 +88,6 @@ func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[stri
 		field:         field,
 		minItemsValue: minItemsValue,
 		structName:    structName,
+		ruleName:      ruleName,
 	}
 }

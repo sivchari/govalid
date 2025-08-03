@@ -188,7 +188,8 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 			continue
 		}
 
-		v := factory(pass, field, marker.Expressions, structName)
+		ruleName := strings.TrimPrefix(marker.Identifier, "govalid:")
+		v := factory(pass, field, marker.Expressions, structName, ruleName)
 		if v == nil {
 			continue
 		}
@@ -219,7 +220,6 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 		"trimDots": func(s string) string {
 			return strings.ReplaceAll(s, ".", "")
 		},
-		"lower": strings.ToLower,
 	}).Parse(ValidationTemplate)
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %w", err)

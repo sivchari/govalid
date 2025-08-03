@@ -15,6 +15,7 @@ type alphaValidator struct {
 	pass       *codegen.Pass
 	field      *ast.Field
 	structName string
+	ruleName   string
 }
 
 var _ validator.Validator = (*alphaValidator)(nil)
@@ -39,13 +40,14 @@ func (v *alphaValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when field [@FIELD] is not alphabetic.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be alphabetic",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be alphabetic",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", v.ErrVariable(),
 		"[@FIELD]", v.FieldName(),
 		"[@PATH]", fmt.Sprintf("%s.%s", v.structName, v.structName+v.FieldName()),
+		"[@TYPE]", v.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -61,7 +63,7 @@ func (v *alphaValidator) Imports() []string {
 }
 
 // ValidateAlpha creates a new alphaValidator for string types.
-func ValidateAlpha(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string) validator.Validator {
+func ValidateAlpha(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type
@@ -75,5 +77,6 @@ func ValidateAlpha(pass *codegen.Pass, field *ast.Field, _ map[string]string, st
 		pass:       pass,
 		field:      field,
 		structName: structName,
+		ruleName:   ruleName,
 	}
 }

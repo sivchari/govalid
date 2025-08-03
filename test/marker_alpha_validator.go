@@ -12,13 +12,13 @@ var (
 	ErrNilAlpha = errors.New("input Alpha is nil")
 
 	// ErrAlphaFirstNameAlphaValidation is the error returned when field FirstName is not alphabetic.
-	ErrAlphaFirstNameAlphaValidation = govaliderrors.ValidationError{Reason: "field FirstName must be alphabetic", Path: "Alpha.AlphaFirstName"}
+	ErrAlphaFirstNameAlphaValidation = govaliderrors.ValidationError{Reason: "field FirstName must be alphabetic", Path: "Alpha.AlphaFirstName", Type: "alpha"}
 
 	// ErrAlphaLastNameAlphaValidation is the error returned when field LastName is not alphabetic.
-	ErrAlphaLastNameAlphaValidation = govaliderrors.ValidationError{Reason: "field LastName must be alphabetic", Path: "Alpha.AlphaLastName"}
+	ErrAlphaLastNameAlphaValidation = govaliderrors.ValidationError{Reason: "field LastName must be alphabetic", Path: "Alpha.AlphaLastName", Type: "alpha"}
 
 	// ErrAlphaCountryCodeAlphaValidation is the error returned when field CountryCode is not alphabetic.
-	ErrAlphaCountryCodeAlphaValidation = govaliderrors.ValidationError{Reason: "field CountryCode must be alphabetic", Path: "Alpha.AlphaCountryCode"}
+	ErrAlphaCountryCodeAlphaValidation = govaliderrors.ValidationError{Reason: "field CountryCode must be alphabetic", Path: "Alpha.AlphaCountryCode", Type: "alpha"}
 )
 
 func ValidateAlpha(t *Alpha) error {
@@ -30,21 +30,18 @@ func ValidateAlpha(t *Alpha) error {
 
 	if !validationhelper.IsValidAlpha(t.FirstName) {
 		err := ErrAlphaFirstNameAlphaValidation
-		err.Type = "alpha"
 		err.Value = t.FirstName
 		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidAlpha(t.LastName) {
 		err := ErrAlphaLastNameAlphaValidation
-		err.Type = "alpha"
 		err.Value = t.LastName
 		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidAlpha(t.CountryCode) {
 		err := ErrAlphaCountryCodeAlphaValidation
-		err.Type = "alpha"
 		err.Value = t.CountryCode
 		errs = append(errs, err)
 	}

@@ -20,7 +20,7 @@ type ValidatorInitializer interface {
 }
 
 // ValidatorFactory is a function that creates a validator instance.
-type ValidatorFactory func(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator
+type ValidatorFactory func(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator
 
 // Registry is an interface for managing a collection of validators.
 type Registry interface {

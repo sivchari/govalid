@@ -18,6 +18,7 @@ type gteValidator struct {
 	field      *ast.Field
 	gteValue   string
 	structName string
+	ruleName   string
 }
 
 var _ validator.Validator = (*gteValidator)(nil)
@@ -43,14 +44,15 @@ func (m *gteValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the value of the field is less than [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be greater than or equal to [@VALUE]",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be greater than or equal to [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", m.ErrVariable(),
 		"[@FIELD]", m.FieldName(),
-		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
 		"[@VALUE]", m.gteValue,
+		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[@TYPE]", m.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -65,7 +67,7 @@ func (m *gteValidator) Imports() []string {
 }
 
 // ValidateGTE creates a new gteValidator if the field type is numeric and the gte marker is present.
-func ValidateGTE(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
+func ValidateGTE(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 
@@ -83,5 +85,6 @@ func ValidateGTE(pass *codegen.Pass, field *ast.Field, expressions map[string]st
 		field:      field,
 		gteValue:   gteValue,
 		structName: structName,
+		ruleName:   ruleName,
 	}
 }

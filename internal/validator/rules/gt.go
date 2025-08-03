@@ -18,6 +18,7 @@ type gtValidator struct {
 	field      *ast.Field
 	gtValue    string
 	structName string
+	ruleName   string
 }
 
 var _ validator.Validator = (*gtValidator)(nil)
@@ -43,7 +44,7 @@ func (m *gtValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the value of the field is less than the [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be greater than [@VALUE]",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be greater than [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
@@ -51,6 +52,7 @@ func (m *gtValidator) Err() string {
 		"[@FIELD]", m.FieldName(),
 		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
 		"[@VALUE]", m.gtValue,
+		"[@TYPE]", m.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -65,7 +67,7 @@ func (m *gtValidator) Imports() []string {
 }
 
 // ValidateGT creates a new gtValidator if the field type is numeric and the max marker is present.
-func ValidateGT(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
+func ValidateGT(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 
@@ -83,5 +85,6 @@ func ValidateGT(pass *codegen.Pass, field *ast.Field, expressions map[string]str
 		field:      field,
 		gtValue:    gtValue,
 		structName: structName,
+		ruleName:   ruleName,
 	}
 }

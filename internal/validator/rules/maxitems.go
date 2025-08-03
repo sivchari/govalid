@@ -18,6 +18,7 @@ type maxItemsValidator struct {
 	field         *ast.Field
 	maxItemsValue string
 	structName    string
+	ruleName      string
 }
 
 var _ validator.Validator = (*maxItemsValidator)(nil)
@@ -43,7 +44,7 @@ func (m *maxItemsValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the length of the field exceeds the maximum of [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a maximum of [@VALUE] items",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a maximum of [@VALUE] items",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
@@ -51,6 +52,7 @@ func (m *maxItemsValidator) Err() string {
 		"[@FIELD]", m.FieldName(),
 		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
 		"[@VALUE]", m.maxItemsValue,
+		"[@TYPE]", m.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -65,7 +67,7 @@ func (m *maxItemsValidator) Imports() []string {
 }
 
 // ValidateMaxItems creates a new maxItemsValidator if the field type supports len() and the maxitems marker is present.
-func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
+func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a type that supports len() (exclude strings - use maxlength instead)
@@ -86,5 +88,6 @@ func ValidateMaxItems(pass *codegen.Pass, field *ast.Field, expressions map[stri
 		field:         field,
 		maxItemsValue: maxItemsValue,
 		structName:    structName,
+		ruleName:      ruleName,
 	}
 }

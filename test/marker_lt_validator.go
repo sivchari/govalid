@@ -11,7 +11,7 @@ var (
 	ErrNilLT = errors.New("input LT is nil")
 
 	// ErrLTAgeLTValidation is the error returned when the value of the field is greater than the 10.
-	ErrLTAgeLTValidation = govaliderrors.ValidationError{Reason: "field Age must be less than 10", Path: "LT.Age"}
+	ErrLTAgeLTValidation = govaliderrors.ValidationError{Reason: "field Age must be less than 10", Path: "LT.Age", Type: "lt"}
 )
 
 func ValidateLT(t *LT) error {
@@ -23,7 +23,6 @@ func ValidateLT(t *LT) error {
 
 	if !(t.Age < 10) {
 		err := ErrLTAgeLTValidation
-		err.Type = "lt"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}

@@ -11,16 +11,16 @@ var (
 	ErrNilCEL = errors.New("input CEL is nil")
 
 	// ErrCELAgeCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELAgeCELValidation = govaliderrors.ValidationError{Reason: "field Age failed CEL validation: value >= 18", Path: "CEL.Age"}
+	ErrCELAgeCELValidation = govaliderrors.ValidationError{Reason: "field Age failed CEL validation: value >= 18", Path: "CEL.Age", Type: "cel"}
 
 	// ErrCELNameCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELNameCELValidation = govaliderrors.ValidationError{Reason: "field Name failed CEL validation: size(value) > 0", Path: "CEL.Name"}
+	ErrCELNameCELValidation = govaliderrors.ValidationError{Reason: "field Name failed CEL validation: size(value) > 0", Path: "CEL.Name", Type: "cel"}
 
 	// ErrCELScoreCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELScoreCELValidation = govaliderrors.ValidationError{Reason: "field Score failed CEL validation: value > 0.0", Path: "CEL.Score"}
+	ErrCELScoreCELValidation = govaliderrors.ValidationError{Reason: "field Score failed CEL validation: value > 0.0", Path: "CEL.Score", Type: "cel"}
 
 	// ErrCELIsActiveCELValidation is the error returned when the CEL expression evaluation fails.
-	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{Reason: "field IsActive failed CEL validation: value == true", Path: "CEL.IsActive"}
+	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{Reason: "field IsActive failed CEL validation: value == true", Path: "CEL.IsActive", Type: "cel"}
 )
 
 func ValidateCEL(t *CEL) error {
@@ -32,28 +32,24 @@ func ValidateCEL(t *CEL) error {
 
 	if !(t.Age >= 18) {
 		err := ErrCELAgeCELValidation
-		err.Type = "cel"
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
 
 	if !(len(t.Name) > 0) {
 		err := ErrCELNameCELValidation
-		err.Type = "cel"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}
 
 	if !(t.Score > 0) {
 		err := ErrCELScoreCELValidation
-		err.Type = "cel"
 		err.Value = t.Score
 		errs = append(errs, err)
 	}
 
 	if !(t.IsActive == true) {
 		err := ErrCELIsActiveCELValidation
-		err.Type = "cel"
 		err.Value = t.IsActive
 		errs = append(errs, err)
 	}

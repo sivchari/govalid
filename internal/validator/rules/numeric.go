@@ -16,6 +16,7 @@ type numericValidator struct {
 	pass       *codegen.Pass
 	field      *ast.Field
 	structName string
+	ruleName   string
 }
 
 var _ validator.Validator = (*numericValidator)(nil)
@@ -40,13 +41,14 @@ func (m *numericValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the field [@FIELD] is not numeric.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be numeric",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be numeric",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", m.ErrVariable(),
 		"[@FIELD]", m.FieldName(),
 		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[@TYPE]", m.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -63,7 +65,7 @@ func (m *numericValidator) Imports() []string {
 }
 
 // ValidateNumeric creates a new numericValidator if the 'numeric' marker is present and field is string.
-func ValidateNumeric(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string) validator.Validator {
+func ValidateNumeric(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string, ruleName string) validator.Validator {
 	typ := pass.TypesInfo.TypeOf(field.Type)
 
 	// Check if it's a string type
@@ -76,5 +78,6 @@ func ValidateNumeric(pass *codegen.Pass, field *ast.Field, _ map[string]string, 
 		pass:       pass,
 		field:      field,
 		structName: structName,
+		ruleName:   ruleName,
 	}
 }

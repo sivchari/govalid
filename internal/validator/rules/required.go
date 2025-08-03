@@ -17,6 +17,7 @@ type requiredValidator struct {
 	pass       *codegen.Pass
 	field      *ast.Field
 	structName string
+	ruleName   string
 }
 
 var _ validator.Validator = (*requiredValidator)(nil)
@@ -61,13 +62,14 @@ func (r *requiredValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is returned when the [@FIELD] is required but not provided.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] is required",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] is required",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", r.ErrVariable(),
 		"[@FIELD]", r.FieldName(),
 		"[@PATH]", fmt.Sprintf("%s.%s", r.structName, r.FieldName()),
+		"[@TYPE]", r.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -82,12 +84,13 @@ func (r *requiredValidator) Imports() []string {
 }
 
 // ValidateRequired creates a new required validator for the given field.
-func ValidateRequired(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string) validator.Validator {
+func ValidateRequired(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName string, ruleName string) validator.Validator {
 	validator.GeneratorMemory[fmt.Sprintf(requiredKey, structName+field.Names[0].Name)] = false
 
 	return &requiredValidator{
 		pass:       pass,
 		field:      field,
 		structName: structName,
+		ruleName:   ruleName,
 	}
 }

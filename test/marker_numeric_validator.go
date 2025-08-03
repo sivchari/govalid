@@ -12,7 +12,7 @@ var (
 	ErrNilNumeric = errors.New("input Numeric is nil")
 
 	// ErrNumericNumberNumericValidation is the error returned when the field Number is not numeric.
-	ErrNumericNumberNumericValidation = govaliderrors.ValidationError{Reason: "field Number must be numeric", Path: "Numeric.Number"}
+	ErrNumericNumberNumericValidation = govaliderrors.ValidationError{Reason: "field Number must be numeric", Path: "Numeric.Number", Type: "numeric"}
 )
 
 func ValidateNumeric(t *Numeric) error {
@@ -24,7 +24,6 @@ func ValidateNumeric(t *Numeric) error {
 
 	if !validationhelper.IsNumeric(t.Number) {
 		err := ErrNumericNumberNumericValidation
-		err.Type = "numeric"
 		err.Value = t.Number
 		errs = append(errs, err)
 	}

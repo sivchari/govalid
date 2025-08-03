@@ -11,16 +11,16 @@ var (
 	ErrNilEnum = errors.New("input Enum is nil")
 
 	// ErrEnumRoleEnumValidation is the error returned when the value is not in the allowed enum values admin, user, guest.
-	ErrEnumRoleEnumValidation = govaliderrors.ValidationError{Reason: "field Role must be one of admin, user, guest", Path: "Enum.Role"}
+	ErrEnumRoleEnumValidation = govaliderrors.ValidationError{Reason: "field Role must be one of admin, user, guest", Path: "Enum.Role", Type: "enum"}
 
 	// ErrEnumLevelEnumValidation is the error returned when the value is not in the allowed enum values 1, 2, 3.
-	ErrEnumLevelEnumValidation = govaliderrors.ValidationError{Reason: "field Level must be one of 1, 2, 3", Path: "Enum.Level"}
+	ErrEnumLevelEnumValidation = govaliderrors.ValidationError{Reason: "field Level must be one of 1, 2, 3", Path: "Enum.Level", Type: "enum"}
 
 	// ErrEnumUserRoleEnumValidation is the error returned when the value is not in the allowed enum values manager, developer, tester.
-	ErrEnumUserRoleEnumValidation = govaliderrors.ValidationError{Reason: "field UserRole must be one of manager, developer, tester", Path: "Enum.UserRole"}
+	ErrEnumUserRoleEnumValidation = govaliderrors.ValidationError{Reason: "field UserRole must be one of manager, developer, tester", Path: "Enum.UserRole", Type: "enum"}
 
 	// ErrEnumPriorityEnumValidation is the error returned when the value is not in the allowed enum values 10, 20, 30.
-	ErrEnumPriorityEnumValidation = govaliderrors.ValidationError{Reason: "field Priority must be one of 10, 20, 30", Path: "Enum.Priority"}
+	ErrEnumPriorityEnumValidation = govaliderrors.ValidationError{Reason: "field Priority must be one of 10, 20, 30", Path: "Enum.Priority", Type: "enum"}
 )
 
 func ValidateEnum(t *Enum) error {
@@ -32,28 +32,24 @@ func ValidateEnum(t *Enum) error {
 
 	if t.Role != "admin" && t.Role != "user" && t.Role != "guest" {
 		err := ErrEnumRoleEnumValidation
-		err.Type = "enum"
 		err.Value = t.Role
 		errs = append(errs, err)
 	}
 
 	if t.Level != 1 && t.Level != 2 && t.Level != 3 {
 		err := ErrEnumLevelEnumValidation
-		err.Type = "enum"
 		err.Value = t.Level
 		errs = append(errs, err)
 	}
 
 	if t.UserRole != "manager" && t.UserRole != "developer" && t.UserRole != "tester" {
 		err := ErrEnumUserRoleEnumValidation
-		err.Type = "enum"
 		err.Value = t.UserRole
 		errs = append(errs, err)
 	}
 
 	if t.Priority != 10 && t.Priority != 20 && t.Priority != 30 {
 		err := ErrEnumPriorityEnumValidation
-		err.Type = "enum"
 		err.Value = t.Priority
 		errs = append(errs, err)
 	}

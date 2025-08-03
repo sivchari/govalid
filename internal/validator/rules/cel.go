@@ -20,6 +20,7 @@ type celValidator struct {
 	field      *ast.Field
 	expression string
 	structName string
+	ruleName   string
 }
 
 var _ validator.Validator = (*celValidator)(nil)
@@ -60,7 +61,7 @@ func (c *celValidator) Err() string {
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the CEL expression evaluation fails.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] failed CEL validation: [@EXPRESSION]",Path:"[@PATH]"}
+		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] failed CEL validation: [@EXPRESSION]",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
@@ -68,6 +69,7 @@ func (c *celValidator) Err() string {
 		"[@FIELD]", fieldName,
 		"[@PATH]", fmt.Sprintf("%s.%s", c.structName, fieldName),
 		"[@EXPRESSION]", c.expression,
+		"[@TYPE]", c.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
@@ -132,7 +134,7 @@ func (c *celValidator) needsTimeImport() bool {
 
 // ValidateCEL creates a new celValidator for fields with CEL marker.
 // This validator supports all field types since CEL can handle various data types.
-func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
+func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string, ruleName string) validator.Validator {
 	celExpression, ok := expressions[markers.GoValidMarkerCel]
 	if !ok {
 		return nil
@@ -148,6 +150,7 @@ func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]st
 		field:      field,
 		expression: celExpression,
 		structName: structName,
+		ruleName:   ruleName,
 	}
 }
 

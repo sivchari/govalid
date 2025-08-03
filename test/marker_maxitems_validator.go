@@ -11,13 +11,13 @@ var (
 	ErrNilMaxItems = errors.New("input MaxItems is nil")
 
 	// ErrMaxItemsItemsMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 5.
-	ErrMaxItemsItemsMaxItemsValidation = govaliderrors.ValidationError{Reason: "field Items must have a maximum of 5 items", Path: "MaxItems.Items"}
+	ErrMaxItemsItemsMaxItemsValidation = govaliderrors.ValidationError{Reason: "field Items must have a maximum of 5 items", Path: "MaxItems.Items", Type: "maxitems"}
 
 	// ErrMaxItemsMetadataMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 3.
-	ErrMaxItemsMetadataMaxItemsValidation = govaliderrors.ValidationError{Reason: "field Metadata must have a maximum of 3 items", Path: "MaxItems.Metadata"}
+	ErrMaxItemsMetadataMaxItemsValidation = govaliderrors.ValidationError{Reason: "field Metadata must have a maximum of 3 items", Path: "MaxItems.Metadata", Type: "maxitems"}
 
 	// ErrMaxItemsChanFieldMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 2.
-	ErrMaxItemsChanFieldMaxItemsValidation = govaliderrors.ValidationError{Reason: "field ChanField must have a maximum of 2 items", Path: "MaxItems.ChanField"}
+	ErrMaxItemsChanFieldMaxItemsValidation = govaliderrors.ValidationError{Reason: "field ChanField must have a maximum of 2 items", Path: "MaxItems.ChanField", Type: "maxitems"}
 )
 
 func ValidateMaxItems(t *MaxItems) error {
@@ -29,21 +29,18 @@ func ValidateMaxItems(t *MaxItems) error {
 
 	if len(t.Items) > 5 {
 		err := ErrMaxItemsItemsMaxItemsValidation
-		err.Type = "maxitems"
 		err.Value = t.Items
 		errs = append(errs, err)
 	}
 
 	if len(t.Metadata) > 3 {
 		err := ErrMaxItemsMetadataMaxItemsValidation
-		err.Type = "maxitems"
 		err.Value = t.Metadata
 		errs = append(errs, err)
 	}
 
 	if len(t.ChanField) > 2 {
 		err := ErrMaxItemsChanFieldMaxItemsValidation
-		err.Type = "maxitems"
 		err.Value = t.ChanField
 		errs = append(errs, err)
 	}

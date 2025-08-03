@@ -12,7 +12,7 @@ var (
 	ErrNilEmail = errors.New("input Email is nil")
 
 	// ErrEmailEmailEmailValidation is the error returned when the field is not a valid email address.
-	ErrEmailEmailEmailValidation = govaliderrors.ValidationError{Reason: "field Email must be a valid email address", Path: "Email.Email"}
+	ErrEmailEmailEmailValidation = govaliderrors.ValidationError{Reason: "field Email must be a valid email address", Path: "Email.Email", Type: "email"}
 )
 
 func ValidateEmail(t *Email) error {
@@ -24,7 +24,6 @@ func ValidateEmail(t *Email) error {
 
 	if !validationhelper.IsValidEmail(t.Email) {
 		err := ErrEmailEmailEmailValidation
-		err.Type = "email"
 		err.Value = t.Email
 		errs = append(errs, err)
 	}

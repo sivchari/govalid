@@ -11,7 +11,7 @@ var (
 	ErrNilPartial = errors.New("input Partial is nil")
 
 	// ErrPartialNameRequiredValidation is returned when the Name is required but not provided.
-	ErrPartialNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "Partial.Name"}
+	ErrPartialNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "Partial.Name", Type: "required"}
 )
 
 func ValidatePartial(t *Partial) error {
@@ -23,7 +23,6 @@ func ValidatePartial(t *Partial) error {
 
 	if t.Name == "" {
 		err := ErrPartialNameRequiredValidation
-		err.Type = "partial"
 		err.Value = t.Name
 		errs = append(errs, err)
 	}

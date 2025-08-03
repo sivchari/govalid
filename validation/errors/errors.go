@@ -26,12 +26,23 @@ type ValidationErrors []ValidationError
 func (e ValidationErrors) Error() string {
 	buff := strings.Builder{}
 
-	for i := range len(e) {
+	for i := range e {
 		buff.WriteString(e[i].Error())
 		buff.WriteString("\n")
 	}
 
 	return strings.TrimSpace(buff.String())
+}
+
+// Is implements error matching for ValidationErrors.
+// It checks if any of the contained errors match the target.
+func (e ValidationErrors) Is(target error) bool {
+	for _, err := range e {
+		if err.Is(target) {
+			return true
+		}
+	}
+	return false
 }
 
 // Error implements the error interface for ValidationError.
@@ -41,4 +52,13 @@ func (e ValidationError) Error() string {
 		"field %s with value %v has failed validation %s because %s",
 		e.Path, e.Value, e.Type, e.Reason,
 	).Error()
+}
+
+// Is implements error matching for ValidationError.
+// It allows errors.Is to work with ValidationError instances.
+func (e ValidationError) Is(target error) bool {
+	if ve, ok := target.(ValidationError); ok {
+		return e.Path == ve.Path && e.Type == ve.Type && e.Reason == ve.Reason
+	}
+	return false
 }
