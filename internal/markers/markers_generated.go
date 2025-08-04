@@ -41,6 +41,9 @@ var (
 	// GoValidMarkerMinlength is the marker for minlength validation.
 	GoValidMarkerMinlength = "govalid:minlength"
 
+	// GoValidMarkerNumeric is the marker for numeric validation.
+	GoValidMarkerNumeric = "govalid:numeric"
+
 	// GoValidMarkerRequired is the marker for required validation.
 	GoValidMarkerRequired = "govalid:required"
 
@@ -50,27 +53,25 @@ var (
 	// GoValidMarkerUuid is the marker for uuid validation.
 	GoValidMarkerUuid = "govalid:uuid"
 
-	// GoValidMarkerNumeric is the marker for uuid validation
-	GoValidMarkerNumeric = "govalid:numeric"
 )
 
 // GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
-	GoValidMarkerAlpha:     {},
-	GoValidMarkerCel:       {},
-	GoValidMarkerEmail:     {},
-	GoValidMarkerEnum:      {},
-	GoValidMarkerGt:        {},
-	GoValidMarkerGte:       {},
-	GoValidMarkerLength:    {},
-	GoValidMarkerLt:        {},
-	GoValidMarkerLte:       {},
-	GoValidMarkerMaxitems:  {},
+	GoValidMarkerAlpha: {},
+	GoValidMarkerCel: {},
+	GoValidMarkerEmail: {},
+	GoValidMarkerEnum: {},
+	GoValidMarkerGt: {},
+	GoValidMarkerGte: {},
+	GoValidMarkerLength: {},
+	GoValidMarkerLt: {},
+	GoValidMarkerLte: {},
+	GoValidMarkerMaxitems: {},
 	GoValidMarkerMaxlength: {},
-	GoValidMarkerMinitems:  {},
+	GoValidMarkerMinitems: {},
 	GoValidMarkerMinlength: {},
-	GoValidMarkerRequired:  {},
-	GoValidMarkerUrl:       {},
-	GoValidMarkerUuid:      {},
-	GoValidMarkerNumeric:   {},
+	GoValidMarkerNumeric: {},
+	GoValidMarkerRequired: {},
+	GoValidMarkerUrl: {},
+	GoValidMarkerUuid: {},
 }
