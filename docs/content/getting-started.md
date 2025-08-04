@@ -123,12 +123,23 @@ govalid generates descriptive error messages and variables:
 // Generated error variables
 var (
     ErrNilUser                    = errors.New("User is nil")
-    ErrNameRequiredValidation     = errors.New("Name is required")
-    ErrEmailEmailValidation       = errors.New("Email must be a valid email address")
-    ErrAgeGTEValidation          = errors.New("Age must be greater than or equal to 0")
-    ErrAgeLTEValidation          = errors.New("Age must be less than or equal to 120")
-    ErrBioMaxLengthValidation    = errors.New("Bio must be at most 500 characters")
+
+	// ErrUserNameRequiredValidation is returned when the Name is required but not provided.
+	ErrUserNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "User.Name", Type: "required"}
+
+	// ErrUserEmailEmailValidation is the error returned when the field is not a valid email address.
+	ErrUserEmailEmailValidation = govaliderrors.ValidationError{Reason: "field Email must be a valid email address", Path: "User.Email", Type: "email"}
+
+	// ErrUserAgeGTEValidation is the error returned when the value of the field is less than 0.
+	ErrUserAgeGTEValidation = govaliderrors.ValidationError{Reason: "field Age must be greater than or equal to 0", Path: "User.Age", Type: "gte"}
+
+	// ErrUserAgeLTEValidation is the error returned when the value of the field is greater than 120.
+	ErrUserAgeLTEValidation = govaliderrors.ValidationError{Reason: "field Age must be less than or equal to 120", Path: "User.Age", Type: "lte"}
+
+	// ErrUserBioMaxLengthValidation is the error returned when the length of the field exceeds the maximum of 500.
+	ErrUserBioMaxLengthValidation = govaliderrors.ValidationError{Reason: "field Bio must have a maximum length of 500", Path: "User.Bio", Type: "maxlength"}
 )
+
 ```
 
 You can check for specific errors:
@@ -143,6 +154,21 @@ if err := ValidateUser(user); err != nil {
     default:
         fmt.Printf("Validation error: %v\n", err)
     }
+}
+
+```
+
+If multiple errors in are found during validation errors will be returned as a slice of structs that implement error interface.
+
+```go
+
+if err := ValidateUser(user); err != nil {
+  var validationErrors govaliderrors.ValidationErrors
+  if errors.As(err, &validationErrors) {
+  	for _, e := range validationErrors {
+  		log.Printf("Field %s: %s", e.Path, e.Reason)
+  	}
+  }
 }
 ```
 
