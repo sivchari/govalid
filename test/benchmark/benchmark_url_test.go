@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/asaskevich/govalidator"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/go-playground/validator/v10"
 	"github.com/gookit/validate"
 
@@ -42,16 +40,6 @@ func BenchmarkGoValidatorURL(b *testing.B) {
 	for b.Loop() {
 		if !govalidator.IsURL(testURL) {
 			b.Fatal("validation failed")
-		}
-	}
-}
-
-func BenchmarkOzzoValidationURL(b *testing.B) {
-	testURL := "https://example.com/path/to/resource?key=value"
-	for b.Loop() {
-		err := validation.Validate(testURL, is.URL)
-		if err != nil {
-			b.Fatal("validation failed:", err)
 		}
 	}
 }
