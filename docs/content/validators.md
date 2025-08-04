@@ -188,26 +188,19 @@ type User struct {
 
 **Generated Code:**
 ```go
-isAlphaNumeric = func(s string) bool {
-    for _, r := range s {
-        if (r < 'a' || r > 'z') &&
-            (r < 'A' || r > 'Z') &&
-            (r < '0' || r > '9') {
-            return false
-        }
-    }
-    return s != ""
+if t == nil {
+    return ErrNilUser
 }
 
-if !isAlphaNumeric(t.Username) {
+if !validationhelper.IsValidAlphanum(t.Username) {
     return ErrUsernameAlphanumValidation
 }
 
-if !isAlphaNumeric(t.ProductCode) {
+if !validationhelper.IsValidAlphanum(t.ProductCode) {
     return ErrProductCodeAlphanumValidation
 }
 
-if !isAlphaNumeric(t.SerialNumber) {
+if !validationhelper.IsValidAlphanum(t.SerialNumber) {
     return ErrSerialNumberAlphanumValidation
 }
 ```

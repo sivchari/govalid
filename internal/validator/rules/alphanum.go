@@ -24,39 +24,17 @@ const alphanumKey = "%s-alphanum"
 func (v *alphanumValidator) Validate() string {
 	fieldName := v.FieldName()
 
-	return fmt.Sprintf("!isAlphaNumeric(t.%s)", fieldName)
+	return fmt.Sprintf("!validationhelper.IsValidAlphanum(t.%s)", fieldName)
 }
 
 func (v *alphanumValidator) FieldName() string {
 	return v.field.Names[0].Name
 }
 
-func (v *alphanumValidator) generateValidationFunction() string {
-	return `
-		isAlphaNumeric = func(s string) bool {
-			for _, r := range s {
-				if (r < 'a' || r > 'z') &&
-					(r < 'A' || r > 'Z') &&
-					(r < '0' || r > '9') {
-					return false
-				}
-			}
-			return s != ""
-		}
-	`
-}
-
 func (v *alphanumValidator) Err() string {
 	fieldName := v.FieldName()
 
 	var result strings.Builder
-
-	// Generate isValidAlphanum function only once
-	if !validator.GeneratorMemory["alphanum-function-generated"] {
-		validator.GeneratorMemory["alphanum-function-generated"] = true
-
-		result.WriteString(v.generateValidationFunction())
-	}
 
 	key := fmt.Sprintf(alphanumKey, v.structName+fieldName)
 	if validator.GeneratorMemory[key] {
@@ -77,7 +55,7 @@ func (v *alphanumValidator) ErrVariable() string {
 }
 
 func (v *alphanumValidator) Imports() []string {
-	return []string{}
+	return []string{"github.com/sivchari/govalid/validation/validationhelper"}
 }
 
 // ValidateAlphanum creates a new alphanum validator for the given field.
