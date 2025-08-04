@@ -166,6 +166,48 @@ if !isValidUUID(t.ID) {
 }
 ```
 
+### `govalid:alphanum`
+
+Ensures that a string field contains only alphanumeric characters (letters and numbers).
+
+**Supported Types:** `string`
+
+**Example:**
+```go
+type User struct {
+    // +govalid:alphanum
+    Username string `json:"username"`
+    
+    // +govalid:alphanum
+    ProductCode string `json:"product_code"`
+    
+    // +govalid:alphanum
+    SerialNumber string `json:"serial_number"`
+}
+```
+
+**Generated Code:**
+```go
+if t == nil {
+    return ErrNilUser
+}
+
+if !validationhelper.IsValidAlphanum(t.Username) {
+    return ErrUsernameAlphanumValidation
+}
+
+if !validationhelper.IsValidAlphanum(t.ProductCode) {
+    return ErrProductCodeAlphanumValidation
+}
+
+if !validationhelper.IsValidAlphanum(t.SerialNumber) {
+    return ErrSerialNumberAlphanumValidation
+}
+```
+
+**Note:** This validator ensures the string contains only letters (a-z, A-Z) and numbers (0-9). The string must not be empty and cannot contain spaces, special characters, or symbols.
+
+
 ## Numeric Validators
 
 ### `govalid:gt=N`
