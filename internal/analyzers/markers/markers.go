@@ -50,7 +50,9 @@ func (m *markers) insertFieldMarkers(field *ast.Field, markers MarkerSet) {
 
 	if existing, ok := m.fieldMarkers[field]; ok {
 		maps.Copy(existing, markers)
+
 		return
 	}
+
 	m.fieldMarkers[field] = markers
 }
