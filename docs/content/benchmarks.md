@@ -161,7 +161,7 @@ Channel chan string   // Channels supported!
 ## Optimization Techniques
 
 ### 1. Code Generation
-- **Compile-time validation functions** (no runtime reflection)
+- **Zero-allocation validation functions** (no runtime reflection)
 - **Inlined simple operations** for maximum speed
 - **Direct field access** with no interface overhead
 

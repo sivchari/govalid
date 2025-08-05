@@ -1,8 +1,8 @@
 <div align="center">
   <img src="assets/govalid-icon.svg" alt="govalid" width="128" height="128">
   <h1>govalid</h1>
-  <p><strong>Blazing fast, compile-time type-safe validation for Go</strong></p>
-  
+  <p><strong>Blazing fast, zero-allocation, type-safe validation for Go</strong></p>
+
   ![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)
   ![License](https://img.shields.io/badge/license-MIT-green.svg)
   ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
@@ -12,7 +12,7 @@
 
 ## 🚀 Overview
 
-govalid generates **type-safe validation code** at compile time using struct field markers. No reflection, no runtime overhead, just blazing fast validation.
+govalid generates **type-safe validation code** from struct field markers. No reflection, no runtime overhead, just blazing fast validation.
 
 ## ⚡ Why govalid?
 
@@ -23,7 +23,7 @@ govalid generates **type-safe validation code** at compile time using struct fie
 
 ### 👨‍💻 Developer Experience
 - **Type safety**: Validation functions are generated with proper types, eliminating runtime reflection
-- **Compile-time errors**: Invalid validation rules are caught during code generation, not at runtime
+- **Early error detection**: Invalid validation rules are caught during code generation, not at runtime
 - **No runtime dependencies**: Generated code has minimal external dependencies
 
 ### 🔧 Comprehensive Go Support
@@ -39,10 +39,10 @@ govalid generates **type-safe validation code** at compile time using struct fie
 | Feature | govalid | Reflection Validators |
 |:-------:|:-------:|:--------------------:|
 | **Performance** | `~1-14ns, 0 allocs` | `~50-700ns, 0-5 allocs` |
-| **Type Safety** | ✅ Compile-time | ❌ Runtime reflection |
+| **Type Safety** | ✅ Generated functions | ❌ Runtime reflection |
 | **Collections** | `slice, array, map, channel` | `slice, array only` |
 | **Dependencies** | ✅ Minimal | ❌ Heavy runtime deps |
-| **Error Detection** | ✅ Compile-time | ❌ Runtime |
+| **Error Detection** | ✅ During code generation | ❌ Runtime |
 | **CEL Support** | ✅ Full support | ❌ Limited/None |
 
 </div>

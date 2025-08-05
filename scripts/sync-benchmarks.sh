@@ -120,7 +120,7 @@ $COMPARISON_TABLE
 
 ### Enum Validation
 - **Enum**: Comprehensive enum validation for string, numeric, and custom types (~2.17ns)
-- Zero-allocation enum checking with compile-time safety
+- Zero-allocation enum checking with type safety during code generation
 - Works with custom type definitions (e.g., \`type Status string\`)
 
 ### Collection Type Extension
@@ -138,7 +138,7 @@ These validators support map and channel types, which go-playground/validator do
 
 ## Implementation Notes
 
-- govalid generates compile-time validation functions with zero runtime reflection
+- govalid generates zero-allocation validation functions with no runtime reflection
 - **External Helper Functions**: Complex validators use optimized external functions
 - **Zero-Allocation**: Manual string parsing eliminates allocations
 - Proper Unicode support in string length validators using \`utf8.RuneCountInString\`
@@ -234,7 +234,7 @@ Channel chan string   // Channels supported!
 ## Optimization Techniques
 
 ### 1. Code Generation
-- **Compile-time validation functions** (no runtime reflection)
+- **Zero-allocation validation functions** (no runtime reflection)
 - **Inlined simple operations** for maximum speed
 - **Direct field access** with no interface overhead
 

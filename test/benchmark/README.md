@@ -4,8 +4,8 @@ This document contains performance comparison results between govalid and go-pla
 
 ## Latest Results
 
-**Benchmarked on:** 2025-07-15  
-**Platform:** Darwin 24.5.0 arm64  
+**Benchmarked on:** 2025-07-15
+**Platform:** Darwin 24.5.0 arm64
 **Go version:** go1.25-devel_a8e99ab19c
 
 ## Raw Benchmark Data
@@ -84,30 +84,30 @@ BenchmarkGookitValidateNumeric-12                 107311         11131 ns/op    
 ### CEL Expression Support
 - **CEL**: Common Expression Language validation for complex business logic (~0.1-2.0ns)
 - Supports concurrent evaluation, multiple expressions, and cross-field validation
-- Compile-time validation with zero-allocation runtime execution
+- Zero-allocation validation with rule checking during code generation
 - Cache-optimized for maximum performance
 
 ### Enum Validation
 - **Enum**: Comprehensive enum validation for string, numeric, and custom types (~2.17ns)
-- Zero-allocation enum checking with compile-time safety
+- Zero-allocation enum checking with type safety during code generation
 - Works with custom type definitions (e.g., `type Status string`)
 
 ### Extended Collection Type Support
 These validators support map and channel types, which go-playground/validator doesn't support:
-- **MaxItems**: slice, array, map, channel length ≤ limit  
+- **MaxItems**: slice, array, map, channel length ≤ limit
 - **MinItems**: slice, array, map, channel length ≥ limit
 
 ## Key Findings
 
 1. **Exceptional Performance**: govalid shows 5x to 44x performance improvements across all validators
-2. **Sub-3ns Execution**: Most validators execute in under 3 nanoseconds  
+2. **Sub-3ns Execution**: Most validators execute in under 3 nanoseconds
 3. **Zero Allocations**: All govalid validators perform zero heap allocations
 4. **Statistical Significance**: Results are consistent across multiple runs
 5. **Extended Type Support**: Collection validators work with map/channel types
 
 ## Implementation Notes
 
-- govalid generates compile-time validation functions with zero runtime reflection
+- govalid generates zero-allocation validation functions with no runtime reflection
 - **External Helper Functions**: Complex validators use optimized external functions
 - **Zero-Allocation**: Manual string parsing eliminates allocations
 - Proper Unicode support in string length validators using `utf8.RuneCountInString`
