@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/sivchari/govalid/cmd/generate-validators/templates"
@@ -24,7 +25,7 @@ func generateInitializers(validators []ValidatorInfo, outputDir, initializerTemp
 			return fmt.Errorf("failed to execute template for %s: %w", validator.MarkerName, err)
 		}
 
-		filename := filepath.Join(outputDir, validator.MarkerName+".go")
+		filename := filepath.Join(outputDir, strings.ToLower(validator.MarkerName)+".go")
 		if err := os.WriteFile(filename, buf.Bytes(), 0o600); err != nil {
 			return fmt.Errorf("failed to write file %s: %w", filename, err)
 		}
