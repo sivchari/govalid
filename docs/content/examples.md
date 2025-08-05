@@ -846,7 +846,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 
 ### 5. Performance Benefits
 - **Zero allocations** for all validation operations
-- **Compile-time safety** with generated functions
+- **Type safety** ensured during code generation
 - **5x to 50x faster** than runtime validation libraries
 
 These examples demonstrate the power and flexibility of govalid for creating robust, high-performance validation in Go applications.
