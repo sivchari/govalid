@@ -2,6 +2,7 @@ package markers
 
 import (
 	"go/ast"
+	"maps"
 )
 
 // Marker represents a single marker with an identifier and associated expressions.
@@ -44,6 +45,12 @@ func (m *markers) FieldMarkers(field *ast.Field) MarkerSet {
 // insertFieldMarkers adds a set of markers to a specific struct field.
 func (m *markers) insertFieldMarkers(field *ast.Field, markers MarkerSet) {
 	if len(markers) == 0 {
+		return
+	}
+
+	if existing, ok := m.fieldMarkers[field]; ok {
+		maps.Copy(existing, markers)
+
 		return
 	}
 
