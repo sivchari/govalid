@@ -10,8 +10,8 @@ var (
 	// ErrNilInside is returned when the Inside is nil.
 	ErrNilInside = errors.New("input Inside is nil")
 
-	// ErrInsideXRequiredValidation is returned when the X is required but not provided.
-	ErrInsideXRequiredValidation = govaliderrors.ValidationError{Reason: "field X is required", Path: "Inside.X", Type: "required"}
+	// ErrInsideAXRequiredValidation is returned when the X is required but not provided.
+	ErrInsideAXRequiredValidation = govaliderrors.ValidationError{Reason: "field X is required", Path: "Inside.A.X", Type: "required"}
 )
 
 func ValidateInside(t *Inside) error {
@@ -25,7 +25,7 @@ func ValidateInside(t *Inside) error {
 		t := t.A
 
 		if t.X == "" {
-			err := ErrInsideXRequiredValidation
+			err := ErrInsideAXRequiredValidation
 			err.Value = t.X
 			errs = append(errs, err)
 		}

@@ -11,6 +11,7 @@ import (
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 type maxLengthValidator struct {
@@ -19,6 +20,7 @@ type maxLengthValidator struct {
 	maxLengthValue string
 	structName     string
 	ruleName       string
+	parentPath     string
 }
 
 var _ validator.Validator = (*maxLengthValidator)(nil)
@@ -33,8 +35,12 @@ func (m *maxLengthValidator) FieldName() string {
 	return m.field.Names[0].Name
 }
 
+func (m *maxLengthValidator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
+}
+
 func (m *maxLengthValidator) Err() string {
-	key := fmt.Sprintf(maxLengthKey, m.structName+m.FieldName())
+	key := fmt.Sprintf(maxLengthKey, m.structName+m.FieldPath().CleanedPath())
 
 	if validator.GeneratorMemory[key] {
 		return ""
@@ -50,8 +56,8 @@ func (m *maxLengthValidator) Err() string {
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", m.ErrVariable(),
 		"[@FIELD]", m.FieldName(),
+		"[@PATH]", m.FieldPath().String(),
 		"[@VALUE]", m.maxLengthValue,
-		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
 		"[@TYPE]", m.ruleName,
 	)
 
@@ -59,7 +65,7 @@ func (m *maxLengthValidator) Err() string {
 }
 
 func (m *maxLengthValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]MaxLengthValidation", "[@PATH]", m.structName+m.FieldName())
+	return strings.ReplaceAll("Err[@PATH]MaxLengthValidation", "[@PATH]", m.FieldPath().CleanedPath())
 }
 
 func (m *maxLengthValidator) Imports() []string {
@@ -67,24 +73,25 @@ func (m *maxLengthValidator) Imports() []string {
 }
 
 // ValidateMaxLength creates a new maxLengthValidator if the field type is string and the maxlength marker is present.
-func ValidateMaxLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
-	typ := pass.TypesInfo.TypeOf(field.Type)
+func ValidateMaxLength(input registry.ValidatorInput) validator.Validator {
+	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 
 	if !ok || basic.Kind() != types.String {
 		return nil
 	}
 
-	maxLengthValue, ok := expressions[markers.GoValidMarkerMaxlength]
+	maxLengthValue, ok := input.Expressions[markers.GoValidMarkerMaxlength]
 	if !ok {
 		return nil
 	}
 
 	return &maxLengthValidator{
-		pass:           pass,
-		field:          field,
+		pass:           input.Pass,
+		field:          input.Field,
 		maxLengthValue: maxLengthValue,
-		structName:     structName,
-		ruleName:       ruleName,
+		structName:     input.StructName,
+		ruleName:       input.RuleName,
+		parentPath:     input.ParentPath,
 	}
 }

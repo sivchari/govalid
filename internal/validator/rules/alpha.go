@@ -9,6 +9,7 @@ import (
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 type alphaValidator struct {
@@ -16,6 +17,7 @@ type alphaValidator struct {
 	field      *ast.Field
 	structName string
 	ruleName   string
+	parentPath string
 }
 
 var _ validator.Validator = (*alphaValidator)(nil)
@@ -31,12 +33,18 @@ func (v *alphaValidator) FieldName() string {
 	return v.field.Names[0].Name
 }
 
+func (v *alphaValidator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(v.structName, v.parentPath, v.FieldName())
+}
+
 func (v *alphaValidator) Err() string {
-	if validator.GeneratorMemory[fmt.Sprintf(alphaKey, v.FieldName())] {
+	key := fmt.Sprintf(alphaKey, v.FieldPath().CleanedPath())
+
+	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
-	validator.GeneratorMemory[fmt.Sprintf(alphaKey, v.FieldName())] = true
+	validator.GeneratorMemory[key] = true
 
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when field [@FIELD] is not alphabetic.
@@ -46,7 +54,7 @@ func (v *alphaValidator) Err() string {
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", v.ErrVariable(),
 		"[@FIELD]", v.FieldName(),
-		"[@PATH]", fmt.Sprintf("%s.%s", v.structName, v.structName+v.FieldName()),
+		"[@PATH]", v.FieldPath().String(),
 		"[@TYPE]", v.ruleName,
 	)
 
@@ -54,7 +62,7 @@ func (v *alphaValidator) Err() string {
 }
 
 func (v *alphaValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]AlphaValidation", "[@PATH]", v.structName+v.FieldName())
+	return strings.ReplaceAll("Err[@PATH]AlphaValidation", "[@PATH]", v.FieldPath().CleanedPath())
 }
 
 func (v *alphaValidator) Imports() []string {
@@ -63,8 +71,8 @@ func (v *alphaValidator) Imports() []string {
 }
 
 // ValidateAlpha creates a new alphaValidator for string types.
-func ValidateAlpha(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName, ruleName string) validator.Validator {
-	typ := pass.TypesInfo.TypeOf(field.Type)
+func ValidateAlpha(input registry.ValidatorInput) validator.Validator {
+	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
 
 	// Check if it's a string type
 	basic, ok := typ.Underlying().(*types.Basic)
@@ -74,9 +82,10 @@ func ValidateAlpha(pass *codegen.Pass, field *ast.Field, _ map[string]string, st
 	}
 
 	return &alphaValidator{
-		pass:       pass,
-		field:      field,
-		structName: structName,
-		ruleName:   ruleName,
+		pass:       input.Pass,
+		field:      input.Field,
+		structName: input.StructName,
+		ruleName:   input.RuleName,
+		parentPath: input.ParentPath,
 	}
 }

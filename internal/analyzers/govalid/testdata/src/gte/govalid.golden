@@ -16,8 +16,8 @@ var (
 	// ErrGTEScoreGTEValidation is the error returned when the value of the field is less than 0.
 	ErrGTEScoreGTEValidation = govaliderrors.ValidationError{Reason: "field Score must be greater than or equal to 0", Path: "GTE.Score", Type: "gte"}
 
-	// ErrGTEValueGTEValidation is the error returned when the value of the field is less than 100.
-	ErrGTEValueGTEValidation = govaliderrors.ValidationError{Reason: "field Value must be greater than or equal to 100", Path: "GTE.Value", Type: "gte"}
+	// ErrGTEStructValueGTEValidation is the error returned when the value of the field is less than 100.
+	ErrGTEStructValueGTEValidation = govaliderrors.ValidationError{Reason: "field Value must be greater than or equal to 100", Path: "GTE.Struct.Value", Type: "gte"}
 )
 
 func ValidateGTE(t *GTE) error {
@@ -43,7 +43,7 @@ func ValidateGTE(t *GTE) error {
 		t := t.Struct
 
 		if !(t.Value >= 100) {
-			err := ErrGTEValueGTEValidation
+			err := ErrGTEStructValueGTEValidation
 			err.Value = t.Value
 			errs = append(errs, err)
 		}

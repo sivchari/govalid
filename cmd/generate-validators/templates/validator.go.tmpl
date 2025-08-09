@@ -9,12 +9,15 @@ import (
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 type {{.MarkerName}}Validator struct {
 	pass       *codegen.Pass
 	field      *ast.Field
 	structName string
+	ruleName   string
+	parentPath string
 }
 
 var _ validator.Validator = (*{{.MarkerName}}Validator)(nil)
@@ -31,8 +34,12 @@ func (v *{{.MarkerName}}Validator) FieldName() string {
 	return v.field.Names[0].Name
 }
 
+func (v *{{.MarkerName}}Validator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(v.structName, v.parentPath, v.FieldName())
+}
+
 func (v *{{.MarkerName}}Validator) Err() string {
-	key := fmt.Sprintf({{.MarkerName}}Key, v.structName+v.FieldName())
+	key := fmt.Sprintf({{.MarkerName}}Key, v.FieldPath().CleanedPath())
 
 	if validator.GeneratorMemory[key] {
 		return ""
@@ -42,20 +49,21 @@ func (v *{{.MarkerName}}Validator) Err() string {
 
 	const errTemplate = `
 	  // [@ERRVARIABLE] is returned when the [@FIELD] fails {{.MarkerName}} validation.
-	  [@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field [@FIELD] failed {{.MarkerName}} validation{{end}}",Path:"[@PATH]"}
+	  [@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field [@FIELD] failed {{.MarkerName}} validation{{end}}",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", v.ErrVariable(),
-		"[@FIELD]", v.structName+v.FieldName(),
-		"[@PATH]", fmt.Sprintf("%s.%s", v.structName+v.FieldName()),
+		"[@FIELD]", v.FieldName(),
+		"[@PATH]", v.FieldPath().String(),
+		"[@TYPE]", v.ruleName,
 	)
 
 	return replacer.Replace(errTemplate)
 }
 
 func (v *{{.MarkerName}}Validator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]{{.StructName}}Validation", "[@PATH]", v.structName+v.FieldName())
+	return strings.ReplaceAll("Err[@PATH]{{.StructName}}Validation", "[@PATH]", v.FieldPath().CleanedPath())
 }
 
 func (v *{{.MarkerName}}Validator) Imports() []string {
@@ -64,12 +72,12 @@ func (v *{{.MarkerName}}Validator) Imports() []string {
 }
 
 // Validate{{.StructName}} creates a new {{.MarkerName}} validator for the given field.
-func Validate{{.StructName}}(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName string) validator.Validator {
-	validator.GeneratorMemory[fmt.Sprintf({{.MarkerName}}Key, structName+field.Names[0].Name)] = false
-
+func Validate{{.StructName}}(input registry.ValidatorInput) validator.Validator {
 	return &{{.MarkerName}}Validator{
-		pass:       pass,
-		field:      field,
-		structName: structName,
+		pass:       input.Pass,
+		field:      input.Field,
+		structName: input.StructName,
+		ruleName:   input.RuleName,
+		parentPath: input.ParentPath,
 	}
 }

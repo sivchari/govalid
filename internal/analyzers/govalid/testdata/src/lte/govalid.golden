@@ -16,8 +16,8 @@ var (
 	// ErrLTEScoreLTEValidation is the error returned when the value of the field is greater than 10.5.
 	ErrLTEScoreLTEValidation = govaliderrors.ValidationError{Reason: "field Score must be less than or equal to 10.5", Path: "LTE.Score", Type: "lte"}
 
-	// ErrLTEValueLTEValidation is the error returned when the value of the field is greater than 50.
-	ErrLTEValueLTEValidation = govaliderrors.ValidationError{Reason: "field Value must be less than or equal to 50", Path: "LTE.Value", Type: "lte"}
+	// ErrLTEStructValueLTEValidation is the error returned when the value of the field is greater than 50.
+	ErrLTEStructValueLTEValidation = govaliderrors.ValidationError{Reason: "field Value must be less than or equal to 50", Path: "LTE.Struct.Value", Type: "lte"}
 )
 
 func ValidateLTE(t *LTE) error {
@@ -43,7 +43,7 @@ func ValidateLTE(t *LTE) error {
 		t := t.Struct
 
 		if !(t.Value <= 50) {
-			err := ErrLTEValueLTEValidation
+			err := ErrLTEStructValueLTEValidation
 			err.Value = t.Value
 			errs = append(errs, err)
 		}

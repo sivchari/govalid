@@ -10,6 +10,7 @@ import (
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 type lengthValidator struct {
@@ -18,6 +19,7 @@ type lengthValidator struct {
 	lengthValue string
 	structName  string
 	ruleName    string
+	parentPath  string
 }
 
 var _ validator.Validator = (*lengthValidator)(nil)
@@ -32,8 +34,12 @@ func (l *lengthValidator) FieldName() string {
 	return l.field.Names[0].Name
 }
 
+func (l *lengthValidator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(l.structName, l.parentPath, l.FieldName())
+}
+
 func (l *lengthValidator) Err() string {
-	key := fmt.Sprintf(lengthKey, l.structName+l.FieldName())
+	key := fmt.Sprintf(lengthKey, l.structName+l.FieldPath().CleanedPath())
 
 	if validator.GeneratorMemory[key] {
 		return ""
@@ -49,7 +55,7 @@ func (l *lengthValidator) Err() string {
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", l.ErrVariable(),
 		"[@FIELD]", l.FieldName(),
-		"[@PATH]", fmt.Sprintf("%s.%s", l.structName, l.FieldName()),
+		"[@PATH]", l.FieldPath().String(),
 		"[@VALUE]", l.lengthValue,
 		"[@TYPE]", l.ruleName,
 	)
@@ -58,7 +64,7 @@ func (l *lengthValidator) Err() string {
 }
 
 func (l *lengthValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]LengthValidation", "[@PATH]", l.structName+l.FieldName())
+	return strings.ReplaceAll("Err[@PATH]LengthValidation", "[@PATH]", l.FieldPath().CleanedPath())
 }
 
 func (l *lengthValidator) Imports() []string {
@@ -66,24 +72,25 @@ func (l *lengthValidator) Imports() []string {
 }
 
 // ValidateLength creates a new lengthValidator if the field type is string and the length marker is present.
-func ValidateLength(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
-	typ := pass.TypesInfo.TypeOf(field.Type)
+func ValidateLength(input registry.ValidatorInput) validator.Validator {
+	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
 	basic, ok := typ.Underlying().(*types.Basic)
 
 	if !ok || basic.Kind() != types.String {
 		return nil
 	}
 
-	lengthValue, ok := expressions[markers.GoValidMarkerLength]
+	lengthValue, ok := input.Expressions[markers.GoValidMarkerLength]
 	if !ok {
 		return nil
 	}
 
 	return &lengthValidator{
-		pass:        pass,
-		field:       field,
+		pass:        input.Pass,
+		field:       input.Field,
 		lengthValue: lengthValue,
-		structName:  structName,
-		ruleName:    ruleName,
+		structName:  input.StructName,
+		ruleName:    input.RuleName,
+		parentPath:  input.ParentPath,
 	}
 }
