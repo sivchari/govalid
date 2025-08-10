@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
@@ -49,4 +50,10 @@ func ValidateMinItems(t *MinItems) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*MinItems)(nil)
+
+func (t *MinItems) Validate() error {
+	return ValidateMinItems(t)
 }

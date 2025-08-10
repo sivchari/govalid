@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
@@ -58,4 +59,10 @@ func ValidateCEL(t *CEL) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*CEL)(nil)
+
+func (t *CEL) Validate() error {
+	return ValidateCEL(t)
 }

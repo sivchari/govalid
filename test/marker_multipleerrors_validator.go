@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"unicode/utf8"
 )
@@ -41,4 +42,10 @@ func ValidateMultipleErrors(t *MultipleErrors) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*MultipleErrors)(nil)
+
+func (t *MultipleErrors) Validate() error {
+	return ValidateMultipleErrors(t)
 }
