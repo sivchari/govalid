@@ -3,6 +3,7 @@ package partial
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
@@ -31,4 +32,10 @@ func ValidatePartial(t *Partial) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*Partial)(nil)
+
+func (t *Partial) Validate() error {
+	return ValidatePartial(t)
 }

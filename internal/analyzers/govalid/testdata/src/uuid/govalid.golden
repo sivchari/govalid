@@ -3,6 +3,7 @@ package uuid
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
@@ -72,4 +73,10 @@ func ValidateUUID(t *UUID) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*UUID)(nil)
+
+func (t *UUID) Validate() error {
+	return ValidateUUID(t)
 }

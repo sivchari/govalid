@@ -3,6 +3,7 @@ package inside
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
@@ -36,4 +37,10 @@ func ValidateInside(t *Inside) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*Inside)(nil)
+
+func (t *Inside) Validate() error {
+	return ValidateInside(t)
 }

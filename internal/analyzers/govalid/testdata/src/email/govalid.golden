@@ -3,6 +3,7 @@ package email
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
@@ -32,4 +33,10 @@ func ValidateEmail(t *Email) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*Email)(nil)
+
+func (t *Email) Validate() error {
+	return ValidateEmail(t)
 }

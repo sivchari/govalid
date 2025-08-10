@@ -3,6 +3,7 @@ package alpha
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
@@ -50,4 +51,10 @@ func ValidateAlpha(t *Alpha) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*Alpha)(nil)
+
+func (t *Alpha) Validate() error {
+	return ValidateAlpha(t)
 }

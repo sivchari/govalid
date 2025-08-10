@@ -3,6 +3,7 @@ package enum
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
@@ -58,4 +59,10 @@ func ValidateEnum(t *Enum) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*Enum)(nil)
+
+func (t *Enum) Validate() error {
+	return ValidateEnum(t)
 }

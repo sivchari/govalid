@@ -3,6 +3,7 @@ package numeric
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
@@ -32,4 +33,10 @@ func ValidateNumeric(t *Numeric) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*Numeric)(nil)
+
+func (t *Numeric) Validate() error {
+	return ValidateNumeric(t)
 }
