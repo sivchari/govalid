@@ -12,26 +12,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      
-      - name: Check if benchmarks are synced
-        id: check-sync
-        run: |
-          if ./check-benchmark-sync.sh | grep -q "days old"; then
-              echo "Benchmarks are out of sync, proceeding with sync."
-              echo "sync_needed=true" >> $GITHUB_OUTPUT
-            else
-              echo "Benchmarks are already up to date."
-              echo "sync_needed=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Run benchmark sync script
-        id: sync-benchmarks
-        if: steps.check-sync.outputs.sync_needed == 'true'
         run: ./sync-benchmarks.sh
+
       - name: Commit and push changes
         id: commit-changes
         run: |
@@ -47,6 +36,7 @@ jobs:
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Notify completion
         run: |
           if [ "${{ steps.commit-changes.outputs.committed }}" = "true" ]; then
