@@ -42,8 +42,8 @@ func BenchmarkAsaskevichGovalidatorAlpha(b *testing.B) {
 
 func BenchmarkGookitValidateAlpha(b *testing.B) {
 	instance := test.Alpha{FirstName: "John", LastName: "Doe", CountryCode: "US"}
-	v := validate.Struct(instance)
 	for b.Loop() {
+		v := validate.Struct(instance)
 		if !v.Validate() {
 			b.Fatal("validation failed")
 		}
