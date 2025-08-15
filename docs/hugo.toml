@@ -23,7 +23,7 @@ staticDir = "static"
     weight = 20
   [[menu.main]]
     name = "Benchmarks"
-    url = "/benchmarks/"
+    url = "https://github.com/sivchari/govalid/blob/main/test/benchmark/README.md"
     weight = 30
   [[menu.main]]
     name = "Examples"

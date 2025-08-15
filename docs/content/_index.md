@@ -116,17 +116,17 @@ func main() {
 
 ## Performance Comparison
 
-| Validator | govalid | go-playground | go-validator | ozzo-validation | Best Improvement |
-|-----------|---------|---------------|--------------|-----------------|------------------|
-| Required  | 10.00 | 149.5 | **14.9x faster** |
-| Email     | 57.79 | 1103 | **19x faster** |
-| GT/LT     | ~10.00 | ~106.5 | **10.6x faster** |
-| MaxLength | 31.74 | 137.3 | **4.3x faster** |
-| Enum      | 10.00 | N/A (unique to govalid)| **govalid exclusive** |
+| Validator | govalid | Best Competitor | Improvement |
+|-----------|---------|-----------------|-------------|
+| Required  | 2.112 | 1.748 (asaskevich) | **0.8x faster** |
+| Email     | 34.10 | 586.0 (asaskevich) | **17.1x faster** |
+| GT/LT     | 1.872 | 51.58 (asaskevich) | **27.5x faster** |
+| MaxLength | 14.29 | 68.96 (go-playground) | **4.8x faster** |
+| Enum      | 2.661 | N/A | **govalid exclusive** |
 
 *All benchmarks show 0 allocations for govalid vs 0-80 allocations for competitors*
 
-**Methodology**: 10 runs per benchmark analyzed with `benchstat` for statistical significance
+📊 **[View full benchmark results →](https://github.com/sivchari/govalid/blob/main/test/benchmark/README.md)**
 
 ## Supported Validators
 

@@ -11,7 +11,7 @@ echo "🔄 Synchronizing benchmark results across documentation..."
 echo "📊 Running fresh benchmarks..."
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT/test"
-BENCHMARK_OUTPUT=$(go test ./benchmark/ -bench=. -benchmem -benchtime=10s -timeout=60m | grep "^Benchmark" || echo "# Benchmark execution failed")
+BENCHMARK_OUTPUT=$(go test ./benchmark/ -bench=. -benchmem -benchtime=1s -timeout=5m | grep "^Benchmark" || echo "# Benchmark execution failed")
 
 # Get current date and system info
 BENCH_DATE=$(date +"%Y-%m-%d")
@@ -39,64 +39,190 @@ echo "📊 Creating performance comparison table..."
 
 COMPARISON_TABLE=$(echo "$BENCHMARK_OUTPUT" | awk '
 BEGIN { 
-    print "| Validator | govalid (ns/op) | go-playground/validator (ns/op) | Improvement | govalid Allocs | Competitor Allocs |"
-    print "|-----------|-----------------|--------------------------------|-------------|----------------|-------------------|"
+    print "| Validator | govalid | go-playground | vs go-playground | asaskevich/govalidator | vs asaskevich | gookit/validate | vs gookit |"
+    print "|-----------|---------|---------------|------------------|----------------------|---------------|----------------|----------|"
 }
 {
-    if ($1 ~ /BenchmarkGoValid/ && $1 !~ /Enum/) {
-        # Extract validator name
+    # Store all benchmark results by validator name
+    # Important: Check more specific patterns first to avoid false matches
+    
+    if ($1 ~ /BenchmarkGoValidCEL/) {
+        # Skip CEL benchmarks in main table
+        next
+    }
+    else if ($1 ~ /BenchmarkGoValidator/) {
+        # This is asaskevich/govalidator (BenchmarkGoValidator*)
+        validator = $1
+        gsub(/BenchmarkGoValidator/, "", validator)
+        gsub(/-.*/, "", validator)
+        
+        time = $3
+        allocs = $7
+        bytes = $5
+        
+        if (bytes == "0" || allocs == "0") {
+            result = time " / 0 allocs"
+        } else {
+            result = time " / " bytes " B / " allocs " allocs"
+        }
+        
+        asaskevich_results[validator] = result
+        asaskevich_time[validator] = time
+    }
+    else if ($1 ~ /BenchmarkGoValid/) {
+        # This is govalid (BenchmarkGoValid*)
         validator = $1
         gsub(/BenchmarkGoValid/, "", validator)
         gsub(/-.*/, "", validator)
         
-        govalid_time = $3
-        govalid_allocs = $7
+        time = $3
+        allocs = $7
+        bytes = $5
         
-        # Store govalid results
-        govalid_results[validator] = govalid_time " PIPE " govalid_allocs
+        # Format result string
+        if (bytes == "0" || allocs == "0") {
+            result = time " / 0 allocs"
+        } else {
+            result = time " / " bytes " B / " allocs " allocs"
+        }
+        
+        govalid_results[validator] = result
+        govalid_time[validator] = time
     }
     else if ($1 ~ /BenchmarkGoPlayground/) {
-        # Extract validator name and match with govalid
         validator = $1
         gsub(/BenchmarkGoPlayground/, "", validator)
         gsub(/-.*/, "", validator)
         
-        playground_time = $3
-        playground_allocs = $7
-        playground_bytes = $5
+        time = $3
+        allocs = $7
+        bytes = $5
         
-        if (validator in govalid_results) {
-            split(govalid_results[validator], govalid, " PIPE ")
-            govalid_ns = govalid[1]
-            govalid_alloc = govalid[2]
-            
-            # Calculate improvement
-            gsub(/ns\/op/, "", govalid_ns)
-            gsub(/ns\/op/, "", playground_time)
-            
-            if (govalid_ns > 0) {
-                improvement = playground_time / govalid_ns
-                improvement_text = sprintf("**%.1fx faster**", improvement)
-            } else {
-                improvement_text = "**N/A**"
-            }
-            
-            # Format allocations correctly
-            govalid_alloc_display = govalid_alloc " allocs/op"
-            
-            playground_alloc_display = playground_allocs " allocs/op"
-            if (playground_bytes != "0" && playground_bytes != "") {
-                playground_alloc_display = playground_allocs " allocs + " playground_bytes " B/op"
-            }
-            
-            printf "| %s | %s | %s | %s | %s | %s |\n", 
-                   validator, govalid_ns "ns", playground_time, improvement_text, govalid_alloc_display, playground_alloc_display
+        if (bytes == "0" || allocs == "0") {
+            result = time " / 0 allocs"
+        } else {
+            result = time " / " bytes " B / " allocs " allocs"
         }
+        
+        playground_results[validator] = result
+        playground_time[validator] = time
+    }
+    else if ($1 ~ /BenchmarkAsaskevichGovalidator/) {
+        validator = $1
+        gsub(/BenchmarkAsaskevichGovalidator/, "", validator)
+        gsub(/-.*/, "", validator)
+        
+        time = $3
+        allocs = $7
+        bytes = $5
+        
+        if (bytes == "0" || allocs == "0") {
+            result = time " / 0 allocs"
+        } else {
+            result = time " / " bytes " B / " allocs " allocs"
+        }
+        
+        asaskevich_results[validator] = result
+        asaskevich_time[validator] = time
+    }
+    else if ($1 ~ /BenchmarkGookitValidate/) {
+        validator = $1
+        gsub(/BenchmarkGookitValidate/, "", validator)
+        gsub(/-.*/, "", validator)
+        
+        time = $3
+        allocs = $7
+        bytes = $5
+        
+        if (bytes == "0" || allocs == "0") {
+            result = time " / 0 allocs"
+        } else {
+            result = time " / " bytes " B / " allocs " allocs"
+        }
+        
+        gookit_results[validator] = result
+        gookit_time[validator] = time
     }
 }
 END {
-    # Add Enum separately as it is govalid-only
-    print "| Enum | 2.242ns | N/A (govalid exclusive) | **govalid exclusive** | 0 allocs/op | N/A |"
+    # Print results for each validator
+    for (validator in govalid_results) {
+        # Skip CEL-related benchmarks in the main table
+        if (validator ~ /CEL/) continue
+        
+        govalid_col = govalid_results[validator]
+        playground_col = (validator in playground_results) ? playground_results[validator] : "N/A"
+        asaskevich_col = (validator in asaskevich_results) ? asaskevich_results[validator] : "N/A"
+        gookit_col = (validator in gookit_results) ? gookit_results[validator] : "N/A"
+        
+        # Calculate improvement for each library
+        govalid_ns = govalid_time[validator]
+        gsub(/ns\/op/, "", govalid_ns)
+        
+        # vs go-playground
+        playground_improvement = "N/A"
+        if (validator in playground_time) {
+            pg_ns = playground_time[validator]
+            gsub(/ns\/op/, "", pg_ns)
+            if (govalid_ns > 0) {
+                improvement = pg_ns / govalid_ns
+                playground_improvement = sprintf("**%.1fx**", improvement)
+            }
+        }
+        
+        # vs asaskevich
+        asaskevich_improvement = "N/A"
+        if (validator in asaskevich_time) {
+            as_ns = asaskevich_time[validator]
+            gsub(/ns\/op/, "", as_ns)
+            if (govalid_ns > 0) {
+                improvement = as_ns / govalid_ns
+                asaskevich_improvement = sprintf("**%.1fx**", improvement)
+            }
+        }
+        
+        # vs gookit
+        gookit_improvement = "N/A"
+        if (validator in gookit_time) {
+            gk_ns = gookit_time[validator]
+            gsub(/ns\/op/, "", gk_ns)
+            if (govalid_ns > 0) {
+                improvement = gk_ns / govalid_ns
+                gookit_improvement = sprintf("**%.1fx**", improvement)
+            }
+        }
+        
+        printf "| %s | %s | %s | %s | %s | %s | %s | %s |\n", 
+               validator, govalid_col, playground_col, playground_improvement, asaskevich_col, asaskevich_improvement, gookit_col, gookit_improvement
+    }
+}')
+
+# Generate CEL benchmarks table separately
+echo "📊 Creating CEL benchmarks table..."
+
+CEL_TABLE=$(echo "$BENCHMARK_OUTPUT" | awk '
+BEGIN { 
+    print "| CEL Validator | govalid (ns/op) | Allocations |"
+    print "|---------------|-----------------|-------------|"
+}
+{
+    if ($1 ~ /BenchmarkGoValidCEL/) {
+        validator = $1
+        gsub(/BenchmarkGoValid/, "", validator)
+        gsub(/-.*/, "", validator)
+        
+        time = $3
+        allocs = $7
+        bytes = $5
+        
+        if (bytes == "0" || allocs == "0") {
+            alloc_str = "0 allocs"
+        } else {
+            alloc_str = bytes " B / " allocs " allocs"
+        }
+        
+        printf "| %s | %s | %s |\n", validator, time, alloc_str
+    }
 }')
 
 # Update test/benchmark/README.md
@@ -106,7 +232,7 @@ cd "$PROJECT_ROOT"
 cat > test/benchmark/README.md << EOF
 # Benchmark Results
 
-This document contains performance comparison results between govalid and go-playground/validator.
+Performance comparison between govalid and popular Go validation libraries.
 
 ## Latest Results
 
@@ -116,35 +242,13 @@ $BENCHMARK_DATA
 
 $COMPARISON_TABLE
 
-## govalid-Exclusive Features
+## CEL Expression Validation (govalid Exclusive)
 
-### Enum Validation
-- **Enum**: Comprehensive enum validation for string, numeric, and custom types (~2.17ns)
-- Zero-allocation enum checking with compile-time safety
-- Works with custom type definitions (e.g., \`type Status string\`)
+$CEL_TABLE
 
-### Collection Type Extension
-These validators support map and channel types, which go-playground/validator doesn't support:
-- **MaxItems**: slice, array, map, channel length ≤ limit  
-- **MinItems**: slice, array, map, channel length ≥ limit
+CEL (Common Expression Language) support allows complex runtime expressions with near-zero overhead.
 
-## Key Findings
-
-1. **Exceptional Performance**: govalid shows 4.8x to 45x performance improvements across all validators
-2. **Sub-3ns Execution**: Most validators execute in under 3 nanoseconds  
-3. **Zero Allocations**: All govalid validators perform zero heap allocations
-4. **Statistical Significance**: Results are consistent across multiple runs
-5. **Extended Type Support**: Collection validators work with map/channel types
-
-## Implementation Notes
-
-- govalid generates compile-time validation functions with zero runtime reflection
-- **External Helper Functions**: Complex validators use optimized external functions
-- **Zero-Allocation**: Manual string parsing eliminates allocations
-- Proper Unicode support in string length validators using \`utf8.RuneCountInString\`
-- Comprehensive type support including map and channel validation
-
-## Running Benchmarks Yourself
+## Running Benchmarks
 
 \`\`\`bash
 # Update all benchmark documentation
@@ -152,158 +256,106 @@ make sync-benchmarks
 
 # Run benchmarks manually
 cd test
-go test ./benchmark/ -bench=. -benchmem
+go test ./benchmark/ -bench=. -benchmem -benchtime=10s
+
+# Run specific validator benchmarks
+go test ./benchmark/ -bench=BenchmarkGoValid{ValidatorName} -benchmem
 \`\`\`
 EOF
 
-# Update docs/content/benchmarks.md
-echo "📄 Updating docs/content/benchmarks.md..."
-
-cat > docs/content/benchmarks.md << EOF
----
-title: "Benchmarks"
-description: "Performance comparison between govalid and go-playground/validator"
-weight: 30
----
-
-# Performance Benchmarks
-
-govalid is designed for maximum performance with zero allocations. Here are the latest benchmark results comparing govalid with go-playground/validator.
-
-## Latest Results
-
-$BENCHMARK_DATA
-
-## Performance Comparison
-
-$COMPARISON_TABLE
-
-## Performance Categories
-
-### 🚀 Ultra-Fast (< 3ns)
-- **Required**: ~1.9ns - 45x faster
-- **GT/GTE/LT/LTE**: ~1.9ns - 32x faster
-- **Enum**: ~2.2ns - govalid exclusive
-- **MaxItems**: ~2.5ns - 32x faster
-- **MinItems**: ~2.8ns - 29x faster
-
-### ⚡ Fast (3-40ns)
-- **MinLength**: ~11ns - 6x faster
-- **MaxLength**: ~15ns - 5x faster
-- **UUID**: ~36ns - 7x faster
-- **URL**: ~41ns - 7x faster
-- **Email**: ~36ns - 17x faster
-
-## Key Performance Insights
-
-### 1. Zero Allocations
-**All govalid validators perform zero heap allocations**, while competitors often allocate 0-5 objects per validation.
-
-### 2. Sub-Nanosecond Efficiency
-Simple validators (GT, LT, Required) execute in under 2ns, making them essentially free operations.
-
-### 3. Complex Validation Optimization
-Even complex validators like email and URL are optimized with:
-- Manual string parsing (no regex overhead)
-- Single-pass validation algorithms
-- Zero memory allocations
-
-### 4. String Length Performance
-Unicode-aware string validators are 4.8-6.0x faster despite proper UTF-8 handling.
-
-## govalid-Exclusive Features
-
-### Enum Validation
-\`\`\`go
-// +govalid:enum=admin,user,guest
-Role string
-\`\`\`
-- **Performance**: ~2.2ns with 0 allocations
-- **No equivalent** in go-playground/validator
-- Supports string, numeric, and custom types
-
-### Extended Collection Support
-\`\`\`go
-// +govalid:maxitems=10
-Items map[string]int  // Maps supported!
-
-// +govalid:minitems=1
-Channel chan string   // Channels supported!
-\`\`\`
-
-## Optimization Techniques
-
-### 1. Code Generation
-- **Compile-time validation functions** (no runtime reflection)
-- **Inlined simple operations** for maximum speed
-- **Direct field access** with no interface overhead
-
-### 2. External Helper Functions
-Complex validators use optimized external functions for better performance.
-
-### 3. Manual String Parsing
-- **Character-by-character parsing** instead of \`strings.Split\`
-- **Direct indexing** instead of \`strings.Contains\`
-- **Single-pass algorithms** for complex validation
-
-### 4. Memory Optimization
-- **Zero heap allocations** across all validators
-- **Stack-only operations** for maximum cache efficiency
-- **Minimal memory footprint** in generated code
-
-## Running Benchmarks
-
-To run benchmarks yourself:
-
-\`\`\`bash
-# Sync all benchmark documentation
-make sync-benchmarks
-
-# Run benchmarks manually
-cd test
-go test ./benchmark/ -bench=. -benchmem
-\`\`\`
-
-## Conclusion
-
-govalid delivers exceptional performance improvements:
-- **4.8x to 45x faster** than go-playground/validator
-- **Zero allocations** across all validators
-- **Sub-3ns performance** for simple operations
-- **Extended type support** (maps, channels, enums)
-- **Production-ready** with comprehensive test coverage
-
-Choose govalid when performance matters and zero allocations are critical for your application's success.
-EOF
+# docs/content/benchmarks.md is now deprecated - we only maintain test/benchmark/README.md
+echo "📄 Skipping docs/content/benchmarks.md (deprecated - using test/benchmark/README.md instead)"
 
 # Update main homepage performance table
 echo "📄 Updating docs/content/_index.md performance table..."
 
-# Extract key metrics for the homepage table
+# Extract key metrics for the homepage table (simplified showcase)
 HOMEPAGE_TABLE=$(echo "$BENCHMARK_OUTPUT" | awk '
 {
+    # Store benchmark results
     if ($1 ~ /BenchmarkGoValidRequired/) govalid_required = $3
     if ($1 ~ /BenchmarkGoPlaygroundRequired/) playground_required = $3
+    if ($1 ~ /BenchmarkGoValidatorRequired/) asaskevich_required = $3
+    
     if ($1 ~ /BenchmarkGoValidEmail/) govalid_email = $3
     if ($1 ~ /BenchmarkGoPlaygroundEmail/) playground_email = $3
+    if ($1 ~ /BenchmarkGoValidatorEmail/) asaskevich_email = $3
+    if ($1 ~ /BenchmarkGookitValidateEmail/) gookit_email = $3
+    
     if ($1 ~ /BenchmarkGoValidGT/) govalid_gt = $3
     if ($1 ~ /BenchmarkGoPlaygroundGT/) playground_gt = $3
+    if ($1 ~ /BenchmarkGoValidatorGT/) asaskevich_gt = $3
+    
     if ($1 ~ /BenchmarkGoValidMaxLength/) govalid_maxlength = $3
     if ($1 ~ /BenchmarkGoPlaygroundMaxLength/) playground_maxlength = $3
+    if ($1 ~ /BenchmarkGoValidatorMaxLength/) asaskevich_maxlength = $3
+    if ($1 ~ /BenchmarkGookitValidateMaxLength/) gookit_maxlength = $3
+    
     if ($1 ~ /BenchmarkGoValidEnum/) govalid_enum = $3
 }
 END {
-    # Calculate improvements
-    req_imp = int(playground_required / govalid_required * 10) / 10
-    email_imp = int(playground_email / govalid_email * 10) / 10
-    gt_imp = int(playground_gt / govalid_gt * 10) / 10
-    max_imp = int(playground_maxlength / govalid_maxlength * 10) / 10
+    # Calculate best competitor for each validator
+    print "| Validator | govalid | Best Competitor | Improvement |"
+    print "|-----------|---------|-----------------|-------------|"
     
-    print "| Required  | " govalid_required " | " playground_required " | **" req_imp "x faster** |"
-    print "| Email     | " govalid_email " | " playground_email " | **" email_imp "x faster** |"
-    print "| GT/LT     | ~" govalid_gt " | ~" playground_gt " | **" gt_imp "x faster** |"
-    print "| MaxLength | " govalid_maxlength " | " playground_maxlength " | **" max_imp "x faster** |"
-    print "| Enum      | " govalid_enum " | N/A (unique to govalid)| **govalid exclusive** |"
+    # Required
+    best_req = playground_required
+    best_req_name = "go-playground"
+    if (asaskevich_required != "" && asaskevich_required < best_req) {
+        best_req = asaskevich_required
+        best_req_name = "asaskevich"
+    }
+    req_imp = int(best_req / govalid_required * 10) / 10
+    print "| Required  | " govalid_required " | " best_req " (" best_req_name ") | **" req_imp "x faster** |"
+    
+    # Email
+    best_email = 999999
+    best_email_name = ""
+    if (playground_email != "") {
+        best_email = playground_email
+        best_email_name = "go-playground"
+    }
+    if (asaskevich_email != "" && asaskevich_email < best_email) {
+        best_email = asaskevich_email
+        best_email_name = "asaskevich"
+    }
+    if (gookit_email != "" && gookit_email < best_email) {
+        best_email = gookit_email
+        best_email_name = "gookit"
+    }
+    email_imp = int(best_email / govalid_email * 10) / 10
+    print "| Email     | " govalid_email " | " best_email " (" best_email_name ") | **" email_imp "x faster** |"
+    
+    # GT
+    best_gt = playground_gt
+    best_gt_name = "go-playground"
+    if (asaskevich_gt != "" && asaskevich_gt < best_gt) {
+        best_gt = asaskevich_gt
+        best_gt_name = "asaskevich"
+    }
+    gt_imp = int(best_gt / govalid_gt * 10) / 10
+    print "| GT/LT     | " govalid_gt " | " best_gt " (" best_gt_name ") | **" gt_imp "x faster** |"
+    
+    # MaxLength
+    best_maxlen = 999999
+    best_maxlen_name = ""
+    if (playground_maxlength != "") {
+        best_maxlen = playground_maxlength
+        best_maxlen_name = "go-playground"
+    }
+    if (asaskevich_maxlength != "" && asaskevich_maxlength < best_maxlen) {
+        best_maxlen = asaskevich_maxlength
+        best_maxlen_name = "asaskevich"
+    }
+    if (gookit_maxlength != "" && gookit_maxlength < best_maxlen) {
+        best_maxlen = gookit_maxlength
+        best_maxlen_name = "gookit"
+    }
+    max_imp = int(best_maxlen / govalid_maxlength * 10) / 10
+    print "| MaxLength | " govalid_maxlength " | " best_maxlen " (" best_maxlen_name ") | **" max_imp "x faster** |"
+    
+    # Enum (govalid exclusive)
+    print "| Enum      | " govalid_enum " | N/A | **govalid exclusive** |"
 }')
 
 # Update the performance table in _index.md
@@ -313,7 +365,7 @@ echo "$HOMEPAGE_TABLE" > /tmp/homepage_table.txt
 # Replace the table section in _index.md
 awk '
 BEGIN { in_table = 0 }
-/\| Required/ { in_table = 1; next }
+/\| Validator.*\| govalid/ { in_table = 1; next }
 /\| Enum/ && in_table { 
     # Print the new table content
     while ((getline line < "/tmp/homepage_table.txt") > 0) {
@@ -334,10 +386,8 @@ echo "✅ Benchmark synchronization complete!"
 echo ""
 echo "📁 Updated files:"
 echo "  - test/benchmark/README.md"
-echo "  - docs/content/benchmarks.md"
 echo "  - docs/content/_index.md (performance table)"
 echo ""
-echo "🔍 All files now contain identical benchmark data from: $BENCH_DATE"
+echo "🔍 Benchmark data updated from: $BENCH_DATE"
 echo ""
-echo "💡 To verify synchronization, run:"
-echo "  make check-benchmark-sync"
+echo "📊 Full benchmark results: test/benchmark/README.md"
