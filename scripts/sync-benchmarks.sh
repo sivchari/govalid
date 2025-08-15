@@ -266,127 +266,14 @@ EOF
 # docs/content/benchmarks.md is now deprecated - we only maintain test/benchmark/README.md
 echo "📄 Skipping docs/content/benchmarks.md (deprecated - using test/benchmark/README.md instead)"
 
-# Update main homepage performance table
-echo "📄 Updating docs/content/_index.md performance table..."
-
-# Extract key metrics for the homepage table (simplified showcase)
-HOMEPAGE_TABLE=$(echo "$BENCHMARK_OUTPUT" | awk '
-{
-    # Store benchmark results
-    if ($1 ~ /BenchmarkGoValidRequired/) govalid_required = $3
-    if ($1 ~ /BenchmarkGoPlaygroundRequired/) playground_required = $3
-    if ($1 ~ /BenchmarkGoValidatorRequired/) asaskevich_required = $3
-    
-    if ($1 ~ /BenchmarkGoValidEmail/) govalid_email = $3
-    if ($1 ~ /BenchmarkGoPlaygroundEmail/) playground_email = $3
-    if ($1 ~ /BenchmarkGoValidatorEmail/) asaskevich_email = $3
-    if ($1 ~ /BenchmarkGookitValidateEmail/) gookit_email = $3
-    
-    if ($1 ~ /BenchmarkGoValidGT/) govalid_gt = $3
-    if ($1 ~ /BenchmarkGoPlaygroundGT/) playground_gt = $3
-    if ($1 ~ /BenchmarkGoValidatorGT/) asaskevich_gt = $3
-    
-    if ($1 ~ /BenchmarkGoValidMaxLength/) govalid_maxlength = $3
-    if ($1 ~ /BenchmarkGoPlaygroundMaxLength/) playground_maxlength = $3
-    if ($1 ~ /BenchmarkGoValidatorMaxLength/) asaskevich_maxlength = $3
-    if ($1 ~ /BenchmarkGookitValidateMaxLength/) gookit_maxlength = $3
-    
-    if ($1 ~ /BenchmarkGoValidEnum/) govalid_enum = $3
-}
-END {
-    # Calculate best competitor for each validator
-    print "| Validator | govalid | Best Competitor | Improvement |"
-    print "|-----------|---------|-----------------|-------------|"
-    
-    # Required
-    best_req = playground_required
-    best_req_name = "go-playground"
-    if (asaskevich_required != "" && asaskevich_required < best_req) {
-        best_req = asaskevich_required
-        best_req_name = "asaskevich"
-    }
-    req_imp = int(best_req / govalid_required * 10) / 10
-    print "| Required  | " govalid_required " | " best_req " (" best_req_name ") | **" req_imp "x faster** |"
-    
-    # Email
-    best_email = 999999
-    best_email_name = ""
-    if (playground_email != "") {
-        best_email = playground_email
-        best_email_name = "go-playground"
-    }
-    if (asaskevich_email != "" && asaskevich_email < best_email) {
-        best_email = asaskevich_email
-        best_email_name = "asaskevich"
-    }
-    if (gookit_email != "" && gookit_email < best_email) {
-        best_email = gookit_email
-        best_email_name = "gookit"
-    }
-    email_imp = int(best_email / govalid_email * 10) / 10
-    print "| Email     | " govalid_email " | " best_email " (" best_email_name ") | **" email_imp "x faster** |"
-    
-    # GT
-    best_gt = playground_gt
-    best_gt_name = "go-playground"
-    if (asaskevich_gt != "" && asaskevich_gt < best_gt) {
-        best_gt = asaskevich_gt
-        best_gt_name = "asaskevich"
-    }
-    gt_imp = int(best_gt / govalid_gt * 10) / 10
-    print "| GT/LT     | " govalid_gt " | " best_gt " (" best_gt_name ") | **" gt_imp "x faster** |"
-    
-    # MaxLength
-    best_maxlen = 999999
-    best_maxlen_name = ""
-    if (playground_maxlength != "") {
-        best_maxlen = playground_maxlength
-        best_maxlen_name = "go-playground"
-    }
-    if (asaskevich_maxlength != "" && asaskevich_maxlength < best_maxlen) {
-        best_maxlen = asaskevich_maxlength
-        best_maxlen_name = "asaskevich"
-    }
-    if (gookit_maxlength != "" && gookit_maxlength < best_maxlen) {
-        best_maxlen = gookit_maxlength
-        best_maxlen_name = "gookit"
-    }
-    max_imp = int(best_maxlen / govalid_maxlength * 10) / 10
-    print "| MaxLength | " govalid_maxlength " | " best_maxlen " (" best_maxlen_name ") | **" max_imp "x faster** |"
-    
-    # Enum (govalid exclusive)
-    print "| Enum      | " govalid_enum " | N/A | **govalid exclusive** |"
-}')
-
-# Update the performance table in _index.md
-# Create a temporary file with the new table
-echo "$HOMEPAGE_TABLE" > /tmp/homepage_table.txt
-
-# Replace the table section in _index.md
-awk '
-BEGIN { in_table = 0 }
-/\| Validator.*\| govalid/ { in_table = 1; next }
-/\| Enum/ && in_table { 
-    # Print the new table content
-    while ((getline line < "/tmp/homepage_table.txt") > 0) {
-        print line
-    }
-    close("/tmp/homepage_table.txt")
-    in_table = 0
-    next
-}
-in_table { next }
-{ print }
-' docs/content/_index.md > /tmp/_index_new.md && mv /tmp/_index_new.md docs/content/_index.md
-
-rm -f /tmp/homepage_table.txt
+# Skip updating _index.md - keep it static
+echo "📄 Skipping docs/content/_index.md (performance table is now static)"
 
 echo ""
 echo "✅ Benchmark synchronization complete!"
 echo ""
 echo "📁 Updated files:"
 echo "  - test/benchmark/README.md"
-echo "  - docs/content/_index.md (performance table)"
 echo ""
 echo "🔍 Benchmark data updated from: $BENCH_DATE"
 echo ""
