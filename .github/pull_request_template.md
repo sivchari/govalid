@@ -27,7 +27,6 @@ Before submitting this pull request, ensure your contribution meets these qualit
 - [ ] Benchmark tests comparing against popular validation libraries (`test/benchmark/`)
   - [ ] [go-playground/validator](https://github.com/go-playground/validator) (BenchmarkGoPlayground*)
   - [ ] [asaskevich/govalidator](https://github.com/asaskevich/govalidator) (BenchmarkGoValidator*)
-  - [ ] [go-ozzo/ozzo-validation](https://github.com/go-ozzo/ozzo-validation) (BenchmarkOzzoValidation*)
   - [ ] [gookit/validate](https://github.com/gookit/validate) (BenchmarkGookitValidate*)
 - [ ] All test files generated: `cd test && go generate`
 
