@@ -205,38 +205,17 @@ The generated `Validate()` method enables seamless integration with HTTP middlew
 
 ```go
 import (
-	"context"
-	"encoding/json"
 	"net/http"
-	"github.com/sivchari/govalid"
+	"github.com/sivchari/govalid/validation/middleware"
 )
 
-func ValidateRequest[T govalid.Validator](next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var body T
-
-		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-			return
-		}
-
-		if err := body.Validate(); err != nil {
-			http.Error(w, "Validation error: "+err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), "validatedBody", body)
-		next(w, r.WithContext(ctx))
-	}
-}
-
 func CreatePersonHandler(w http.ResponseWriter, r *http.Request) {
-	person := r.Context().Value("validatedBody").(Person)
+	person := r.Context().Value(middleware.ValidatedBodyKey).(*Person)
 	w.Write([]byte("Person created: " + person.Name))
 }
 
 func main() {
-	http.HandleFunc("/person", ValidateRequest[Person](CreatePersonHandler))
+	http.HandleFunc("/person", middleware.ValidateRequest[*Person](CreatePersonHandler))
 	http.ListenAndServe(":8080", nil)
 }
 ```
