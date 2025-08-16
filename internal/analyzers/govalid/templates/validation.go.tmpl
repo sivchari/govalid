@@ -4,6 +4,7 @@ package {{.PackageName}}
 import (
 	{{if .Metadata }}
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	{{- range $pkg, $_ := .ImportPackages }}
 	"{{ $pkg }}"
@@ -63,4 +64,10 @@ func Validate{{.TypeName}}(t *{{.TypeName}}) error {
   	  return errs
   }
   return nil
+}
+
+var _ govalid.Validator = (*{{.TypeName}})(nil)
+
+func (t *{{.TypeName}}) Validate() error {
+	return Validate{{.TypeName}}(t)
 }

@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
@@ -40,4 +41,10 @@ func ValidateCELCrossField(t *CELCrossField) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*CELCrossField)(nil)
+
+func (t *CELCrossField) Validate() error {
+	return ValidateCELCrossField(t)
 }

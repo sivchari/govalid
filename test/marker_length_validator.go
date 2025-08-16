@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"unicode/utf8"
 )
@@ -32,4 +33,10 @@ func ValidateLength(t *Length) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*Length)(nil)
+
+func (t *Length) Validate() error {
+	return ValidateLength(t)
 }
