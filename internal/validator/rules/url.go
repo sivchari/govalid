@@ -9,6 +9,7 @@ import (
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 type urlValidator struct {
@@ -16,6 +17,7 @@ type urlValidator struct {
 	field      *ast.Field
 	structName string
 	ruleName   string
+	parentPath string
 }
 
 var _ validator.Validator = (*urlValidator)(nil)
@@ -32,11 +34,13 @@ func (u *urlValidator) FieldName() string {
 	return u.field.Names[0].Name
 }
 
-func (u *urlValidator) Err() string {
-	fieldName := u.FieldName()
+func (u *urlValidator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(u.structName, u.parentPath, u.FieldName())
+}
 
+func (u *urlValidator) Err() string {
 	// No need to generate inline function - using external helper
-	key := fmt.Sprintf(urlKey, u.structName+fieldName)
+	key := fmt.Sprintf(urlKey, u.structName+u.FieldPath().CleanedPath())
 	if validator.GeneratorMemory[key] {
 		return ""
 	}
@@ -50,8 +54,8 @@ func (u *urlValidator) Err() string {
 
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", u.ErrVariable(),
-		"[@FIELD]", fieldName,
-		"[@PATH]", fmt.Sprintf("%s.%s", u.structName, fieldName),
+		"[@FIELD]", u.FieldName(),
+		"[@PATH]", u.FieldPath().String(),
 		"[@TYPE]", u.ruleName,
 	)
 
@@ -59,7 +63,7 @@ func (u *urlValidator) Err() string {
 }
 
 func (u *urlValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]URLValidation", `[@PATH]`, u.structName+u.FieldName())
+	return strings.ReplaceAll("Err[@PATH]URLValidation", `[@PATH]`, u.FieldPath().CleanedPath())
 }
 
 func (u *urlValidator) Imports() []string {
@@ -67,8 +71,8 @@ func (u *urlValidator) Imports() []string {
 }
 
 // ValidateURL creates a new urlValidator for string types.
-func ValidateURL(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName, ruleName string) validator.Validator {
-	typ := pass.TypesInfo.TypeOf(field.Type)
+func ValidateURL(input registry.ValidatorInput) validator.Validator {
+	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
 
 	// Check if it's a string type
 	basic, ok := typ.Underlying().(*types.Basic)
@@ -77,9 +81,10 @@ func ValidateURL(pass *codegen.Pass, field *ast.Field, _ map[string]string, stru
 	}
 
 	return &urlValidator{
-		pass:       pass,
-		field:      field,
-		structName: structName,
-		ruleName:   ruleName,
+		pass:       input.Pass,
+		field:      input.Field,
+		structName: input.StructName,
+		ruleName:   input.RuleName,
+		parentPath: input.ParentPath,
 	}
 }

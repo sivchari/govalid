@@ -54,6 +54,9 @@ var (
 
 	// ErrLTComplex128LTValidation is the error returned when the value of the field is greater than the 1.
 	ErrLTComplex128LTValidation = govaliderrors.ValidationError{Reason: "field Complex128 must be less than 1", Path: "LT.Complex128", Type: "lt"}
+
+	// ErrLTStructIntLTValidation is the error returned when the value of the field is greater than the 1.
+	ErrLTStructIntLTValidation = govaliderrors.ValidationError{Reason: "field Int must be less than 1", Path: "LT.Struct.Int", Type: "lt"}
 )
 
 func ValidateLT(t *LT) error {
@@ -157,7 +160,7 @@ func ValidateLT(t *LT) error {
 		t := t.Struct
 
 		if !(t.Int < 1) {
-			err := ErrLTIntLTValidation
+			err := ErrLTStructIntLTValidation
 			err.Value = t.Int
 			errs = append(errs, err)
 		}

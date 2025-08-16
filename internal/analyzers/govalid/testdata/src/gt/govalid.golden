@@ -54,6 +54,9 @@ var (
 
 	// ErrGTComplex128GTValidation is the error returned when the value of the field is less than the 1.
 	ErrGTComplex128GTValidation = govaliderrors.ValidationError{Reason: "field Complex128 must be greater than 1", Path: "GT.Complex128", Type: "gt"}
+
+	// ErrGTStructIntGTValidation is the error returned when the value of the field is less than the 1.
+	ErrGTStructIntGTValidation = govaliderrors.ValidationError{Reason: "field Int must be greater than 1", Path: "GT.Struct.Int", Type: "gt"}
 )
 
 func ValidateGT(t *GT) error {
@@ -157,7 +160,7 @@ func ValidateGT(t *GT) error {
 		t := t.Struct
 
 		if !(t.Int > 1) {
-			err := ErrGTIntGTValidation
+			err := ErrGTStructIntGTValidation
 			err.Value = t.Int
 			errs = append(errs, err)
 		}

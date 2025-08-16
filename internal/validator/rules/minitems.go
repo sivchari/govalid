@@ -11,6 +11,7 @@ import (
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 type minItemsValidator struct {
@@ -19,6 +20,7 @@ type minItemsValidator struct {
 	minItemsValue string
 	structName    string
 	ruleName      string
+	parentPath    string
 }
 
 var _ validator.Validator = (*minItemsValidator)(nil)
@@ -33,8 +35,12 @@ func (m *minItemsValidator) FieldName() string {
 	return m.field.Names[0].Name
 }
 
+func (m *minItemsValidator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
+}
+
 func (m *minItemsValidator) Err() string {
-	key := fmt.Sprintf(minItemsKey, m.structName+m.FieldName())
+	key := fmt.Sprintf(minItemsKey, m.structName+m.FieldPath().CleanedPath())
 
 	if validator.GeneratorMemory[key] {
 		return ""
@@ -50,7 +56,7 @@ func (m *minItemsValidator) Err() string {
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", m.ErrVariable(),
 		"[@FIELD]", m.FieldName(),
-		"[@PATH]", fmt.Sprintf("%s.%s", m.structName, m.FieldName()),
+		"[@PATH]", m.FieldPath().String(),
 		"[@VALUE]", m.minItemsValue,
 		"[@TYPE]", m.ruleName,
 	)
@@ -59,7 +65,7 @@ func (m *minItemsValidator) Err() string {
 }
 
 func (m *minItemsValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]MinItemsValidation", "[@PATH]", m.structName+m.FieldName())
+	return strings.ReplaceAll("Err[@PATH]MinItemsValidation", "[@PATH]", m.FieldPath().CleanedPath())
 }
 
 func (m *minItemsValidator) Imports() []string {
@@ -67,8 +73,8 @@ func (m *minItemsValidator) Imports() []string {
 }
 
 // ValidateMinItems creates a new minItemsValidator if the field type supports len() and the minitems marker is present.
-func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
-	typ := pass.TypesInfo.TypeOf(field.Type)
+func ValidateMinItems(input registry.ValidatorInput) validator.Validator {
+	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
 
 	// Check if it's a type that supports len() (exclude strings - use minlength instead)
 	switch typ.Underlying().(type) {
@@ -78,16 +84,17 @@ func ValidateMinItems(pass *codegen.Pass, field *ast.Field, expressions map[stri
 		return nil
 	}
 
-	minItemsValue, ok := expressions[markers.GoValidMarkerMinitems]
+	minItemsValue, ok := input.Expressions[markers.GoValidMarkerMinitems]
 	if !ok {
 		return nil
 	}
 
 	return &minItemsValidator{
-		pass:          pass,
-		field:         field,
+		pass:          input.Pass,
+		field:         input.Field,
 		minItemsValue: minItemsValue,
-		structName:    structName,
-		ruleName:      ruleName,
+		structName:    input.StructName,
+		ruleName:      input.RuleName,
+		parentPath:    input.ParentPath,
 	}
 }

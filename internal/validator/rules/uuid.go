@@ -10,6 +10,7 @@ import (
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 type uuidValidator struct {
@@ -17,6 +18,7 @@ type uuidValidator struct {
 	field      *ast.Field
 	structName string
 	ruleName   string
+	parentPath string
 }
 
 var _ validator.Validator = (*uuidValidator)(nil)
@@ -31,6 +33,10 @@ func (u *uuidValidator) Validate() string {
 
 func (u *uuidValidator) FieldName() string {
 	return u.field.Names[0].Name
+}
+
+func (u *uuidValidator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(u.structName, u.parentPath, u.FieldName())
 }
 
 func (u *uuidValidator) getUUIDValidationHeader() string {
@@ -93,8 +99,6 @@ func (u *uuidValidator) generateValidationFunction() string {
 }
 
 func (u *uuidValidator) Err() string {
-	fieldName := u.FieldName()
-
 	var result strings.Builder
 
 	// Generate isValidUUID function only once
@@ -104,7 +108,7 @@ func (u *uuidValidator) Err() string {
 		result.WriteString(u.generateValidationFunction())
 	}
 
-	key := fmt.Sprintf(uuidKey, u.structName+fieldName)
+	key := fmt.Sprintf(uuidKey, u.structName+u.FieldPath().CleanedPath())
 	if validator.GeneratorMemory[key] {
 		return result.String()
 	}
@@ -119,7 +123,7 @@ func (u *uuidValidator) Err() string {
 	replacer := strings.NewReplacer(
 		"[@ERRVARIABLE]", u.ErrVariable(),
 		"[@FIELD]", u.FieldName(),
-		"[@PATH]", fmt.Sprintf("%s.%s", u.structName, u.FieldName()),
+		"[@PATH]", u.FieldPath().String(),
 		"[@TYPE]", u.ruleName,
 	)
 
@@ -129,7 +133,7 @@ func (u *uuidValidator) Err() string {
 }
 
 func (u *uuidValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]UUIDValidation", "[@PATH]", u.structName+u.FieldName())
+	return strings.ReplaceAll("Err[@PATH]UUIDValidation", "[@PATH]", u.FieldPath().CleanedPath())
 }
 
 func (u *uuidValidator) Imports() []string {
@@ -137,8 +141,8 @@ func (u *uuidValidator) Imports() []string {
 }
 
 // ValidateUUID creates a new uuidValidator for string types.
-func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName, ruleName string) validator.Validator {
-	typ := pass.TypesInfo.TypeOf(field.Type)
+func ValidateUUID(input registry.ValidatorInput) validator.Validator {
+	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
 
 	// Check if it's a string type
 	basic, ok := typ.Underlying().(*types.Basic)
@@ -147,9 +151,10 @@ func ValidateUUID(pass *codegen.Pass, field *ast.Field, _ map[string]string, str
 	}
 
 	return &uuidValidator{
-		pass:       pass,
-		field:      field,
-		structName: structName,
-		ruleName:   ruleName,
+		pass:       input.Pass,
+		field:      input.Field,
+		structName: input.StructName,
+		ruleName:   input.RuleName,
+		parentPath: input.ParentPath,
 	}
 }

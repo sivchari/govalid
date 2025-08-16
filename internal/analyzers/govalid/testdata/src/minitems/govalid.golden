@@ -22,8 +22,8 @@ var (
 	// ErrMinItemsChanFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
 	ErrMinItemsChanFieldMinItemsValidation = govaliderrors.ValidationError{Reason: "field ChanField must have a minimum of 2 items", Path: "MinItems.ChanField", Type: "minitems"}
 
-	// ErrMinItemsItemsMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
-	ErrMinItemsItemsMinItemsValidation = govaliderrors.ValidationError{Reason: "field Items must have a minimum of 1 items", Path: "MinItems.Items", Type: "minitems"}
+	// ErrMinItemsStructItemsMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
+	ErrMinItemsStructItemsMinItemsValidation = govaliderrors.ValidationError{Reason: "field Items must have a minimum of 1 items", Path: "MinItems.Struct.Items", Type: "minitems"}
 )
 
 func ValidateMinItems(t *MinItems) error {
@@ -61,7 +61,7 @@ func ValidateMinItems(t *MinItems) error {
 		t := t.Struct
 
 		if len(t.Items) < 1 {
-			err := ErrMinItemsItemsMinItemsValidation
+			err := ErrMinItemsStructItemsMinItemsValidation
 			err.Value = t.Items
 			errs = append(errs, err)
 		}
