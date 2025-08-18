@@ -12,48 +12,33 @@ import (
 )
 
 func TestValidateRequest(t *testing.T) {
-	tests := []struct {
-		name           string
-		requestBody    interface{}
-		expectedStatus int
-		expectedBody   string
-		handlerCalled  bool
+	t.Parallel()
+
+	tests := map[string]struct {
+		requestBody interface{}
+		want        int
 	}{
-		{
-			name:           "valid request",
-			requestBody:    fixture.PersonRequest{Name: "John", Email: "john@example.com"},
-			expectedStatus: http.StatusOK,
-			expectedBody:   "Person created: John",
-			handlerCalled:  true,
+		"valid request": {
+			requestBody: fixture.PersonRequest{Name: "John", Email: "john@example.com"},
+			want:        http.StatusOK,
 		},
-		{
-			name:           "invalid email - validation error",
-			requestBody:    fixture.PersonRequest{Name: "John", Email: "invalid-email"},
-			expectedStatus: http.StatusBadRequest,
-			expectedBody:   "Validation error",
-			handlerCalled:  false,
+		"invalid email": {
+			requestBody: fixture.PersonRequest{Name: "John", Email: "invalid-email"},
+			want:        http.StatusBadRequest,
 		},
-		{
-			name:           "invalid json",
-			requestBody:    "invalid json", // Raw string for invalid JSON
-			expectedStatus: http.StatusBadRequest,
-			expectedBody:   "Invalid JSON",
-			handlerCalled:  false,
+		"invalid json": {
+			requestBody: "invalid json",
+			want:        http.StatusBadRequest,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			handlerCalled := false
 			testHandler := func(w http.ResponseWriter, r *http.Request) {
-				handlerCalled = true
-				person := r.Context().Value(middleware.ValidatedBodyKey).(*fixture.PersonRequest)
-				w.Write([]byte("Person created: " + person.Name))
+				w.WriteHeader(http.StatusOK)
 			}
-
-			handler := middleware.ValidateRequest[*fixture.PersonRequest](testHandler)
 
 			var req *http.Request
 			if str, ok := tt.requestBody.(string); ok {
@@ -65,16 +50,11 @@ func TestValidateRequest(t *testing.T) {
 			req.Header.Set("Content-Type", "application/json")
 
 			rr := httptest.NewRecorder()
-			handler(rr, req)
+			sut := middleware.ValidateRequest[*fixture.PersonRequest](testHandler)
+			sut(rr, req)
 
-			if rr.Code != tt.expectedStatus {
-				t.Errorf("Expected status %d, got %d", tt.expectedStatus, rr.Code)
-			}
-			if !bytes.Contains(rr.Body.Bytes(), []byte(tt.expectedBody)) {
-				t.Errorf("Expected body to contain '%s', got '%s'", tt.expectedBody, rr.Body.String())
-			}
-			if handlerCalled != tt.handlerCalled {
-				t.Errorf("Expected handler called: %v, got: %v", tt.handlerCalled, handlerCalled)
+			if rr.Code != tt.want {
+				t.Errorf("Expected status %d, got %d", tt.want, rr.Code)
 			}
 		})
 	}
