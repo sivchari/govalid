@@ -47,6 +47,7 @@ func TestValidateRequest(t *testing.T) {
 				jsonBody, _ := json.Marshal(tt.requestBody)
 				req = httptest.NewRequest("POST", "/test", bytes.NewBuffer(jsonBody))
 			}
+
 			req.Header.Set("Content-Type", "application/json")
 
 			rr := httptest.NewRecorder()
