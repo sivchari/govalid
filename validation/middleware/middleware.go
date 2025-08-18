@@ -1,3 +1,4 @@
+// Package middleware provides HTTP middleware for validating request payloads.
 package middleware
 
 import (
@@ -7,6 +8,8 @@ import (
 	"github.com/sivchari/govalid"
 )
 
+// ValidateRequest returns a middleware that validates the request body using the provided Validator type.
+// If validation fails, it responds with a 400 Bad Request.
 func ValidateRequest[T govalid.Validator](next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var body T
