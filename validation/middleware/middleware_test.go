@@ -36,7 +36,7 @@ func TestValidateRequest(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			testHandler := func(w http.ResponseWriter, r *http.Request) {
+			testHandler := func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusOK)
 			}
 
