@@ -2,11 +2,10 @@
 
 package multiple_markers
 
-type User struct {
-	// +govalid:required
+// +govalid:required
+type Multiple struct {
 	Name string `json:"name"`
 
-	// +govalid:required
 	// +govalid:email
 	Email string `json:"email"`
 
