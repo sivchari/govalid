@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/sivchari/govalid/validation/middleware"
-	"github.com/sivchari/govalid/validation/middleware/fixture"
+	"github.com/sivchari/govalid/validation/middleware/internal/testfixture"
 )
 
 func TestValidateRequest(t *testing.T) {
@@ -19,11 +19,11 @@ func TestValidateRequest(t *testing.T) {
 		want        int
 	}{
 		"valid request": {
-			requestBody: fixture.PersonRequest{Name: "John", Email: "john@example.com"},
+			requestBody: testfixture.PersonRequest{Name: "John", Email: "john@example.com"},
 			want:        http.StatusOK,
 		},
 		"invalid email": {
-			requestBody: fixture.PersonRequest{Name: "John", Email: "invalid-email"},
+			requestBody: testfixture.PersonRequest{Name: "John", Email: "invalid-email"},
 			want:        http.StatusBadRequest,
 		},
 		"invalid json": {
@@ -51,7 +51,7 @@ func TestValidateRequest(t *testing.T) {
 			req.Header.Set("Content-Type", "application/json")
 
 			rr := httptest.NewRecorder()
-			sut := middleware.ValidateRequest[*fixture.PersonRequest](testHandler)
+			sut := middleware.ValidateRequest[*testfixture.PersonRequest](testHandler)
 			sut(rr, req)
 
 			if rr.Code != tt.want {

@@ -1,7 +1,7 @@
 //go:generate govalid ./fixture.go
 
-// Package fixture contains request fixtures used by middleware tests.
-package fixture
+// Package testfixture contains request fixtures used by middleware tests.
+package testfixture
 
 // PersonRequest is the request payload used in middleware tests.
 // +govalid:required
