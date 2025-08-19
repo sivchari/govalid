@@ -3,6 +3,7 @@ package multiple_markers
 
 import (
 	"errors"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
 
@@ -10,17 +11,17 @@ var (
 	// ErrNilUser is returned when the User is nil.
 	ErrNilUser = errors.New("input User is nil")
 
-	// ErrUserNameRequiredValidation is returned when the UserName is required but not provided.
-	ErrUserNameRequiredValidation = errors.New("field UserName is required")
+	// ErrUserNameRequiredValidation is returned when the Name is required but not provided.
+	ErrUserNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "User.Name", Type: "required"}
 
-	// ErrUserEmailRequiredValidation is returned when the UserEmail is required but not provided.
-	ErrUserEmailRequiredValidation = errors.New("field UserEmail is required")
+	// ErrUserEmailRequiredValidation is returned when the Email is required but not provided.
+	ErrUserEmailRequiredValidation = govaliderrors.ValidationError{Reason: "field Email is required", Path: "User.Email", Type: "required"}
 
 	// ErrUserEmailEmailValidation is the error returned when the field is not a valid email address.
-	ErrUserEmailEmailValidation = errors.New("field UserEmail must be a valid email address")
+	ErrUserEmailEmailValidation = govaliderrors.ValidationError{Reason: "field Email must be a valid email address", Path: "User.Email", Type: "email"}
 
 	// ErrUserAgeGTEValidation is the error returned when the value of the field is less than 18.
-	ErrUserAgeGTEValidation = errors.New("field UserAge must be greater than or equal to 18")
+	ErrUserAgeGTEValidation = govaliderrors.ValidationError{Reason: "field Age must be greater than or equal to 18", Path: "User.Age", Type: "gte"}
 )
 
 func ValidateUser(t *User) error {
@@ -28,21 +29,34 @@ func ValidateUser(t *User) error {
 		return ErrNilUser
 	}
 
+	var errs govaliderrors.ValidationErrors
+
 	if t.Name == "" {
-		return ErrUserNameRequiredValidation
+		err := ErrUserNameRequiredValidation
+		err.Value = t.Name
+		errs = append(errs, err)
 	}
 
 	if t.Email == "" {
-		return ErrUserEmailRequiredValidation
+		err := ErrUserEmailRequiredValidation
+		err.Value = t.Email
+		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidEmail(t.Email) {
-		return ErrUserEmailEmailValidation
+		err := ErrUserEmailEmailValidation
+		err.Value = t.Email
+		errs = append(errs, err)
 	}
 
 	if !(t.Age >= 18) {
-		return ErrUserAgeGTEValidation
+		err := ErrUserAgeGTEValidation
+		err.Value = t.Age
+		errs = append(errs, err)
 	}
 
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }
