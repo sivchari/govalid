@@ -130,15 +130,21 @@ type AnalyzedMetadata struct {
 	ParentVariable string
 }
 
-func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, typeMarkers markers.MarkerSet, structType *ast.StructType, parent, structName string) []*AnalyzedMetadata {
+func analyzeMarker( //nolint:funlen // This directive will be removed when #134 is merged.
+	pass *codegen.Pass,
+	markersInspect markers.Markers, typeMarkers markers.MarkerSet,
+	structType *ast.StructType,
+	parent, structName string,
+) []*AnalyzedMetadata {
 	analyzed := make([]*AnalyzedMetadata, 0)
 
-	typeMarkersList := make([]markers.Marker, 0, len(typeMarkers))
+	markersList := make([]markers.Marker, 0, len(typeMarkers))
 	for _, marker := range typeMarkers {
-		typeMarkersList = append(typeMarkersList, marker)
+		markersList = append(markersList, marker)
 	}
-	sort.SliceStable(typeMarkersList, func(i, j int) bool {
-		return strings.Compare(typeMarkersList[i].Identifier, typeMarkersList[j].Identifier) < 0
+
+	sort.SliceStable(markersList, func(i, j int) bool {
+		return markersList[i].Identifier < markersList[j].Identifier
 	})
 
 	for _, field := range structType.Fields.List {
@@ -151,11 +157,12 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, typeMarke
 		for _, marker := range fieldMarkers {
 			fieldMarkersList = append(fieldMarkersList, marker)
 		}
+
 		sort.SliceStable(fieldMarkersList, func(i, j int) bool {
-			return strings.Compare(fieldMarkersList[i].Identifier, fieldMarkersList[j].Identifier) < 0
+			return fieldMarkersList[i].Identifier < fieldMarkersList[j].Identifier
 		})
 
-		markersList := append(typeMarkersList, fieldMarkersList...)
+		markersList = append(markersList, fieldMarkersList...)
 
 		// Traverse nested structs
 		structType, ok := field.Type.(*ast.StructType)
