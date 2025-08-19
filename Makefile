@@ -50,7 +50,7 @@ generate-validator: ## Generate a new validator scaffold and all registry files.
 test: ## Run all tests except validation helper (due to known issues)
 	go test ./... -shuffle on -v -race
 	go test -C test ./... -shuffle on -v -race
-	go test ./... -shuffle on -v -race -tags=ignore
+	go test ./... -shuffle on -v -race -tags=middleware_test
 
 # Fuzz test targets
 .PHONY: fuzz

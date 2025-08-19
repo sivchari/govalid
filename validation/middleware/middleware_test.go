@@ -1,4 +1,4 @@
-//go:build ignore
+//go:build middleware_test
 
 package middleware_test
 
