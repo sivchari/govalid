@@ -51,7 +51,7 @@ func (a *analyzer) run(pass *analysis.Pass) (any, error) {
 	}
 
 	nodeFilter := []ast.Node{
-		(*ast.TypeSpec)(nil),
+		(*ast.GenDecl)(nil),
 	}
 
 	results, ok := newMarkers().(*markers)
@@ -61,17 +61,28 @@ func (a *analyzer) run(pass *analysis.Pass) (any, error) {
 
 	inspect.Preorder(nodeFilter, func(n ast.Node) {
 		switch n := n.(type) {
-		case *ast.TypeSpec:
+		case *ast.GenDecl:
 			if n == nil {
 				return
 			}
 
-			st, ok := n.Type.(*ast.StructType)
-			if !ok {
-				return
+			if n.Doc != nil && len(n.Doc.List) > 0 {
+				collectTypeMarkers(pass, n, results)
 			}
 
-			collectStructMarkers(pass, st, results)
+			for _, spec := range n.Specs {
+				ts, ok := spec.(*ast.TypeSpec)
+				if !ok {
+					continue
+				}
+
+				st, ok := ts.Type.(*ast.StructType)
+				if !ok {
+					return
+				}
+
+				collectStructMarkers(pass, st, results)
+			}
 		default:
 		}
 	})
@@ -79,7 +90,41 @@ func (a *analyzer) run(pass *analysis.Pass) (any, error) {
 	return results, nil
 }
 
-// collectTypeSpecMarkers collects markers from a TypeSpec node and adds them to the results.
+// collectTypeMarkers collects markers from a GenDecl node and adds them to the results.
+func collectTypeMarkers(pass *analysis.Pass, genDecl *ast.GenDecl, results *markers) {
+	if genDecl.Doc == nil || len(genDecl.Doc.List) == 0 {
+		return
+	}
+
+	for _, doc := range genDecl.Doc.List {
+		if !strings.HasPrefix(doc.Text, "// +") {
+			continue
+		}
+
+		markerContent := strings.TrimPrefix(doc.Text, "// +")
+
+		identifier, expressions := extractMarker(markerContent)
+		marker := Marker{
+			Identifier:  identifier,
+			Expressions: expressions,
+		}
+
+		for _, spec := range genDecl.Specs {
+			if ts, ok := spec.(*ast.TypeSpec); ok {
+				results.insertTypeMarker(ts, marker)
+
+				if obj, ok := pass.TypesInfo.Defs[ts.Name]; ok {
+					pass.ExportObjectFact(obj, &MarkerFact{
+						Identifier:  identifier,
+						Expressions: expressions,
+					})
+				}
+			}
+		}
+	}
+}
+
+// collectStructMarkers collects markers from a TypeSpec node and adds them to the results.
 func collectStructMarkers(pass *analysis.Pass, s *ast.StructType, results *markers) {
 	if s == nil || s.Fields == nil || len(s.Fields.List) == 0 {
 		return
