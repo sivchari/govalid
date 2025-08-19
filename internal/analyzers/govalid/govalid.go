@@ -162,6 +162,7 @@ func analyzeMarker( //nolint:funlen // This directive will be removed when #134 
 			return fieldMarkersList[i].Identifier < fieldMarkersList[j].Identifier
 		})
 
+		markersList := markersList
 		markersList = append(markersList, fieldMarkersList...)
 
 		// Traverse nested structs
