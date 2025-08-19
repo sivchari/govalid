@@ -210,8 +210,7 @@ import (
 )
 
 func CreatePersonHandler(w http.ResponseWriter, r *http.Request) {
-	person := r.Context().Value(middleware.ValidatedBodyKey).(*Person)
-	w.Write([]byte("Person created: " + person.Name))
+	w.Write([]byte("OK"))
 }
 
 func main() {
