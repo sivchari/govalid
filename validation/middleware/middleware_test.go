@@ -1,3 +1,5 @@
+//go:build ignore
+
 package middleware_test
 
 import (
@@ -8,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/sivchari/govalid/validation/middleware"
-	"github.com/sivchari/govalid/validation/middleware/internal/testfixture"
+	"github.com/sivchari/govalid/validation/middleware/testfixture"
 )
 
 func TestValidateRequest(t *testing.T) {

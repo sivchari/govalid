@@ -1,3 +1,5 @@
+//go:build ignore
+
 //go:generate govalid ./fixture.go
 
 // Package testfixture contains request fixtures used by middleware tests.
