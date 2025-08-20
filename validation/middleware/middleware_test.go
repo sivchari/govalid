@@ -1,4 +1,4 @@
-//go:build middleware_test
+//go:build test
 
 package middleware_test
 
