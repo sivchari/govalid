@@ -3,6 +3,7 @@ package lte
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
@@ -54,4 +55,10 @@ func ValidateLTE(t *LTE) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*LTE)(nil)
+
+func (t *LTE) Validate() error {
+	return ValidateLTE(t)
 }

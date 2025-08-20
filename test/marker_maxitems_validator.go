@@ -3,6 +3,7 @@ package test
 
 import (
 	"errors"
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
@@ -49,4 +50,10 @@ func ValidateMaxItems(t *MaxItems) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*MaxItems)(nil)
+
+func (t *MaxItems) Validate() error {
+	return ValidateMaxItems(t)
 }
