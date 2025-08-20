@@ -3,6 +3,7 @@ package url
 
 import (
 	"errors"
+
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )

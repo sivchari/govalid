@@ -3,6 +3,7 @@ package required
 
 import (
 	"errors"
+
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 

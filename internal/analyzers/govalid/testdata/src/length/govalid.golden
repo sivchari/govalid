@@ -3,8 +3,9 @@ package length
 
 import (
 	"errors"
-	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"unicode/utf8"
+
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (
