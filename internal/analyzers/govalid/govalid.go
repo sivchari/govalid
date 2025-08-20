@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"go/ast"
 	"go/format"
+	"go/token"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"text/template"
@@ -72,41 +74,50 @@ func (g *generator) run(pass *codegen.Pass) error {
 	}
 
 	nodeFilter := []ast.Node{
-		(*ast.TypeSpec)(nil),
+		(*ast.GenDecl)(nil),
 	}
 
 	tmplList := map[string]TemplateData{}
 
 	inspector.Preorder(nodeFilter, func(n ast.Node) {
-		ts, ok := n.(*ast.TypeSpec)
-		if !ok {
+		genDecl, ok := n.(*ast.GenDecl)
+		if !ok || genDecl.Tok != token.TYPE {
 			return
 		}
 
-		structType, ok := ts.Type.(*ast.StructType)
-		if !ok {
-			return
-		}
+		for _, spec := range genDecl.Specs {
+			ts, ok := spec.(*ast.TypeSpec)
+			if !ok {
+				return
+			}
 
-		metadata := analyzeMarker(pass, markersInspect, structType, "", ts.Name.Name)
-		if len(metadata) == 0 {
-			return
-		}
+			typeMarkers := markersInspect.TypeMarkers(ts)
 
-		tmplData := TemplateData{
-			PackageName:    pass.Pkg.Name(),
-			TypeName:       ts.Name.Name,
-			Metadata:       metadata,
-			ImportPackages: collectImportPackages(metadata),
-		}
+			structType, ok := ts.Type.(*ast.StructType)
+			if !ok {
+				return
+			}
 
-		data, ok := tmplList[ts.Name.Name]
-		if ok {
-			data.Metadata = append(data.Metadata, tmplData.Metadata...)
-		}
+			metadata := analyzeMarker(pass, markersInspect, typeMarkers, structType, "", ts.Name.Name)
+			if len(metadata) == 0 {
+				return
+			}
 
-		if err := writeFile(pass, ts, tmplData); err != nil {
-			panic(fmt.Sprintf("failed to write file for %s: %v", ts.Name.Name, err))
+			tmplData := TemplateData{
+				PackageName:    pass.Pkg.Name(),
+				TypeName:       ts.Name.Name,
+				Metadata:       metadata,
+				ImportPackages: collectImportPackages(metadata),
+			}
+
+			data, ok := tmplList[ts.Name.Name]
+			if ok {
+				data.Metadata = append(data.Metadata, tmplData.Metadata...)
+			}
+
+			if err := writeFile(pass, ts, tmplData); err != nil {
+				panic(fmt.Sprintf("failed to write file for %s: %v", ts.Name.Name, err))
+			}
 		}
 	})
 
@@ -119,19 +130,45 @@ type AnalyzedMetadata struct {
 	ParentVariable string
 }
 
-func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structType *ast.StructType, parent, structName string) []*AnalyzedMetadata {
+func analyzeMarker( //nolint:funlen // This directive will be removed when #134 is merged.
+	pass *codegen.Pass,
+	markersInspect markers.Markers, typeMarkers markers.MarkerSet,
+	structType *ast.StructType,
+	parent, structName string,
+) []*AnalyzedMetadata {
 	analyzed := make([]*AnalyzedMetadata, 0)
+
+	markersList := make([]markers.Marker, 0, len(typeMarkers))
+	for _, marker := range typeMarkers {
+		markersList = append(markersList, marker)
+	}
+
+	sort.SliceStable(markersList, func(i, j int) bool {
+		return markersList[i].Identifier < markersList[j].Identifier
+	})
 
 	for _, field := range structType.Fields.List {
 		validators := make([]validator.Validator, 0)
 
 		// Apply markers to the field
-		markerSet := markersInspect.FieldMarkers(field)
+		fieldMarkers := markersInspect.FieldMarkers(field)
+
+		fieldMarkersList := make([]markers.Marker, 0, len(fieldMarkers))
+		for _, marker := range fieldMarkers {
+			fieldMarkersList = append(fieldMarkersList, marker)
+		}
+
+		sort.SliceStable(fieldMarkersList, func(i, j int) bool {
+			return fieldMarkersList[i].Identifier < fieldMarkersList[j].Identifier
+		})
+
+		markersList := markersList
+		markersList = append(markersList, fieldMarkersList...)
 
 		// Traverse nested structs
 		structType, ok := field.Type.(*ast.StructType)
 		if !ok {
-			validators = makeValidator(pass, markerSet, field, structName)
+			validators = makeValidator(pass, markersList, field, structName)
 			if len(validators) == 0 {
 				continue
 			}
@@ -153,7 +190,7 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 					Name string `json:"name"`
 				}
 			*/
-			validators = append(validators, makeValidator(pass, markerSet, field, structName)...)
+			validators = append(validators, makeValidator(pass, markersList, field, structName)...)
 		}
 
 		// Add the parent variable name to the analyzed metadata
@@ -172,16 +209,16 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 		}
 
 		// Recursively analyze nested structs
-		analyzed = append(analyzed, analyzeMarker(pass, markersInspect, structType, parentVariable, structName)...)
+		analyzed = append(analyzed, analyzeMarker(pass, markersInspect, typeMarkers, structType, parentVariable, structName)...)
 	}
 
 	return analyzed
 }
 
-func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Field, structName string) []validator.Validator {
+func makeValidator(pass *codegen.Pass, markersList []markers.Marker, field *ast.Field, structName string) []validator.Validator {
 	validators := make([]validator.Validator, 0)
 
-	for _, marker := range markers {
+	for _, marker := range markersList {
 		factory, err := registry.Validator(marker.Identifier)
 		if err != nil {
 			// Validator not found, skip
