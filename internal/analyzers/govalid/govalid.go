@@ -15,6 +15,7 @@ import (
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
+	"golang.org/x/tools/imports"
 
 	"github.com/sivchari/govalid/internal/analyzers/markers"
 	govaliderrors "github.com/sivchari/govalid/internal/errors"
@@ -231,7 +232,13 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 		return fmt.Errorf("failed to execute template: %w", err)
 	}
 
-	src, err := format.Source(buf.Bytes())
+	// Use goimports to format the source code with proper import grouping
+	src, err := imports.Process("", buf.Bytes(), nil)
+	if err != nil {
+		return fmt.Errorf("failed to format source code with imports: %w", err)
+	}
+
+	src, err = format.Source(src)
 	if err != nil {
 		return fmt.Errorf("failed to format source code: %w", err)
 	}

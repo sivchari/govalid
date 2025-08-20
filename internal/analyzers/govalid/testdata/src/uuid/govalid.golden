@@ -3,6 +3,7 @@ package uuid
 
 import (
 	"errors"
+
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
