@@ -4,13 +4,14 @@ package cel
 import (
 	"errors"
 	"fmt"
-	"github.com/sivchari/govalid"
-	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"regexp"
 	"slices"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/sivchari/govalid"
+	govaliderrors "github.com/sivchari/govalid/validation/errors"
 )
 
 var (

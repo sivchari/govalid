@@ -3,9 +3,10 @@ package test
 
 import (
 	"errors"
+	"unicode/utf8"
+
 	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
-	"unicode/utf8"
 )
 
 var (

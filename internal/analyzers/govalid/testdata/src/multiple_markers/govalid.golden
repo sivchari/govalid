@@ -3,6 +3,8 @@ package multiple_markers
 
 import (
 	"errors"
+
+	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
@@ -59,4 +61,10 @@ func ValidateUser(t *User) error {
 		return errs
 	}
 	return nil
+}
+
+var _ govalid.Validator = (*User)(nil)
+
+func (t *User) Validate() error {
+	return ValidateUser(t)
 }
