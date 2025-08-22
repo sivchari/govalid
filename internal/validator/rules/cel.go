@@ -13,6 +13,7 @@ import (
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 type celValidator struct {
@@ -21,6 +22,7 @@ type celValidator struct {
 	expression string
 	structName string
 	ruleName   string
+	parentPath string
 }
 
 var _ validator.Validator = (*celValidator)(nil)
@@ -49,9 +51,12 @@ func (c *celValidator) FieldName() string {
 	return c.field.Names[0].Name
 }
 
+func (c *celValidator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(c.structName, c.parentPath, c.FieldName())
+}
+
 func (c *celValidator) Err() string {
-	fieldName := c.FieldName()
-	key := fmt.Sprintf(celKey, c.structName+fieldName)
+	key := fmt.Sprintf(celKey, c.FieldPath().CleanedPath())
 
 	if validator.GeneratorMemory[key] {
 		return ""
@@ -59,24 +64,39 @@ func (c *celValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
+	const deprecationNoticeTemplate = `
+		// Deprecated: Use [@ERRVARIABLE]
+		//
+		// [@LEGACYERRVAR] is deprecated and is kept for compatibility purpose.
+		[@LEGACYERRVAR] = [@ERRVARIABLE]
+	`
+
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the CEL expression evaluation fails.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] failed CEL validation: [@EXPRESSION]",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
+	legacyErrVarName := fmt.Sprintf("Err%s%sCELValidation", c.structName, c.FieldName())
+	currentErrVarName := c.ErrVariable()
+
 	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", c.ErrVariable(),
-		"[@FIELD]", fieldName,
-		"[@PATH]", fmt.Sprintf("%s.%s", c.structName, fieldName),
+		"[@ERRVARIABLE]", currentErrVarName,
+		"[@LEGACYERRVAR]", legacyErrVarName,
+		"[@FIELD]", c.FieldName(),
+		"[@PATH]", c.FieldPath().String(),
 		"[@EXPRESSION]", c.expression,
 		"[@TYPE]", c.ruleName,
 	)
+
+	if currentErrVarName != legacyErrVarName {
+		return replacer.Replace(deprecationNoticeTemplate + errTemplate)
+	}
 
 	return replacer.Replace(errTemplate)
 }
 
 func (c *celValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]CELValidation", "[@PATH]", c.structName+c.FieldName())
+	return strings.ReplaceAll("Err[@PATH]CELValidation", "[@PATH]", c.FieldPath().CleanedPath())
 }
 
 func (c *celValidator) Imports() []string {
@@ -134,8 +154,8 @@ func (c *celValidator) needsTimeImport() bool {
 
 // ValidateCEL creates a new celValidator for fields with CEL marker.
 // This validator supports all field types since CEL can handle various data types.
-func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]string, structName, ruleName string) validator.Validator {
-	celExpression, ok := expressions[markers.GoValidMarkerCel]
+func ValidateCEL(input registry.ValidatorInput) validator.Validator {
+	celExpression, ok := input.Expressions[markers.GoValidMarkerCel]
 	if !ok {
 		return nil
 	}
@@ -146,11 +166,12 @@ func ValidateCEL(pass *codegen.Pass, field *ast.Field, expressions map[string]st
 	}
 
 	return &celValidator{
-		pass:       pass,
-		field:      field,
+		pass:       input.Pass,
+		field:      input.Field,
 		expression: celExpression,
-		structName: structName,
-		ruleName:   ruleName,
+		structName: input.StructName,
+		ruleName:   input.RuleName,
+		parentPath: input.ParentPath,
 	}
 }
 

@@ -5,6 +5,7 @@ package validator
 type Validator interface {
 	Validate() string
 	FieldName() string
+	FieldPath() FieldPath
 	Err() string
 	ErrVariable() string
 	Imports() []string

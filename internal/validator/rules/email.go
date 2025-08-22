@@ -10,6 +10,7 @@ import (
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
 type emailValidator struct {
@@ -17,6 +18,7 @@ type emailValidator struct {
 	field      *ast.Field
 	structName string
 	ruleName   string
+	parentPath string
 }
 
 var _ validator.Validator = (*emailValidator)(nil)
@@ -33,34 +35,51 @@ func (e *emailValidator) FieldName() string {
 	return e.field.Names[0].Name
 }
 
-func (e *emailValidator) Err() string {
-	fieldName := e.FieldName()
+func (e *emailValidator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(e.structName, e.parentPath, e.FieldName())
+}
 
+func (e *emailValidator) Err() string {
 	// No need to generate inline function - using external helper
-	key := fmt.Sprintf(emailKey, e.structName+fieldName)
+	key := fmt.Sprintf(emailKey, e.FieldPath().CleanedPath())
 	if validator.GeneratorMemory[key] {
 		return ""
 	}
 
 	validator.GeneratorMemory[key] = true
 
+	const deprecationNoticeTemplate = `
+		// Deprecated: Use [@ERRVARIABLE]
+		//
+		// [@LEGACYERRVAR] is deprecated and is kept for compatibility purpose.
+		[@LEGACYERRVAR] = [@ERRVARIABLE]
+	`
+
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the field is not a valid email address.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid email address",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
+	legacyErrVarName := fmt.Sprintf("Err%s%sEmailValidation", e.structName, e.FieldName())
+	currentErrVarName := e.ErrVariable()
+
 	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", e.ErrVariable(),
-		"[@FIELD]", fieldName,
-		"[@PATH]", fmt.Sprintf("%s.%s", e.structName, fieldName),
+		"[@ERRVARIABLE]", currentErrVarName,
+		"[@LEGACYERRVAR]", legacyErrVarName,
+		"[@FIELD]", e.FieldName(),
+		"[@PATH]", e.FieldPath().String(),
 		"[@TYPE]", e.ruleName,
 	)
+
+	if currentErrVarName != legacyErrVarName {
+		return replacer.Replace(deprecationNoticeTemplate + errTemplate)
+	}
 
 	return replacer.Replace(errTemplate)
 }
 
 func (e *emailValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]EmailValidation", `[@PATH]`, e.structName+e.FieldName())
+	return strings.ReplaceAll("Err[@PATH]EmailValidation", `[@PATH]`, e.FieldPath().CleanedPath())
 }
 
 func (e *emailValidator) Imports() []string {
@@ -68,8 +87,8 @@ func (e *emailValidator) Imports() []string {
 }
 
 // ValidateEmail creates a new emailValidator for string types.
-func ValidateEmail(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName, ruleName string) validator.Validator {
-	typ := pass.TypesInfo.TypeOf(field.Type)
+func ValidateEmail(input registry.ValidatorInput) validator.Validator {
+	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
 
 	// Check if it's a string type
 	basic, ok := typ.Underlying().(*types.Basic)
@@ -78,9 +97,10 @@ func ValidateEmail(pass *codegen.Pass, field *ast.Field, _ map[string]string, st
 	}
 
 	return &emailValidator{
-		pass:       pass,
-		field:      field,
-		structName: structName,
-		ruleName:   ruleName,
+		pass:       input.Pass,
+		field:      input.Field,
+		structName: input.StructName,
+		ruleName:   input.RuleName,
+		parentPath: input.ParentPath,
 	}
 }
