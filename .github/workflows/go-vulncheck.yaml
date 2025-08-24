@@ -21,7 +21,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Run govulncheck
-        id: govulncheck
         uses: golang/govulncheck-action@v1
         with:
           go-version-file: go.mod
