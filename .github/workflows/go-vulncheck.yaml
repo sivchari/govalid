@@ -1,4 +1,4 @@
-name: govulncheck
+name: Vulnerability Check
 
 on:
   pull_request:
