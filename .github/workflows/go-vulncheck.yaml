@@ -1,7 +1,8 @@
 name: Vulnerability Check
 
 on:
-  pull_request:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
   push:
     branches: [ main ]
   schedule:
@@ -16,6 +17,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
       - name: Run govulncheck
         id: govulncheck
         uses: golang/govulncheck-action@v1
@@ -23,6 +27,7 @@ jobs:
           go-version-file: go.mod
           go-package: ./...
           output-file: govulncheck.log
+
       - name: Upload govulncheck report
         if: always()
         uses: actions/upload-artifact@v4
