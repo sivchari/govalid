@@ -39,11 +39,29 @@ var (
 	// ErrRequiredEntireRequiredStructNameRequiredValidation is returned when the EntireRequiredStructName is required but not provided.
 	ErrRequiredEntireRequiredStructNameRequiredValidation = govaliderrors.ValidationError{Reason: "field EntireRequiredStructName is required", Path: "Required.EntireRequiredStructName", Type: "required"}
 
-	// ErrRequiredPartialStructStringRequiredValidation is returned when the PartialStructString is required but not provided.
-	ErrRequiredPartialStructStringRequiredValidation = govaliderrors.ValidationError{Reason: "field PartialStructString is required", Path: "Required.PartialStructString", Type: "required"}
+	// Deprecated: Use ErrRequiredPartialStructPartialStructStringRequiredValidation
+	//
+	// ErrRequiredPartialStructStringRequiredValidation is deprecated and is kept for compatibility purpose.
+	ErrRequiredPartialStructStringRequiredValidation = ErrRequiredPartialStructPartialStructStringRequiredValidation
 
-	// ErrRequiredNested2StringRequiredValidation is returned when the Nested2String is required but not provided.
-	ErrRequiredNested2StringRequiredValidation = govaliderrors.ValidationError{Reason: "field Nested2String is required", Path: "Required.Nested2String", Type: "required"}
+	// ErrRequiredPartialStructPartialStructStringRequiredValidation is returned when the PartialStructString is required but not provided.
+	ErrRequiredPartialStructPartialStructStringRequiredValidation = govaliderrors.ValidationError{Reason: "field PartialStructString is required", Path: "Required.PartialStruct.PartialStructString", Type: "required"}
+
+	// Deprecated: Use ErrRequiredNestedStructNested2StringRequiredValidation
+	//
+	// ErrRequiredNested2StringRequiredValidation is deprecated and is kept for compatibility purpose.
+	ErrRequiredNested2StringRequiredValidation = ErrRequiredNestedStructNested2StringRequiredValidation
+
+	// ErrRequiredNestedStructNested2StringRequiredValidation is returned when the Nested2String is required but not provided.
+	ErrRequiredNestedStructNested2StringRequiredValidation = govaliderrors.ValidationError{Reason: "field Nested2String is required", Path: "Required.NestedStruct.Nested2String", Type: "required"}
+
+	// Deprecated: Use ErrRequiredOtherNestedStructNested2StringRequiredValidation
+	//
+	// ErrRequiredNested2StringRequiredValidation is deprecated and is kept for compatibility purpose.
+	ErrRequiredNested2StringRequiredValidation = ErrRequiredOtherNestedStructNested2StringRequiredValidation
+
+	// ErrRequiredOtherNestedStructNested2StringRequiredValidation is returned when the Nested2String is required but not provided.
+	ErrRequiredOtherNestedStructNested2StringRequiredValidation = govaliderrors.ValidationError{Reason: "field Nested2String is required", Path: "Required.OtherNestedStruct.Nested2String", Type: "required"}
 
 	// ErrRequiredChannelRequiredValidation is returned when the Channel is required but not provided.
 	ErrRequiredChannelRequiredValidation = govaliderrors.ValidationError{Reason: "field Channel is required", Path: "Required.Channel", Type: "required"}
@@ -125,7 +143,7 @@ func ValidateRequired(t *Required) error {
 		t := t.PartialStruct
 
 		if t.PartialStructString == "" {
-			err := ErrRequiredPartialStructStringRequiredValidation
+			err := ErrRequiredPartialStructPartialStructStringRequiredValidation
 			err.Value = t.PartialStructString
 			errs = append(errs, err)
 		}
@@ -136,7 +154,7 @@ func ValidateRequired(t *Required) error {
 		t := t.NestedStruct.Nested2
 
 		if t.Nested2String == "" {
-			err := ErrRequiredNested2StringRequiredValidation
+			err := ErrRequiredNestedStructNested2StringRequiredValidation
 			err.Value = t.Nested2String
 			errs = append(errs, err)
 		}
@@ -147,7 +165,7 @@ func ValidateRequired(t *Required) error {
 		t := t.OtherNestedStruct.Nested2
 
 		if t.Nested2String == "" {
-			err := ErrRequiredNested2StringRequiredValidation
+			err := ErrRequiredOtherNestedStructNested2StringRequiredValidation
 			err.Value = t.Nested2String
 			errs = append(errs, err)
 		}

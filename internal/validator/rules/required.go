@@ -10,6 +10,7 @@ import (
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/registry"
 	"github.com/sivchari/govalid/internal/validator/validatorhelper"
 )
 
@@ -18,6 +19,7 @@ type requiredValidator struct {
 	field      *ast.Field
 	structName string
 	ruleName   string
+	parentPath string
 }
 
 var _ validator.Validator = (*requiredValidator)(nil)
@@ -51,8 +53,12 @@ func (r *requiredValidator) FieldName() string {
 	return r.field.Names[0].Name
 }
 
+func (r *requiredValidator) FieldPath() validator.FieldPath {
+	return validator.NewFieldPath(r.structName, r.parentPath, r.FieldName())
+}
+
 func (r *requiredValidator) Err() string {
-	key := fmt.Sprintf(requiredKey, r.structName+r.FieldName())
+	key := fmt.Sprintf(requiredKey, r.FieldPath().CleanedPath())
 
 	if validator.GeneratorMemory[key] {
 		return ""
@@ -60,23 +66,38 @@ func (r *requiredValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
+	const deprecationNoticeTemplate = `
+		// Deprecated: Use [@ERRVARIABLE]
+		//
+		// [@LEGACYERRVAR] is deprecated and is kept for compatibility purpose.
+		[@LEGACYERRVAR] = [@ERRVARIABLE]
+	`
+
 	const errTemplate = `
 		// [@ERRVARIABLE] is returned when the [@FIELD] is required but not provided.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] is required",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
+	legacyErrVarName := fmt.Sprintf("Err%s%sRequiredValidation", r.structName, r.FieldName())
+	currentErrVarName := r.ErrVariable()
+
 	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", r.ErrVariable(),
+		"[@ERRVARIABLE]", currentErrVarName,
+		"[@LEGACYERRVAR]", legacyErrVarName,
 		"[@FIELD]", r.FieldName(),
-		"[@PATH]", fmt.Sprintf("%s.%s", r.structName, r.FieldName()),
+		"[@PATH]", r.FieldPath().String(),
 		"[@TYPE]", r.ruleName,
 	)
+
+	if currentErrVarName != legacyErrVarName {
+		return replacer.Replace(deprecationNoticeTemplate + errTemplate)
+	}
 
 	return replacer.Replace(errTemplate)
 }
 
 func (r *requiredValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]RequiredValidation", "[@PATH]", r.structName+r.FieldName())
+	return strings.ReplaceAll("Err[@PATH]RequiredValidation", "[@PATH]", r.FieldPath().CleanedPath())
 }
 
 func (r *requiredValidator) Imports() []string {
@@ -84,13 +105,16 @@ func (r *requiredValidator) Imports() []string {
 }
 
 // ValidateRequired creates a new required validator for the given field.
-func ValidateRequired(pass *codegen.Pass, field *ast.Field, _ map[string]string, structName, ruleName string) validator.Validator {
-	validator.GeneratorMemory[fmt.Sprintf(requiredKey, structName+field.Names[0].Name)] = false
+func ValidateRequired(input registry.ValidatorInput) validator.Validator {
+	fieldName := input.Field.Names[0].Name
+	fieldPath := validator.NewFieldPath(input.StructName, input.ParentPath, fieldName)
+	validator.GeneratorMemory[fmt.Sprintf(requiredKey, fieldPath.CleanedPath())] = false
 
 	return &requiredValidator{
-		pass:       pass,
-		field:      field,
-		structName: structName,
-		ruleName:   ruleName,
+		pass:       input.Pass,
+		field:      input.Field,
+		structName: input.StructName,
+		ruleName:   input.RuleName,
+		parentPath: input.ParentPath,
 	}
 }

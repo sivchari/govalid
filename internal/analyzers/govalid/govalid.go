@@ -120,6 +120,15 @@ type AnalyzedMetadata struct {
 	ParentVariable string
 }
 
+// makeValidatorInput contains all the input parameters needed for makeValidator function.
+type makeValidatorInput struct {
+	Pass       *codegen.Pass
+	Markers    markers.MarkerSet
+	Field      *ast.Field
+	StructName string
+	ParentPath string
+}
+
 func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structType *ast.StructType, parent, structName string) []*AnalyzedMetadata {
 	analyzed := make([]*AnalyzedMetadata, 0)
 
@@ -127,12 +136,19 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 		validators := make([]validator.Validator, 0)
 
 		// Apply markers to the field
-		markerSet := markersInspect.FieldMarkers(field)
+		input := makeValidatorInput{
+			Pass:       pass,
+			Markers:    markersInspect.FieldMarkers(field),
+			Field:      field,
+			StructName: structName,
+			ParentPath: parent,
+		}
 
 		// Traverse nested structs
 		structType, ok := field.Type.(*ast.StructType)
 		if !ok {
-			validators = makeValidator(pass, markerSet, field, structName)
+			validators = makeValidator(input)
+
 			if len(validators) == 0 {
 				continue
 			}
@@ -154,7 +170,8 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 					Name string `json:"name"`
 				}
 			*/
-			validators = append(validators, makeValidator(pass, markerSet, field, structName)...)
+			input.Field = field
+			validators = append(validators, makeValidator(input)...)
 		}
 
 		// Add the parent variable name to the analyzed metadata
@@ -179,10 +196,10 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, structTyp
 	return analyzed
 }
 
-func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Field, structName string) []validator.Validator {
+func makeValidator(input makeValidatorInput) []validator.Validator {
 	validators := make([]validator.Validator, 0)
 
-	for _, marker := range markers {
+	for _, marker := range input.Markers {
 		factory, err := registry.Validator(marker.Identifier)
 		if err != nil {
 			// Validator not found, skip
@@ -191,7 +208,16 @@ func makeValidator(pass *codegen.Pass, markers markers.MarkerSet, field *ast.Fie
 
 		ruleName := strings.TrimPrefix(marker.Identifier, "govalid:")
 
-		v := factory(pass, field, marker.Expressions, structName, ruleName)
+		validatorInput := registry.ValidatorInput{
+			Pass:        input.Pass,
+			Field:       input.Field,
+			Expressions: marker.Expressions,
+			StructName:  input.StructName,
+			RuleName:    ruleName,
+			ParentPath:  input.ParentPath,
+		}
+		v := factory(validatorInput)
+
 		if v == nil {
 			continue
 		}
