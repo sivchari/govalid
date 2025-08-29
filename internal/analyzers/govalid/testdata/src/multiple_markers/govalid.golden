@@ -10,49 +10,58 @@ import (
 )
 
 var (
-	// ErrNilUser is returned when the User is nil.
-	ErrNilUser = errors.New("input User is nil")
+	// ErrNilMultiple is returned when the Multiple is nil.
+	ErrNilMultiple = errors.New("input Multiple is nil")
 
-	// ErrUserNameRequiredValidation is returned when the Name is required but not provided.
-	ErrUserNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "User.Name", Type: "required"}
+	// ErrMultipleNameRequiredValidation is returned when the Name is required but not provided.
+	ErrMultipleNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "Multiple.Name", Type: "required"}
 
-	// ErrUserEmailRequiredValidation is returned when the Email is required but not provided.
-	ErrUserEmailRequiredValidation = govaliderrors.ValidationError{Reason: "field Email is required", Path: "User.Email", Type: "required"}
+	// ErrMultipleEmailRequiredValidation is returned when the Email is required but not provided.
+	ErrMultipleEmailRequiredValidation = govaliderrors.ValidationError{Reason: "field Email is required", Path: "Multiple.Email", Type: "required"}
 
-	// ErrUserEmailEmailValidation is the error returned when the field is not a valid email address.
-	ErrUserEmailEmailValidation = govaliderrors.ValidationError{Reason: "field Email must be a valid email address", Path: "User.Email", Type: "email"}
+	// ErrMultipleEmailEmailValidation is the error returned when the field is not a valid email address.
+	ErrMultipleEmailEmailValidation = govaliderrors.ValidationError{Reason: "field Email must be a valid email address", Path: "Multiple.Email", Type: "email"}
 
-	// ErrUserAgeGTEValidation is the error returned when the value of the field is less than 18.
-	ErrUserAgeGTEValidation = govaliderrors.ValidationError{Reason: "field Age must be greater than or equal to 18", Path: "User.Age", Type: "gte"}
+	// ErrMultipleAgeRequiredValidation is returned when the Age is required but not provided.
+	ErrMultipleAgeRequiredValidation = govaliderrors.ValidationError{Reason: "field Age is required", Path: "Multiple.Age", Type: "required"}
+
+	// ErrMultipleAgeGTEValidation is the error returned when the value of the field is less than 18.
+	ErrMultipleAgeGTEValidation = govaliderrors.ValidationError{Reason: "field Age must be greater than or equal to 18", Path: "Multiple.Age", Type: "gte"}
 )
 
-func ValidateUser(t *User) error {
+func ValidateMultiple(t *Multiple) error {
 	if t == nil {
-		return ErrNilUser
+		return ErrNilMultiple
 	}
 
 	var errs govaliderrors.ValidationErrors
 
 	if t.Name == "" {
-		err := ErrUserNameRequiredValidation
+		err := ErrMultipleNameRequiredValidation
 		err.Value = t.Name
 		errs = append(errs, err)
 	}
 
 	if t.Email == "" {
-		err := ErrUserEmailRequiredValidation
+		err := ErrMultipleEmailRequiredValidation
 		err.Value = t.Email
 		errs = append(errs, err)
 	}
 
 	if !validationhelper.IsValidEmail(t.Email) {
-		err := ErrUserEmailEmailValidation
+		err := ErrMultipleEmailEmailValidation
 		err.Value = t.Email
 		errs = append(errs, err)
 	}
 
+	if t.Age == 0 {
+		err := ErrMultipleAgeRequiredValidation
+		err.Value = t.Age
+		errs = append(errs, err)
+	}
+
 	if !(t.Age >= 18) {
-		err := ErrUserAgeGTEValidation
+		err := ErrMultipleAgeGTEValidation
 		err.Value = t.Age
 		errs = append(errs, err)
 	}
