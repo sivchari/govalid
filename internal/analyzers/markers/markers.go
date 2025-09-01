@@ -2,7 +2,6 @@ package markers
 
 import (
 	"go/ast"
-	"maps"
 )
 
 // Marker represents a single marker with an identifier and associated expressions.
@@ -11,12 +10,26 @@ type Marker struct {
 	Expressions map[string]string
 }
 
-// MarkerSet is a collection of markers identified by their string identifiers.
-type MarkerSet map[string]Marker
+// MarkerSet is an ordered collection of markers that preserves definition order.
+type MarkerSet []Marker
 
 // newMarkerSet creates a new empty MarkerSet.
 func newMarkerSet() MarkerSet {
-	return make(MarkerSet)
+	return MarkerSet{}
+}
+
+// Add adds a marker to the set if it doesn't already exist (by identifier).
+func (ms *MarkerSet) Add(marker Marker) {
+	// Check if marker with same identifier already exists
+	for i, existing := range *ms {
+		if existing.Identifier == marker.Identifier {
+			// Update existing marker
+			(*ms)[i] = marker
+			return
+		}
+	}
+	// Add new marker
+	*ms = append(*ms, marker)
 }
 
 // Markers is an interface that provides methods to retrieve markers for struct fields.
@@ -42,17 +55,15 @@ func (m *markers) FieldMarkers(field *ast.Field) MarkerSet {
 	return m.fieldMarkers[field]
 }
 
-// insertFieldMarkers adds a set of markers to a specific struct field.
-func (m *markers) insertFieldMarkers(field *ast.Field, markers MarkerSet) {
-	if len(markers) == 0 {
-		return
-	}
-
+// insertFieldMarkers adds a marker to a specific struct field.
+func (m *markers) insertFieldMarker(field *ast.Field, marker Marker) {
 	if existing, ok := m.fieldMarkers[field]; ok {
-		maps.Copy(existing, markers)
-
+		existing.Add(marker)
+		m.fieldMarkers[field] = existing
 		return
 	}
 
-	m.fieldMarkers[field] = markers
+	ms := newMarkerSet()
+	ms.Add(marker)
+	m.fieldMarkers[field] = ms
 }
