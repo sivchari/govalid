@@ -110,11 +110,6 @@ docs-build: ## Build documentation site for production
 	@command -v hugo >/dev/null 2>&1 || { echo "Hugo is not installed. Please install Hugo first: https://gohugo.io/installation/"; exit 1; }
 	cd docs && hugo --minify
 
-.PHONY: docs-clean
-docs-clean: ## Clean generated documentation files
-	@echo "Cleaning documentation build files..."
-	rm -rf docs/public docs/resources
-
 .PHONY: docs-install
 docs-install: ## Install Hugo (macOS only)
 	@echo "Installing Hugo..."

@@ -29,3 +29,7 @@ dist
 
 # build file
 bin
+
+# Hugo generated files
+docs/public/
+docs/resources/
