@@ -2,16 +2,29 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
 
 	"github.com/gostaticanalysis/codegen/singlegenerator"
 
+	govalid_pkg "github.com/sivchari/govalid"
 	"github.com/sivchari/govalid/internal/analyzers/govalid"
 	"github.com/sivchari/govalid/internal/analyzers/markers"
 	"github.com/sivchari/govalid/internal/analyzers/registry"
 )
 
 func main() {
+	// Parse version flag
+	var version bool
+	flag.BoolVar(&version, "version", false, "print version information")
+	flag.Parse()
+
+	if version {
+		fmt.Printf("govalid version %s\n", govalid_pkg.Version)
+		os.Exit(0)
+	}
+
 	if err := run(); err != nil {
 		panic(err)
 	}
