@@ -111,12 +111,11 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 		markerContent := strings.TrimPrefix(doc.Text, "// +")
 
 		identifier, expressions := extractMarker(markerContent)
-		mset := newMarkerSet()
-		mset[identifier] = Marker{
+		marker := Marker{
 			Identifier:  identifier,
 			Expressions: expressions,
 		}
-		results.insertFieldMarkers(field, mset)
+		results.insertFieldMarker(field, marker)
 
 		if obj, ok := pass.TypesInfo.Defs[field.Names[0]]; ok {
 			pass.ExportObjectFact(obj, &MarkerFact{
