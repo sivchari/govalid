@@ -56,7 +56,7 @@ func (m *markers) FieldMarkers(field *ast.Field) MarkerSet {
 	return m.fieldMarkers[field]
 }
 
-// insertFieldMarkers adds a marker to a specific struct field.
+// insertFieldMarker adds a marker to a specific struct field.
 func (m *markers) insertFieldMarker(field *ast.Field, marker Marker) {
 	if existing, ok := m.fieldMarkers[field]; ok {
 		existing.Add(marker)
