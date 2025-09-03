@@ -17,6 +17,7 @@ import (
 func main() {
 	// Parse version flag
 	var version bool
+
 	flag.BoolVar(&version, "version", false, "print version information")
 	flag.Parse()
 
