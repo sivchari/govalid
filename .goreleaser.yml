@@ -81,5 +81,3 @@ homebrew_casks:
     description: "A Go code generator for validation functions"
     license: MIT
     binary: govalid
-    conflicts:
-      - formula: govalid
