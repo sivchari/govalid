@@ -25,6 +25,7 @@ func (ms *MarkerSet) Add(marker Marker) {
 		if existing.Identifier == marker.Identifier {
 			// Update existing marker
 			(*ms)[i] = marker
+
 			return
 		}
 	}
@@ -60,6 +61,7 @@ func (m *markers) insertFieldMarker(field *ast.Field, marker Marker) {
 	if existing, ok := m.fieldMarkers[field]; ok {
 		existing.Add(marker)
 		m.fieldMarkers[field] = existing
+
 		return
 	}
 
