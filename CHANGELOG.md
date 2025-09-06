@@ -1,5 +1,30 @@
 # Changelog
 
+## [v1.5.0](https://github.com/sivchari/govalid/compare/v1.4.0...v1.5.0) - 2025-09-06
+- Remove obsolete benchmarks by @BlackBuck in https://github.com/sivchari/govalid/pull/123
+- arrange order by @sivchari in https://github.com/sivchari/govalid/pull/126
+- use strings.ToLower to be consist between OSs by @sivchari in https://github.com/sivchari/govalid/pull/127
+- rename files by @sivchari in https://github.com/sivchari/govalid/pull/128
+- Collect multiple errors on validation run by @egor-denysenko in https://github.com/sivchari/govalid/pull/121
+- Adding benchmark syncing to GHA by @BlackBuck in https://github.com/sivchari/govalid/pull/124
+- add go report card badge in readme by @egor-denysenko in https://github.com/sivchari/govalid/pull/133
+- always run sync-benchmark workflow by @sivchari in https://github.com/sivchari/govalid/pull/139
+- Fix benchmark by @sivchari in https://github.com/sivchari/govalid/pull/141
+- improve benchmark script by @sivchari in https://github.com/sivchari/govalid/pull/142
+- Add pre-commit hooks by @t4kamura in https://github.com/sivchari/govalid/pull/137
+- Handle multiple marker by @sivchari in https://github.com/sivchari/govalid/pull/125
+- fix golden test by @sivchari in https://github.com/sivchari/govalid/pull/143
+- chore: add govulncheck workflow by @shiiyan in https://github.com/sivchari/govalid/pull/146
+- Generate validator interface for middleware by @shiiyan in https://github.com/sivchari/govalid/pull/136
+- Run formatting file and sorting impport block by @sivchari in https://github.com/sivchari/govalid/pull/145
+- chore: remove Hugo build artifacts from version control by @sivchari in https://github.com/sivchari/govalid/pull/148
+- fix GHA user by @sivchari in https://github.com/sivchari/govalid/pull/150
+- Add field path tracking for nested structures by @t4kamura in https://github.com/sivchari/govalid/pull/134
+- docs: clarify error detection timing by @ras0q in https://github.com/sivchari/govalid/pull/138
+- Add tagpr to control release version by @sivchari in https://github.com/sivchari/govalid/pull/152
+- prepare release v1.5.0 by @sivchari in https://github.com/sivchari/govalid/pull/154
+- update goreleaser by @sivchari in https://github.com/sivchari/govalid/pull/155
+
 ## [v1.5.0](https://github.com/sivchari/govalid/compare/v1.4.0...v1.5.0) - 2025-09-03
 - Remove obsolete benchmarks by @BlackBuck in https://github.com/sivchari/govalid/pull/123
 - arrange order by @sivchari in https://github.com/sivchari/govalid/pull/126
