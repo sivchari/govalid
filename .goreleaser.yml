@@ -42,34 +42,7 @@ changelog:
   sort: asc
 
 release:
-  github:
-    owner: sivchari
-    name: govalid
-  draft: false
-  prerelease: auto
-  name_template: "{{ .Version }}"
-  header: |
-    ## Changes
-
-    This release includes the following changes:
-  footer: |
-    ## Installation
-
-    ### Binary downloads
-    Download the appropriate binary for your platform from the assets below.
-
-    ### Go install
-    ```bash
-    go install github.com/sivchari/govalid/cmd/govalid@{{ .Tag }}
-    ```
-
-    ### Homebrew (macOS/Linux)
-    ```bash
-    brew install sivchari/tap/govalid
-    ```
-
-    ---
-    **Full Changelog**: https://github.com/sivchari/govalid/compare/{{ .PreviousTag }}...{{ .Tag }}
+  use_existing_draft: true
 
 homebrew_casks:
   - name: govalid
