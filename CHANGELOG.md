@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.5.1](https://github.com/sivchari/govalid/compare/v1.5.0...v1.5.1) - 2025-09-06
+- tidy CHANGELOG by @sivchari in https://github.com/sivchari/govalid/pull/157
+
 ## [v1.5.0](https://github.com/sivchari/govalid/compare/v1.4.0...v1.5.0) - 2025-09-06
 - Remove obsolete benchmarks by @BlackBuck in https://github.com/sivchari/govalid/pull/123
 - arrange order by @sivchari in https://github.com/sivchari/govalid/pull/126
