@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.5.1](https://github.com/sivchari/govalid/compare/v1.5.0...v1.5.1) - 2025-09-08
+- fix: resolve flaky test issue by making MarkerSet preserve order by @sivchari in https://github.com/sivchari/govalid/pull/151
+- integrate tagpr by @sivchari in https://github.com/sivchari/govalid/pull/159
+
 ## [v1.5.0](https://github.com/sivchari/govalid/compare/v1.4.0...v1.5.0) - 2025-09-06
 - Remove obsolete benchmarks by @BlackBuck in https://github.com/sivchari/govalid/pull/123
 - arrange order by @sivchari in https://github.com/sivchari/govalid/pull/126
