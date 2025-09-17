@@ -72,8 +72,8 @@ func ValidateMultiple(t *Multiple) error {
 	return nil
 }
 
-var _ govalid.Validator = (*User)(nil)
+var _ govalid.Validator = (*Multiple)(nil)
 
-func (t *User) Validate() error {
-	return ValidateUser(t)
+func (t *Multiple) Validate() error {
+	return ValidateMultiple(t)
 }
