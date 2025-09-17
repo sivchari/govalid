@@ -140,6 +140,7 @@ type makeValidatorInput struct {
 	ParentPath string
 }
 
+//nolint:funlen // This function is complex but cohesive - it handles complete field analysis including nested structs
 func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, typeMarkers markers.MarkerSet, structType *ast.StructType, parent, structName string) []*AnalyzedMetadata {
 	analyzed := make([]*AnalyzedMetadata, 0)
 
@@ -147,8 +148,9 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, typeMarke
 	for _, marker := range typeMarkers {
 		typeMarkersList = append(typeMarkersList, marker)
 	}
+
 	sort.SliceStable(typeMarkersList, func(i, j int) bool {
-		return strings.Compare(typeMarkersList[i].Identifier, typeMarkersList[j].Identifier) < 0
+		return typeMarkersList[i].Identifier < typeMarkersList[j].Identifier
 	})
 
 	for _, field := range structType.Fields.List {
@@ -161,11 +163,14 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, typeMarke
 		for _, marker := range fieldMarkers {
 			fieldMarkersList = append(fieldMarkersList, marker)
 		}
+
 		sort.SliceStable(fieldMarkersList, func(i, j int) bool {
-			return strings.Compare(fieldMarkersList[i].Identifier, fieldMarkersList[j].Identifier) < 0
+			return fieldMarkersList[i].Identifier < fieldMarkersList[j].Identifier
 		})
 
-		markersList := append(typeMarkersList, fieldMarkersList...)
+		markersList := make([]markers.Marker, 0, len(typeMarkersList)+len(fieldMarkersList))
+		markersList = append(markersList, typeMarkersList...)
+		markersList = append(markersList, fieldMarkersList...)
 
 		input := makeValidatorInput{
 			Pass:       pass,
@@ -201,7 +206,6 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, typeMarke
 				}
 			*/
 			input.Field = field
-			input.Markers = append(typeMarkersList, fieldMarkersList...)
 			validators = append(validators, makeValidator(input)...)
 		}
 
