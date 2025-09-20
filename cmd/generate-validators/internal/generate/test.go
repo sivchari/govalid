@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
-	"unicode/utf8"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/sivchari/govalid/cmd/generate-validators/templates"
 )
@@ -25,7 +26,7 @@ func generateGovalidTests(validators []ValidatorInfo, testDir, testTemplate stri
 		// Convert to TestInfo
 		testInfo := TestInfo{
 			Name:          validator.MarkerName,
-			TitleCaseName: toTitleCase(validator.MarkerName),
+			TitleCaseName: cases.Title(language.English).String(validator.MarkerName),
 		}
 
 		t, err := template.New("test").Funcs(templates.FuncMap).Parse(testTemplate)
@@ -45,18 +46,4 @@ func generateGovalidTests(validators []ValidatorInfo, testDir, testTemplate stri
 	}
 
 	return nil
-}
-
-// toTitleCase converts a marker name to title case.
-func toTitleCase(s string) string {
-	if s == "" {
-		return ""
-	}
-
-	r, size := utf8.DecodeRuneInString(s)
-	if size == 0 {
-		return ""
-	}
-
-	return strings.ToUpper(string(r)) + s[size:]
 }

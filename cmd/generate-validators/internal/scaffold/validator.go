@@ -7,7 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"unicode/utf8"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // CreateValidator creates a new validator scaffold file with the given marker name.
@@ -20,13 +22,7 @@ func CreateValidator(markerName, validatorTemplate, rulesDir string) error {
 	// Convert marker name to various forms
 	markerLower := strings.ToLower(markerName)
 
-	// Simple inline PascalCase conversion
-	r, size := utf8.DecodeRuneInString(markerLower)
-	if size == 0 {
-		return errors.New("marker name cannot be empty")
-	}
-
-	structName := strings.ToUpper(string(r)) + markerLower[size:]
+	structName := cases.Title(language.English).String(markerLower)
 
 	// Check if validator file already exists
 	validatorPath := filepath.Join(rulesDir, markerLower+".go")
@@ -70,13 +66,7 @@ func CreateGovalidTest(markerName, testTemplate, testDir string) error {
 	// Convert marker name to various forms
 	markerLower := strings.ToLower(markerName)
 
-	// Simple inline PascalCase conversion
-	r, size := utf8.DecodeRuneInString(markerLower)
-	if size == 0 {
-		return errors.New("marker name cannot be empty")
-	}
-
-	titleCaseName := strings.ToUpper(string(r)) + markerLower[size:]
+	titleCaseName := cases.Title(language.English).String(markerLower)
 
 	// Generate test file path
 	testPath := filepath.Join(testDir, markerLower+"_test.go")

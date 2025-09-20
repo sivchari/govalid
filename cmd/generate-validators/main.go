@@ -34,13 +34,12 @@ var validatorTemplate string
 //go:embed templates/govalid_test.go.tmpl
 var govalidTestTemplate string
 
-// Fixed paths.
-const (
-	rulesDir       = "internal/validator/rules"
-	outputDir      = "internal/validator/registry/initializers"
-	registryFile   = "internal/analyzers/govalid/registry_init.go"
-	markersFile    = "internal/markers/markers_generated.go"
-	govalidTestDir = "internal/analyzers/govalid/tests"
+var (
+	rulesDir       = filepath.Join("internal", "validator", "rules")
+	outputDir      = filepath.Join("internal", "validator", "registry", "initializers")
+	markersFile    = filepath.Join("internal", "markers", "markers_generated.go")
+	registryFile   = filepath.Join("internal", "analyzers", "govalid", "registry_init.go")
+	govalidTestDir = filepath.Join("internal", "analyzers", "govalid", "tests")
 )
 
 var (

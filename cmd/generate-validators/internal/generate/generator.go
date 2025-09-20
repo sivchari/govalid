@@ -44,7 +44,8 @@ func All(rulesDir, outputDir, registryFile, markersFile string, templates *Templ
 	}
 
 	// Generate test files
-	testDir := "internal/analyzers/govalid/tests"
+	testDir := filepath.Join("internal", "analyzers", "govalid", "tests")
+
 	if templates.GovalidTest != "" {
 		// Create test directory if it doesn't exist
 		if err := os.MkdirAll(testDir, 0o750); err != nil {
