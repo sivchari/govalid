@@ -29,7 +29,6 @@ func TestNestedStruct(t *testing.T) {
 		"nestedstruct/nop",
 		"nestedstruct/inside",
 		"nestedstruct/partial",
-		"multiple_markers",
 	}
 
 	for _, tc := range testCases {

@@ -1,6 +1,6 @@
 //go:generate govalid .
 
-package multiple_markers
+package multiple
 
 // +govalid:required
 type Multiple struct {
