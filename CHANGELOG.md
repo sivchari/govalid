@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.6.0](https://github.com/sivchari/govalid/compare/v1.5.1...v1.6.0) - 2025-09-30
+- Propagate toplevel marker by @sivchari in https://github.com/sivchari/govalid/pull/144
+- Avoid conflict when run add test by @sivchari in https://github.com/sivchari/govalid/pull/120
+- update version by @sivchari in https://github.com/sivchari/govalid/pull/161
+
 ## [v1.5.1](https://github.com/sivchari/govalid/compare/v1.5.0...v1.5.1) - 2025-09-08
 - fix: resolve flaky test issue by making MarkerSet preserve order by @sivchari in https://github.com/sivchari/govalid/pull/151
 - integrate tagpr by @sivchari in https://github.com/sivchari/govalid/pull/159
