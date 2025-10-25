@@ -158,3 +158,8 @@ type MultipleErrors struct {
 	// +govalid:maxlength=1
 	TooLong string `validate:"max=1" json:"too_long"`
 }
+
+type IPV4 struct {
+	// +govalid:ipv4
+	IP string `validate:"ipv4" json:"ip"`
+}
