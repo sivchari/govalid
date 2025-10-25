@@ -163,3 +163,8 @@ type IPV4 struct {
 	// +govalid:ipv4
 	IP string `validate:"ipv4" json:"ip"`
 }
+
+type IPV6 struct {
+	// +govalid:ipv6
+	IP string `validate:"ipv6" json:"ip"`
+}
