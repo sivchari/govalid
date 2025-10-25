@@ -15,6 +15,7 @@ func All() []registry.ValidatorInitializer {
 		GtInitializer{},
 		GteInitializer{},
 		Ipv4Initializer{},
+		Ipv6Initializer{},
 		LengthInitializer{},
 		LtInitializer{},
 		LteInitializer{},

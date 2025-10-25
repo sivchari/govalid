@@ -23,6 +23,9 @@ var (
 	// GoValidMarkerIpv4 is the marker for ipv4 validation.
 	GoValidMarkerIpv4 = "govalid:ipv4"
 
+	// GoValidMarkerIpv6 is the marker for ipv6 validation.
+	GoValidMarkerIpv6 = "govalid:ipv6"
+
 	// GoValidMarkerLength is the marker for length validation.
 	GoValidMarkerLength = "govalid:length"
 
@@ -67,6 +70,7 @@ var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerGt: {},
 	GoValidMarkerGte: {},
 	GoValidMarkerIpv4: {},
+	GoValidMarkerIpv6: {},
 	GoValidMarkerLength: {},
 	GoValidMarkerLt: {},
 	GoValidMarkerLte: {},
