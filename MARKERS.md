@@ -486,3 +486,40 @@ govalid supports the following markers:
       return nil
   }
   ```
+
+## `govalid:ipv4`
+
+- **Description**: Ensure that a string field is a valid RFC 791-compliant IPv4 address.
+
+- **Example**:
+
+  ```go
+  type Request struct {
+      // +govalid:ipv4
+      IP string `json:"ip"`
+  }
+  ```
+
+- **Generated Code**:
+
+  ```go
+  func ValidateRequest(t *Request) error {
+      if t == nil {
+          return ErrNilRequest
+      }
+
+      var errs govaliderrors.ValidationErrors
+
+      if ip := net.ParseIP(t.IP); ip == nil || ip.To4() == nil {
+          err := ErrRequestIPIpv4Validation
+          err.Value = t.IP
+          errs = append(errs, err)
+      }
+
+      if len(errs) > 0 {
+          return errs
+      }
+      return nil
+  }
+
+  ```
