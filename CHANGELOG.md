@@ -1,5 +1,10 @@
 # Changelog
 
+## [v1.7.0](https://github.com/sivchari/govalid/compare/v1.6.0...v1.7.0) - 2025-11-10
+- fix goreleaser to dismiss deprecated syntax by @sivchari in https://github.com/sivchari/govalid/pull/165
+- Add IP address markers by @t4kamura in https://github.com/sivchari/govalid/pull/164
+- cut v1.7.0 by @sivchari in https://github.com/sivchari/govalid/pull/168
+
 ## [v1.6.0](https://github.com/sivchari/govalid/compare/v1.5.1...v1.6.0) - 2025-09-30
 - Propagate toplevel marker by @sivchari in https://github.com/sivchari/govalid/pull/144
 - Avoid conflict when run add test by @sivchari in https://github.com/sivchari/govalid/pull/120
