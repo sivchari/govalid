@@ -53,4 +53,4 @@ homebrew_casks:
     homepage: https://github.com/sivchari/govalid
     description: "A Go code generator for validation functions"
     license: MIT
-    binary: govalid
+    binaries: [govalid]
