@@ -317,7 +317,11 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 	typeName := ts.Name.Name
 	fileName = fmt.Sprintf("%s_%s_validator.go", fileName, strings.ToLower(typeName))
 
-	file, err := os.Create(filepath.Clean(fileName))
+	// Get the directory of the original file to place the validator in the same directory
+	dir := filepath.Dir(originalFilePath)
+	outputPath := filepath.Join(dir, fileName)
+
+	file, err := os.Create(filepath.Clean(outputPath))
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}

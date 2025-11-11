@@ -95,7 +95,14 @@ type Person struct {
 
 ### 2. Generate Validation Code
 ```bash
-govalid generate
+# Generate validation code for the current directory
+govalid .
+
+# Or specify a package path
+govalid ./path/to/package
+
+# Or generate for all packages recursively
+govalid ./...
 ```
 
 This generates validation code like:
