@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.7.1](https://github.com/sivchari/govalid/compare/v1.7.0...v1.7.1) - 2025-11-12
+- Fix validator file output path and correct README usage by @sivchari in https://github.com/sivchari/govalid/pull/172
+
 ## [v1.7.0](https://github.com/sivchari/govalid/compare/v1.6.0...v1.7.0) - 2025-11-10
 - fix goreleaser to dismiss deprecated syntax by @sivchari in https://github.com/sivchari/govalid/pull/165
 - Add IP address markers by @t4kamura in https://github.com/sivchari/govalid/pull/164
