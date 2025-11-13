@@ -108,7 +108,7 @@ jobs:
           cat weekly-fuzz-results/${{ matrix.fuzz-target }}-report.md
           
       - name: Upload extended fuzz results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: weekly-fuzz-results-${{ matrix.fuzz-target }}
           path: weekly-fuzz-results/
@@ -213,7 +213,7 @@ jobs:
           cat weekly-report.md
           
       - name: Upload weekly report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: weekly-fuzz-report
           path: weekly-report.md

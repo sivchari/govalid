@@ -130,7 +130,7 @@ jobs:
           
       - name: Upload fuzz results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: fuzz-results-${{ matrix.fuzz-target }}
           path: fuzz-results/
@@ -149,7 +149,7 @@ jobs:
           
       - name: Upload failure testdata
         if: env.FUZZ_FAILURE == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: fuzz-failures-${{ matrix.fuzz-target }}
           path: fuzz-results/testdata-${{ matrix.fuzz-target }}
@@ -198,7 +198,7 @@ jobs:
           cat fuzz-report.md
           
       - name: Upload combined report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: fuzz-report
           path: fuzz-report.md
