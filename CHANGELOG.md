@@ -1,5 +1,16 @@
 # Changelog
 
+## [v1.7.2](https://github.com/sivchari/govalid/compare/v1.7.1...v1.7.2) - 2025-11-17
+- add dependabot by @sivchari in https://github.com/sivchari/govalid/pull/162
+- ci(deps): bump actions/upload-artifact from 4 to 5 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/175
+- deps(deps): bump golang.org/x/tools from 0.29.0 to 0.39.0 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/176
+- ci(deps): bump actions/cache from 3 to 4 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/177
+- ci(deps): bump actions/configure-pages from 4 to 5 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/179
+- ci(deps): bump actions/setup-go from 4 to 6 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/181
+- ci(deps): bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/182
+- use go-version-file by @sivchari in https://github.com/sivchari/govalid/pull/185
+- update dependencies by @sivchari in https://github.com/sivchari/govalid/pull/184
+
 ## [v1.7.1](https://github.com/sivchari/govalid/compare/v1.7.0...v1.7.1) - 2025-11-12
 - Fix validator file output path and correct README usage by @sivchari in https://github.com/sivchari/govalid/pull/172
 
