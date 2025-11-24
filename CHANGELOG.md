@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.7.3](https://github.com/sivchari/govalid/compare/v1.7.2...v1.7.3) - 2025-11-24
+- ci(deps): bump actions/upload-pages-artifact from 3 to 4 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/189
+- ci(deps): bump actions/download-artifact from 4 to 6 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/188
+- ci(deps): bump actions/github-script from 7 to 8 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/186
+- ci(deps): bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/187
+
 ## [v1.7.2](https://github.com/sivchari/govalid/compare/v1.7.1...v1.7.2) - 2025-11-17
 - add dependabot by @sivchari in https://github.com/sivchari/govalid/pull/162
 - ci(deps): bump actions/upload-artifact from 4 to 5 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/175
