@@ -212,7 +212,7 @@ jobs:
     
     steps:
       - name: Create issue on failure
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const title = `🐛 Fuzz Test Failures Detected - ${new Date().toISOString().split('T')[0]}`;
