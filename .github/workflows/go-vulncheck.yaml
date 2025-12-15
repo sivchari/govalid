@@ -15,20 +15,6 @@ jobs:
   govulncheck:
     runs-on: ubuntu-latest
     steps:
-<<<<<<< Updated upstream
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }} # Checkout the PR commit or the triggering commit if there is no PR
-
-||||||| Stash base
-      - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }} # Checkout the PR commit or the triggering commit if there is no PR
-
-=======
->>>>>>> Stashed changes
       - name: Run govulncheck
         uses: golang/govulncheck-action@v1
         with:
