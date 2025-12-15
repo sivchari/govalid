@@ -122,7 +122,7 @@ jobs:
     
     steps:
       - name: Download all weekly fuzz results
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: all-weekly-results
           
