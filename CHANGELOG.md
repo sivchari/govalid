@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.7.4](https://github.com/sivchari/govalid/compare/v1.7.3...v1.7.4) - 2025-12-22
+- update vulncheck by @sivchari in https://github.com/sivchari/govalid/pull/196
+- deps(deps): bump golang.org/x/tools from 0.39.0 to 0.40.0 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/194
+- ci(deps): bump actions/upload-artifact from 5 to 6 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/193
+- ci(deps): bump actions/download-artifact from 6 to 7 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/191
+- ci(deps): bump actions/cache from 4 to 5 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/192
+- deps(deps): bump golang.org/x/text from 0.31.0 to 0.32.0 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/195
+
 ## [v1.7.3](https://github.com/sivchari/govalid/compare/v1.7.2...v1.7.3) - 2025-11-24
 - ci(deps): bump actions/upload-pages-artifact from 3 to 4 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/189
 - ci(deps): bump actions/download-artifact from 4 to 6 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/188
