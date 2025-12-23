@@ -5,7 +5,8 @@
 
   ![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)
   ![License](https://img.shields.io/badge/license-MIT-green.svg)
-  ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
+  [![CI](https://github.com/sivchari/govalid/actions/workflows/unit-test.yaml/badge.svg)](https://github.com/sivchari/govalid/actions/workflows/unit-test.yaml)
+  [![codecov](https://codecov.io/gh/sivchari/govalid/graph/badge.svg)](https://codecov.io/gh/sivchari/govalid)
   [![Go Report Card](https://goreportcard.com/badge/github.com/sivchari/govalid)](https://goreportcard.com/report/github.com/sivchari/govalid)
 </div>
 
