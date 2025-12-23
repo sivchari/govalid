@@ -27,4 +27,4 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: ./test/coverage.out
-          token: ${{ secrets.CODECOV_ORG_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
