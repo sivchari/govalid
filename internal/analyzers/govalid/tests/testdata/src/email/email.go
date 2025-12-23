@@ -3,6 +3,6 @@
 package email
 
 type Email struct {
-	// +govalid:email
+	//govalid:email
 	Email string `validate:"email" json:"email"`
 }

@@ -27,15 +27,15 @@ import (
 //go:generate govalid .
 
 type User struct {
-	// +govalid:required
+	//govalid:required
 	Name string `json:"name"`
 	
-	// +govalid:required
-	// +govalid:email
+	//govalid:required
+	//govalid:email
 	Email string `json:"email"`
 	
-	// +govalid:gte=0
-	// +govalid:lte=120
+	//govalid:gte=0
+	//govalid:lte=120
 	Age int `json:"age"`
 }
 
@@ -169,28 +169,28 @@ import (
 //go:generate govalid .
 
 type CreateUserRequest struct {
-    // +govalid:required
-    // +govalid:minlength=2
-    // +govalid:maxlength=50
+    //govalid:required
+    //govalid:minlength=2
+    //govalid:maxlength=50
     Name string `json:"name"`
     
-    // +govalid:required
-    // +govalid:email
+    //govalid:required
+    //govalid:email
     Email string `json:"email"`
     
-    // +govalid:required
-    // +govalid:minlength=8
-    // +govalid:maxlength=100
+    //govalid:required
+    //govalid:minlength=8
+    //govalid:maxlength=100
     Password string `json:"password"`
     
-    // +govalid:gte=13
-    // +govalid:lte=120
+    //govalid:gte=13
+    //govalid:lte=120
     Age int `json:"age"`
     
-    // +govalid:enum=admin,user,guest
+    //govalid:enum=admin,user,guest
     Role string `json:"role"`
     
-    // +govalid:maxitems=10
+    //govalid:maxitems=10
     Tags []string `json:"tags,omitempty"`
 }
 
@@ -339,60 +339,60 @@ import (
 //go:generate govalid .
 
 type Product struct {
-    // +govalid:required
-    // +govalid:uuid
+    //govalid:required
+    //govalid:uuid
     ID string `json:"id"`
     
-    // +govalid:required
-    // +govalid:minlength=3
-    // +govalid:maxlength=200
+    //govalid:required
+    //govalid:minlength=3
+    //govalid:maxlength=200
     Name string `json:"name"`
     
-    // +govalid:required
-    // +govalid:gt=0
+    //govalid:required
+    //govalid:gt=0
     Price float64 `json:"price"`
     
-    // +govalid:required
-    // +govalid:enum=electronics,clothing,books,home,sports
+    //govalid:required
+    //govalid:enum=electronics,clothing,books,home,sports
     Category string `json:"category"`
     
-    // +govalid:required
-    // +govalid:minitems=1
-    // +govalid:maxitems=10
+    //govalid:required
+    //govalid:minitems=1
+    //govalid:maxitems=10
     Images []string `json:"images"`
     
-    // +govalid:maxitems=20
+    //govalid:maxitems=20
     Tags []string `json:"tags,omitempty"`
     
-    // +govalid:gte=0
+    //govalid:gte=0
     Stock int `json:"stock"`
     
-    // +govalid:required
-    // +govalid:enum=draft,active,inactive,discontinued
+    //govalid:required
+    //govalid:enum=draft,active,inactive,discontinued
     Status string `json:"status"`
     
-    // +govalid:maxitems=50
+    //govalid:maxitems=50
     Attributes map[string]string `json:"attributes,omitempty"`
 }
 
 type ProductFilter struct {
-    // +govalid:enum=electronics,clothing,books,home,sports
+    //govalid:enum=electronics,clothing,books,home,sports
     Category string `json:"category,omitempty"`
     
-    // +govalid:gte=0
+    //govalid:gte=0
     MinPrice float64 `json:"min_price,omitempty"`
     
-    // +govalid:gte=0
+    //govalid:gte=0
     MaxPrice float64 `json:"max_price,omitempty"`
     
-    // +govalid:maxitems=10
+    //govalid:maxitems=10
     Tags []string `json:"tags,omitempty"`
     
-    // +govalid:gte=1
-    // +govalid:lte=100
+    //govalid:gte=1
+    //govalid:lte=100
     Limit int `json:"limit,omitempty"`
     
-    // +govalid:gte=0
+    //govalid:gte=0
     Offset int `json:"offset,omitempty"`
 }
 
@@ -542,43 +542,43 @@ const (
 )
 
 type Task struct {
-    // +govalid:required
-    // +govalid:uuid
+    //govalid:required
+    //govalid:uuid
     ID string `json:"id"`
     
-    // +govalid:required
-    // +govalid:minlength=3
-    // +govalid:maxlength=200
+    //govalid:required
+    //govalid:minlength=3
+    //govalid:maxlength=200
     Title string `json:"title"`
     
-    // +govalid:maxlength=2000
+    //govalid:maxlength=2000
     Description string `json:"description,omitempty"`
     
-    // +govalid:required
-    // +govalid:enum=admin,user,guest
+    //govalid:required
+    //govalid:enum=admin,user,guest
     AssignedToRole UserRole `json:"assigned_to_role"`
     
-    // +govalid:required
-    // +govalid:enum=1,2,3
+    //govalid:required
+    //govalid:enum=1,2,3
     Priority Priority `json:"priority"`
     
-    // +govalid:required
-    // +govalid:enum=pending,in_progress,completed,cancelled
+    //govalid:required
+    //govalid:enum=pending,in_progress,completed,cancelled
     Status Status `json:"status"`
     
-    // +govalid:minitems=1
-    // +govalid:maxitems=10
+    //govalid:minitems=1
+    //govalid:maxitems=10
     Tags []string `json:"tags"`
     
-    // +govalid:maxitems=20
+    //govalid:maxitems=20
     Metadata map[string]string `json:"metadata,omitempty"`
     
-    // +govalid:gte=1
-    // +govalid:lte=100
+    //govalid:gte=1
+    //govalid:lte=100
     EstimatedHours int `json:"estimated_hours,omitempty"`
     
-    // +govalid:required
-    // +govalid:email
+    //govalid:required
+    //govalid:email
     CreatedBy string `json:"created_by"`
 }
 
@@ -739,14 +739,14 @@ import (
 //go:generate govalid .
 
 type User struct {
-    // +govalid:required
+    //govalid:required
     Name string `json:"name"`
     
-    // +govalid:required
-    // +govalid:email
+    //govalid:required
+    //govalid:email
     Email string `json:"email"`
     
-    // +govalid:gte=18
+    //govalid:gte=18
     Age int `json:"age"`
 }
 

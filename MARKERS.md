@@ -6,7 +6,7 @@ govalid supports the following markers:
 - **Description**: Ensures that the field is not empty or nil.
 - **Example**:
   ```go
-  // +govalid:required
+  //govalid:required
   type User struct {
       Username string `json:"username"`
   }
@@ -30,7 +30,7 @@ govalid supports the following markers:
 - **Description**: Ensures that a numeric field is less than a specified value.
 - **Example**:
   ```go
-  // +govalid:lt=18
+  //govalid:lt=18
   type Profile struct {
       Age int `json:"age"`
   }
@@ -54,7 +54,7 @@ govalid supports the following markers:
 - **Description**: Ensures that a numeric field is less than or equal to a specified value.
 - **Example**:
   ```go
-  // +govalid:lte=65
+  //govalid:lte=65
   type Profile struct {
       Age int `json:"age"`
   }
@@ -78,7 +78,7 @@ govalid supports the following markers:
 - **Description**: Ensures that a numeric field is greater than a specified value.
 - **Example**:
   ```go
-  // +govalid:gt=100
+  //govalid:gt=100
   type Profile struct {
       Age int `json:"age"`
   }
@@ -102,7 +102,7 @@ govalid supports the following markers:
 - **Description**: Ensures that a numeric field is greater than or equal to a specified value.
 - **Example**:
   ```go
-  // +govalid:gte=18
+  //govalid:gte=18
   type Profile struct {
       Age int `json:"age"`
   }
@@ -127,7 +127,7 @@ govalid supports the following markers:
 - **Example**:
   ```go
   type User struct {
-      // +govalid:maxlength=50
+      //govalid:maxlength=50
       Username string `json:"username"`
   }
   ```
@@ -151,7 +151,7 @@ govalid supports the following markers:
 - **Example**:
   ```go
   type User struct {
-      // +govalid:minlength=3
+      //govalid:minlength=3
       Username string `json:"username"`
   }
   ```
@@ -175,7 +175,7 @@ govalid supports the following markers:
 - **Example**:
   ```go
   type User struct {
-      // +govalid:length=7
+      //govalid:length=7
       Name string `json:"name"`
   }
   ```
@@ -200,10 +200,10 @@ govalid supports the following markers:
 - **Example**:
   ```go
   type Collection struct {
-      // +govalid:maxitems=10
+      //govalid:maxitems=10
       Items []string `json:"items"`
       
-      // +govalid:maxitems=5
+      //govalid:maxitems=5
       Metadata map[string]string `json:"metadata"`
   }
   ```
@@ -231,10 +231,10 @@ govalid supports the following markers:
 - **Example**:
   ```go
   type Collection struct {
-      // +govalid:minitems=1
+      //govalid:minitems=1
       Items []string `json:"items"`
       
-      // +govalid:minitems=2
+      //govalid:minitems=2
       Tags []string `json:"tags"`
   }
   ```
@@ -267,19 +267,19 @@ govalid supports the following markers:
 
   type User struct {
       // String enum
-      // +govalid:enum=admin,user,guest
+      //govalid:enum=admin,user,guest
       Role string `json:"role"`
       
       // Numeric enum
-      // +govalid:enum=1,2,3
+      //govalid:enum=1,2,3
       Level int `json:"level"`
       
       // Custom string type enum
-      // +govalid:enum=manager,developer,tester
+      //govalid:enum=manager,developer,tester
       UserRole UserRole `json:"user_role"`
       
       // Custom numeric type enum
-      // +govalid:enum=10,20,30
+      //govalid:enum=10,20,30
       Priority Priority `json:"priority"`
   }
   ```
@@ -315,7 +315,7 @@ govalid supports the following markers:
 - **Example**:
   ```go
   type User struct {
-      // +govalid:email
+      //govalid:email
       Email string `validate:"email" json:"email"`
   }
   ```
@@ -339,7 +339,7 @@ govalid supports the following markers:
 - **Example**:
   ```go
   type Resource struct {
-      // +govalid:url
+      //govalid:url
       URL string `validate:"url" json:"url"`
   }
   ```
@@ -363,7 +363,7 @@ govalid supports the following markers:
 - **Example**:
   ```go
   type Resource struct {
-      // +govalid:uuid
+      //govalid:uuid
       ID string `json:"id"`
   }
   ```
@@ -390,19 +390,19 @@ govalid supports the following markers:
   ```go
   type Config struct {
       // Numeric validation
-      // +govalid:cel=value > 0.0 && value <= 100.0
+      //govalid:cel=value > 0.0 && value <= 100.0
       Score float64 `json:"score"`
       
       // String length validation
-      // +govalid:cel=size(value) >= 3 && size(value) <= 50
+      //govalid:cel=size(value) >= 3 && size(value) <= 50
       Username string `json:"username"`
       
       // Pattern matching
-      // +govalid:cel=value.contains('@')
+      //govalid:cel=value.contains('@')
       Email string `json:"email"`
       
       // List validation
-      // +govalid:cel=size(value) > 0 && size(value) <= 10
+      //govalid:cel=size(value) > 0 && size(value) <= 10
       Tags []string `json:"tags"`
   }
   ```
@@ -439,7 +439,7 @@ govalid supports the following markers:
 - **Example**:
   ```go
     type User struct {
-        // +govalid:alpha
+        //govalid:alpha
         FirstName string `json:"first_name"`
     }
     ```
@@ -466,7 +466,7 @@ govalid supports the following markers:
 
   ```go
   type Payload struct {
-      // +govalid:numeric
+      //govalid:numeric
       Phone string `json:"phone"`
   }
   ```
@@ -495,7 +495,7 @@ govalid supports the following markers:
 
   ```go
   type Request struct {
-      // +govalid:ipv4
+      //govalid:ipv4
       IP string `json:"ip"`
   }
   ```
@@ -532,7 +532,7 @@ govalid supports the following markers:
 
   ```go
   type Request struct {
-      // +govalid:ipv6
+      //govalid:ipv6
       IP string `json:"ip"`
   }
   ```

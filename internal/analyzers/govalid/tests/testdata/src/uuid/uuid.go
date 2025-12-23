@@ -3,6 +3,6 @@
 package uuid
 
 type UUID struct {
-	// +govalid:uuid
+	//govalid:uuid
 	UUID string `validate:"uuid" json:"uuid"`
 }

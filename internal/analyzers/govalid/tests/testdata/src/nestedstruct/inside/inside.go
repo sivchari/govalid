@@ -6,7 +6,7 @@ package inside
 // the nested field with marker inside the anonymous struct.
 type Inside struct {
 	A struct {
-		// +govalid:required
+		//govalid:required
 		X string
 	}
 }

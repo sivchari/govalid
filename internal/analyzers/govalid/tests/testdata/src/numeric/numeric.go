@@ -3,6 +3,6 @@
 package numeric
 
 type Numeric struct {
-	// +govalid:numeric
+	//govalid:numeric
 	Number string
 }

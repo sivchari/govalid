@@ -3,12 +3,12 @@ package alpha
 
 // Alpha is a struct for testing alpha validation
 type Alpha struct {
-	// +govalid:alpha
+	//govalid:alpha
 	FirstName string `json:"first_name"`
 
-	// +govalid:alpha
+	//govalid:alpha
 	LastName string `json:"last_name"`
 
-	// +govalid:alpha
+	//govalid:alpha
 	CountryCode string `json:"country_code"`
 }

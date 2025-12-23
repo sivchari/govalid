@@ -6,9 +6,9 @@
 package testfixture
 
 // PersonRequest is the request payload used in middleware tests.
-// +govalid:required
+//govalid:required
 type PersonRequest struct {
 	Name string `json:"name"`
-	// +govalid:email
+	//govalid:email
 	Email string `json:"email"`
 }

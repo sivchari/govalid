@@ -5,7 +5,7 @@ package partial
 // Partial struct should generate validation code only for
 // the field with marker, not for the nested struct without markers.
 type Partial struct {
-	// +govalid:required
+	//govalid:required
 	Name string
 
 	NestedWithoutMarkers struct {
