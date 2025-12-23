@@ -2,52 +2,43 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 
-	"github.com/gostaticanalysis/codegen/singlegenerator"
+	"github.com/spf13/cobra"
 
 	govalid_pkg "github.com/sivchari/govalid"
-	"github.com/sivchari/govalid/internal/analyzers/govalid"
-	"github.com/sivchari/govalid/internal/analyzers/markers"
-	"github.com/sivchari/govalid/internal/analyzers/registry"
 )
 
-func main() {
-	// Parse version flag
-	var version bool
-
-	flag.BoolVar(&version, "version", false, "print version information")
-	flag.Parse()
-
-	if version {
-		fmt.Printf("govalid version %s\n", govalid_pkg.Version)
-		os.Exit(0)
-	}
-
-	if err := run(); err != nil {
-		panic(err)
-	}
+var rootCmd = &cobra.Command{
+	Use:     "govalid",
+	Short:   "govalid generates type-safe validation code for Go structs",
+	Version: govalid_pkg.Version,
+	Run: func(_ *cobra.Command, _ []string) {
+		if err := runGenerator(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+	},
 }
 
-// run initializes the analyzers and starts the unit checker.
-func run() error {
-	registry := registry.NewRegistry(
-		registry.AddAnalyzers(markers.Initializer()),
-		registry.AddGenerators(govalid.Initializer()),
-	)
+func init() {
+	rootCmd.AddCommand(migrateCmd)
+}
 
-	if err := registry.Init(nil); err != nil {
-		return fmt.Errorf("failed to initialize analyzers: %w", err)
+func main() {
+	// Check if running in generator mode (called via go generate)
+	// In this case, pass through to the generator directly
+	if len(os.Args) > 1 && os.Args[1] != "migrate" && os.Args[1] != "help" && os.Args[1] != "--help" && os.Args[1] != "-h" && os.Args[1] != "version" && os.Args[1] != "--version" && os.Args[1] != "-v" {
+		if err := runGenerator(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+
+		return
 	}
 
-	govalid, err := registry.Generator(govalid.Name)
-	if err != nil {
-		return fmt.Errorf("failed to get govalid generator: %w", err)
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
 	}
-
-	singlegenerator.Main(govalid)
-
-	return nil
 }
