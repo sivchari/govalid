@@ -11,9 +11,10 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "govalid",
+	Use:     "govalid [flags] [packages]",
 	Short:   "govalid generates type-safe validation code for Go structs",
 	Version: govalid_pkg.Version,
+	Args:    cobra.ArbitraryArgs,
 	Run: func(_ *cobra.Command, _ []string) {
 		if err := runGenerator(); err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -27,17 +28,6 @@ func init() {
 }
 
 func main() {
-	// Check if running in generator mode (called via go generate)
-	// In this case, pass through to the generator directly
-	if len(os.Args) > 1 && os.Args[1] != "migrate" && os.Args[1] != "help" && os.Args[1] != "--help" && os.Args[1] != "-h" && os.Args[1] != "version" && os.Args[1] != "--version" && os.Args[1] != "-v" {
-		if err := runGenerator(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
-
-		return
-	}
-
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
