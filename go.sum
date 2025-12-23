@@ -20,6 +20,8 @@ github.com/gostaticanalysis/comment v1.4.0/go.mod h1:ih6ZxzTHLdadaiSnF5WY3dxUoXf
 github.com/gostaticanalysis/knife v0.0.0-20201007075211-3ce0c932ae3d/go.mod h1:RQzcXVjVIpE0Q1HI2A4xujk8ko+rV9cBf0f6zqGrNZk=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/sivchari/golden v0.3.0 h1:WUtMlhvqeH8mXcX4hsZwyfrA5jeNz5F9IL1w+u7Ew7w=
+github.com/sivchari/golden v0.3.0/go.mod h1:gddwjsjxPtLYRCq0M471x9WD9khQWty82Yn/PZ/2I8E=
 github.com/stoewer/go-strcase v1.2.0 h1:Z2iHWqGXH00XYgqDmNgQbIBxf3wrNq0F3feEy0ainaU=
 github.com/stoewer/go-strcase v1.2.0/go.mod h1:IBiWB2sKIp3wVVQ3Y035++gc+knqhUQag1KpM8ahLw8=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

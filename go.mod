@@ -5,6 +5,7 @@ go 1.24.3
 require (
 	github.com/google/cel-go v0.26.1
 	github.com/gostaticanalysis/codegen v0.1.0
+	github.com/sivchari/golden v0.3.0
 	golang.org/x/text v0.32.0
 	golang.org/x/tools v0.40.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gostaticanalysis/codegen/codegentest"
+	"github.com/sivchari/golden"
 
 	"github.com/sivchari/govalid/internal/analyzers/govalid"
 	"github.com/sivchari/govalid/internal/analyzers/markers"
@@ -28,5 +29,8 @@ func TestUuid(t *testing.T) {
 	}
 
 	results := codegentest.Run(t, codegentest.TestData(), govalid, "uuid")
-	codegentest.Golden(t, results, update)
+	g := golden.New(t, golden.WithUpdate(update))
+	for _, r := range results {
+		g.Assert("uuid", r.Output.String())
+	}
 }

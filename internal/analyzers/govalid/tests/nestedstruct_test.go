@@ -1,9 +1,11 @@
 package tests
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/gostaticanalysis/codegen/codegentest"
+	"github.com/sivchari/golden"
 
 	"github.com/sivchari/govalid/internal/analyzers/govalid"
 	"github.com/sivchari/govalid/internal/analyzers/markers"
@@ -34,7 +36,12 @@ func TestNestedStruct(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc, func(t *testing.T) {
 			results := codegentest.Run(t, codegentest.TestData(), govalid, tc)
-			codegentest.Golden(t, results, update)
+			g := golden.New(t, golden.WithUpdate(update))
+			name := filepath.Base(tc)
+
+			for _, r := range results {
+				g.Assert(name, r.Output.String())
+			}
 		})
 	}
 }
