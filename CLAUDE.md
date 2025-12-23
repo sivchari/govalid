@@ -422,10 +422,6 @@ make golangci-lint
 - Add comprehensive unit tests with boundary value testing
 - Add benchmarks showing {performance_improvement}
 - Update documentation and README
-
-🤖 Generated with [Claude Code](https://claude.ai/code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ## 🔄 Next Markers to Implement

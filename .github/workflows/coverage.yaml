@@ -27,7 +27,4 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: ./test/coverage.out
-          flags: unittests
-          name: codecov-govalid
-          fail_ci_if_error: false
-          verbose: true
+          token: ${{ secrets.CODECOV_ORG_TOKEN }}

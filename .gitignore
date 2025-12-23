@@ -33,3 +33,7 @@ bin
 # Hugo generated files
 docs/public/
 docs/resources/
+
+# Code coverage HTML report
+test/coverage.html
+

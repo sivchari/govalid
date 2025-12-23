@@ -61,7 +61,7 @@ test: ## Run all tests
 .PHONY: test-coverage
 test-coverage: ## Run tests with coverage report
 	@echo "Running tests with coverage..."
-	cd test && go test -coverprofile=coverage.out -coverpkg=github.com/sivchari/govalid/... ./unit/...
+	cd test && go test -race -covermode=atomic -coverprofile=coverage.out -coverpkg=github.com/sivchari/govalid/... ./unit/...
 	@echo ""
 	@echo "Coverage summary:"
 	@cd test && go tool cover -func=coverage.out | tail -1
