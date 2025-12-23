@@ -1,7 +1,9 @@
 package markers
 
 import (
+	"fmt"
 	"go/ast"
+	"os"
 	"reflect"
 	"strings"
 
@@ -97,7 +99,9 @@ func collectTypeMarkers(pass *analysis.Pass, genDecl *ast.GenDecl, results *mark
 	}
 
 	for _, doc := range genDecl.Doc.List {
-		markerContent, ok := parseMarkerComment(doc.Text)
+		pos := pass.Fset.Position(doc.Pos())
+		markerContent, ok := parseMarkerComment(doc.Text, pos.Filename, pos.Line)
+
 		if !ok {
 			continue
 		}
@@ -148,7 +152,9 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 	}
 
 	for _, doc := range field.Doc.List {
-		markerContent, ok := parseMarkerComment(doc.Text)
+		pos := pass.Fset.Position(doc.Pos())
+		markerContent, ok := parseMarkerComment(doc.Text, pos.Filename, pos.Line)
+
 		if !ok {
 			continue
 		}
@@ -172,13 +178,15 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 // parseMarkerComment parses a comment and extracts the marker content.
 // It supports both old format "// +govalid:" and new format "//govalid:".
 // Returns the marker content (e.g., "govalid:required") and true if valid, or empty string and false if not a marker.
-func parseMarkerComment(text string) (string, bool) {
+func parseMarkerComment(text, filename string, line int) (string, bool) {
 	// New format: //govalid:xxx (recommended, go doc directive style)
 	if strings.HasPrefix(text, "//govalid:") {
 		return strings.TrimPrefix(text, "//"), true
 	}
 	// Old format: // +govalid:xxx (deprecated, kept for backward compatibility)
 	if strings.HasPrefix(text, "// +govalid:") {
+		fmt.Fprintf(os.Stderr, "\033[33mWARNING\033[0m: %s:%d: deprecated marker format \"// +govalid:\"; use \"//govalid:\" instead (run 'govalid migrate' to fix)\n", filename, line)
+
 		return strings.TrimPrefix(text, "// +"), true
 	}
 
