@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/tools/go/packages"
 )
 
 const (
@@ -17,24 +18,24 @@ const (
 var dryRun bool
 
 var migrateCmd = &cobra.Command{
-	Use:   "migrate [paths...]",
+	Use:   "migrate [patterns...]",
 	Short: "Migrate old marker format to new format",
 	Long: `Migrate old marker format (// +govalid:) to new format (//govalid:).
 
-If no paths are specified, the current directory is used.
+If no patterns are specified, the current directory is used.
 
 Examples:
   govalid migrate                    # Migrate all .go files in current directory
   govalid migrate ./...              # Migrate all .go files recursively
-  govalid migrate file.go            # Migrate a specific file
+  govalid migrate ./pkg/...          # Migrate files in pkg directory
   govalid migrate --dry-run ./...    # Preview changes without modifying files`,
 	RunE: func(_ *cobra.Command, args []string) error {
-		paths := args
-		if len(paths) == 0 {
-			paths = []string{"."}
+		patterns := args
+		if len(patterns) == 0 {
+			patterns = []string{"."}
 		}
 
-		return runMigrate(paths, dryRun)
+		return runMigrate(patterns, dryRun)
 	},
 }
 
@@ -42,8 +43,8 @@ func init() {
 	migrateCmd.Flags().BoolVar(&dryRun, "dry-run", false, "preview changes without modifying files")
 }
 
-func runMigrate(paths []string, dryRun bool) error {
-	files, err := collectGoFiles(paths)
+func runMigrate(patterns []string, dryRun bool) error {
+	files, err := collectGoFiles(patterns)
 	if err != nil {
 		return err
 	}
@@ -64,79 +65,29 @@ func runMigrate(paths []string, dryRun bool) error {
 	return nil
 }
 
-func collectGoFiles(paths []string) ([]string, error) {
-	var files []string
-
-	for _, path := range paths {
-		collected, err := collectFromPath(path)
-		if err != nil {
-			return nil, err
-		}
-
-		files = append(files, collected...)
+func collectGoFiles(patterns []string) ([]string, error) {
+	cfg := &packages.Config{
+		Mode: packages.NeedFiles,
 	}
 
-	return files, nil
-}
-
-func collectFromPath(path string) ([]string, error) {
-	// Handle ./... pattern
-	if strings.HasSuffix(path, "/...") {
-		return collectRecursive(strings.TrimSuffix(path, "/..."))
-	}
-
-	info, err := os.Stat(path)
+	pkgs, err := packages.Load(cfg, patterns...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to stat %s: %w", path, err)
+		return nil, fmt.Errorf("failed to load packages: %w", err)
 	}
 
-	if info.IsDir() {
-		return collectFromDirectory(path)
-	}
-
-	if strings.HasSuffix(path, ".go") {
-		return []string{path}, nil
-	}
-
-	return nil, nil
-}
-
-func collectRecursive(basePath string) ([]string, error) {
-	if basePath == "" {
-		basePath = "."
-	}
+	seen := make(map[string]struct{})
 
 	var files []string
 
-	err := filepath.Walk(basePath, func(p string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
+	for _, pkg := range pkgs {
+		for _, file := range pkg.GoFiles {
+			if _, ok := seen[file]; ok {
+				continue
+			}
 
-		if !info.IsDir() && strings.HasSuffix(p, ".go") {
-			files = append(files, p)
-		}
+			seen[file] = struct{}{}
 
-		return nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to walk directory %s: %w", basePath, err)
-	}
-
-	return files, nil
-}
-
-func collectFromDirectory(path string) ([]string, error) {
-	entries, err := os.ReadDir(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read directory %s: %w", path, err)
-	}
-
-	var files []string
-
-	for _, entry := range entries {
-		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".go") {
-			files = append(files, filepath.Join(path, entry.Name()))
+			files = append(files, file)
 		}
 	}
 
