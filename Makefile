@@ -53,10 +53,23 @@ generate-validator: ## Generate a new validator scaffold and all registry files.
 
 # Test targets
 .PHONY: test
-test: ## Run all tests except validation helper (due to known issues)
+test: ## Run all tests
 	go test ./... -shuffle on -v -race
 	go test -C test ./... -shuffle on -v -race
 	go test ./... -shuffle on -v -race -tags=test
+
+.PHONY: test-coverage
+test-coverage: ## Run tests with coverage report
+	@echo "Running tests with coverage..."
+	cd test && go test -coverprofile=coverage.out -coverpkg=github.com/sivchari/govalid/... ./unit/...
+	@echo ""
+	@echo "Coverage summary:"
+	@cd test && go tool cover -func=coverage.out | tail -1
+
+.PHONY: coverage-html
+coverage-html: test-coverage ## Generate HTML coverage report
+	cd test && go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report generated: test/coverage.html"
 
 # Fuzz test targets
 .PHONY: fuzz
@@ -139,7 +152,10 @@ help: ## Show this help message
 	@echo '  make fuzz-quick         # Run quick fuzz tests (15s each)'
 	@echo '  make fuzz-email         # Run email fuzz test (30s default)'
 	@echo '  make fuzz FUZZ_TIME=2m  # Run all fuzz tests for 2 minutes each'
-	@echo '  make test               # Run regular tests (excluding validation helper)'
+	@echo '  make test               # Run all tests'
+	@echo '  make test-coverage      # Run tests with coverage'
+	@echo '  make coverage           # Show detailed coverage report'
+	@echo '  make coverage-html      # Generate HTML coverage report'
 	@echo '  make lint               # Run linter'
 	@echo '  make docs-serve         # Serve documentation site locally'
 	@echo '  make docs-build         # Build documentation for production'

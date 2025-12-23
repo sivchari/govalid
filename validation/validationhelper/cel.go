@@ -17,6 +17,10 @@ var celCache sync.Map
 // This function uses a simple approach without reflection, following govalid's design principles.
 // Compiled CEL programs are cached for performance.
 //
+// Deprecated: IsValidCEL is deprecated and will be removed in a future version.
+// govalid now converts CEL expressions to Go code at generation time for better performance.
+// This function is kept for backward compatibility but is no longer used by govalid.
+//
 // Parameters:
 //   - expression: The CEL expression string to evaluate
 //   - value: The current field value being validated
