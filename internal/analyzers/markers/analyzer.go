@@ -185,7 +185,7 @@ func parseMarkerComment(text, filename string, line int) (string, bool) {
 	}
 	// Old format: // +govalid:xxx (deprecated, kept for backward compatibility)
 	if strings.HasPrefix(text, "// +govalid:") {
-		fmt.Fprintf(os.Stderr, "\033[33mWARNING\033[0m: %s:%d: deprecated marker format \"// +govalid:\"; use \"//govalid:\" instead (run 'govalid migrate' to fix)\n", filename, line)
+		fmt.Fprintf(os.Stderr, "\033[33mWARNING\033[0m: %s:%d: "+`deprecated marker format "// +govalid:"; use "//govalid:" instead (run 'govalid migrate' to fix)`+"\n", filename, line)
 
 		return strings.TrimPrefix(text, "// +"), true
 	}
