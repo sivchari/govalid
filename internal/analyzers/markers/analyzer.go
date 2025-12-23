@@ -97,11 +97,11 @@ func collectTypeMarkers(pass *analysis.Pass, genDecl *ast.GenDecl, results *mark
 	}
 
 	for _, doc := range genDecl.Doc.List {
-		if !strings.HasPrefix(doc.Text, "// +") {
+		if !strings.HasPrefix(doc.Text, "//govalid:") {
 			continue
 		}
 
-		markerContent := strings.TrimPrefix(doc.Text, "// +")
+		markerContent := strings.TrimPrefix(doc.Text, "//")
 
 		identifier, expressions := extractMarker(markerContent)
 		marker := Marker{
@@ -149,11 +149,11 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 	}
 
 	for _, doc := range field.Doc.List {
-		if !strings.HasPrefix(doc.Text, "// +") {
+		if !strings.HasPrefix(doc.Text, "//govalid:") {
 			continue
 		}
 
-		markerContent := strings.TrimPrefix(doc.Text, "// +")
+		markerContent := strings.TrimPrefix(doc.Text, "//")
 
 		identifier, expressions := extractMarker(markerContent)
 		marker := Marker{

@@ -40,16 +40,16 @@ go install github.com/sivchari/govalid/cmd/govalid@latest
 package main
 
 type User struct {
-    // +govalid:required
+    //govalid:required
     Name string `json:"name"`
     
-    // +govalid:email
+    //govalid:email
     Email string `json:"email"`
     
-    // +govalid:gte=18
+    //govalid:gte=18
     Age int `json:"age"`
     
-    // +govalid:maxlength=100
+    //govalid:maxlength=100
     Bio string `json:"bio"`
 }
 ```

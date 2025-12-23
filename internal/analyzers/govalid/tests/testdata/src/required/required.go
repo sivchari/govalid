@@ -3,66 +3,66 @@ package required
 //go:generate govalid ./required.go
 
 type Required struct {
-	// +govalid:required
+	//govalid:required
 	String string
 
-	// +govalid:required
+	//govalid:required
 	Int int
 
-	// +govalid:required
+	//govalid:required
 	Array [1]string
 
-	// +govalid:required
+	//govalid:required
 	Slice []string
 
-	// +govalid:required
+	//govalid:required
 	Map map[string]string
 
-	// +govalid:required
+	//govalid:required
 	Interface interface{}
 
-	// +govalid:required
+	//govalid:required
 	Any any
 
-	// +govalid:required
+	//govalid:required
 	Pointer *string
 
-	// +govalid:required
+	//govalid:required
 	EmptyStruct struct{}
 
-	// +govalid:required
+	//govalid:required
 	EntireRequiredStruct struct {
 		EntireRequiredStructName string
 	}
 
 	PartialStruct struct {
-		// +govalid:required
+		//govalid:required
 		PartialStructString string
 
 		Int int
 	}
 
 	NestedStruct struct {
-		// +govalid:required
+		//govalid:required
 		Nested2 struct {
 			Nested2String string
 		}
 	}
 
 	OtherNestedStruct struct {
-		// +govalid:required
+		//govalid:required
 		Nested2 struct {
 			Nested2String string
 		}
 	}
 
-	// +govalid:required
+	//govalid:required
 	Channel chan string
 
-	// +govalid:required
+	//govalid:required
 	Func func(string) string
 
-	// +govalid:required
+	//govalid:required
 	Named Named
 }
 

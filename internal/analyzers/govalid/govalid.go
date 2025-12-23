@@ -200,7 +200,7 @@ func analyzeMarker(pass *codegen.Pass, markersInspect markers.Markers, typeMarke
 			/*
 				Propagate parent markers to nested fields
 
-				// +govalid:required
+				//govalid:required
 				type Nested struct {
 					Name string `json:"name"`
 				}

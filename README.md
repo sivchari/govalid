@@ -86,10 +86,10 @@ govalid -h
 ### 1. Define Your Struct
 ```go
 // Add validation markers above your struct
-// +govalid:required
+//govalid:required
 type Person struct {
     Name  string `json:"name"`
-    // +govalid:email
+    //govalid:email
     Email string `json:"email"`
 }
 ```
@@ -235,7 +235,7 @@ Apply validation rules to entire structs:
 
 ```go
 // All fields will be validated as required
-// +govalid:required
+//govalid:required
 type Person struct {
     Name  string
     Email string
@@ -248,9 +248,9 @@ Use Common Expression Language for complex validation:
 
 ```go
 type User struct {
-    // +govalid:cel=value >= 18 && value <= 120
+    //govalid:cel=value >= 18 && value <= 120
     Age int
-    // +govalid:cel=value >= this.Age
+    //govalid:cel=value >= this.Age
     RetirementAge int
 }
 ```
@@ -259,7 +259,7 @@ type User struct {
 Validate maps, channels, slices, and arrays:
 
 ```go
-// +govalid:maxitems=10
+//govalid:maxitems=10
 type UserList struct {
     Users    []User           // slice support
     UserMap  map[string]User  // map support  

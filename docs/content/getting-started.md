@@ -32,17 +32,17 @@ Define your struct with validation markers in comments:
 package main
 
 type User struct {
-    // +govalid:required
+    //govalid:required
     Name string `json:"name"`
     
-    // +govalid:email
+    //govalid:email
     Email string `json:"email"`
     
-    // +govalid:gte=0
-    // +govalid:lte=120
+    //govalid:gte=0
+    //govalid:lte=120
     Age int `json:"age"`
     
-    // +govalid:maxlength=500
+    //govalid:maxlength=500
     Bio string `json:"bio,omitempty"`
 }
 ```
@@ -181,7 +181,7 @@ Add a `go:generate` directive to automatically run govalid:
 package main
 
 type User struct {
-    // +govalid:required
+    //govalid:required
     Name string `json:"name"`
 }
 ```
@@ -201,19 +201,19 @@ Group related validation rules together:
 ```go
 type CreateUserRequest struct {
     // Basic required fields
-    // +govalid:required
-    // +govalid:minlength=2
-    // +govalid:maxlength=50
+    //govalid:required
+    //govalid:minlength=2
+    //govalid:maxlength=50
     Name string `json:"name"`
     
     // Email validation
-    // +govalid:required
-    // +govalid:email
+    //govalid:required
+    //govalid:email
     Email string `json:"email"`
     
     // Age constraints
-    // +govalid:gte=13
-    // +govalid:lte=120
+    //govalid:gte=13
+    //govalid:lte=120
     Age int `json:"age"`
 }
 ```
@@ -224,13 +224,13 @@ Choose clear, descriptive names for your structs and fields:
 
 ```go
 type ProductCreateRequest struct {
-    // +govalid:required
-    // +govalid:minlength=3
-    // +govalid:maxlength=100
+    //govalid:required
+    //govalid:minlength=3
+    //govalid:maxlength=100
     ProductName string `json:"product_name"`
     
-    // +govalid:required
-    // +govalid:gt=0
+    //govalid:required
+    //govalid:gt=0
     Price float64 `json:"price"`
 }
 ```
