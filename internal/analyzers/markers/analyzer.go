@@ -97,11 +97,10 @@ func collectTypeMarkers(pass *analysis.Pass, genDecl *ast.GenDecl, results *mark
 	}
 
 	for _, doc := range genDecl.Doc.List {
-		if !strings.HasPrefix(doc.Text, "//govalid:") {
+		markerContent, ok := parseMarkerComment(doc.Text)
+		if !ok {
 			continue
 		}
-
-		markerContent := strings.TrimPrefix(doc.Text, "//")
 
 		identifier, expressions := extractMarker(markerContent)
 		marker := Marker{
@@ -149,11 +148,10 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 	}
 
 	for _, doc := range field.Doc.List {
-		if !strings.HasPrefix(doc.Text, "//govalid:") {
+		markerContent, ok := parseMarkerComment(doc.Text)
+		if !ok {
 			continue
 		}
-
-		markerContent := strings.TrimPrefix(doc.Text, "//")
 
 		identifier, expressions := extractMarker(markerContent)
 		marker := Marker{
@@ -169,6 +167,22 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 			})
 		}
 	}
+}
+
+// parseMarkerComment parses a comment and extracts the marker content.
+// It supports both old format "// +govalid:" and new format "//govalid:".
+// Returns the marker content (e.g., "govalid:required") and true if valid, or empty string and false if not a marker.
+func parseMarkerComment(text string) (string, bool) {
+	// New format: //govalid:xxx (recommended, go doc directive style)
+	if strings.HasPrefix(text, "//govalid:") {
+		return strings.TrimPrefix(text, "//"), true
+	}
+	// Old format: // +govalid:xxx (deprecated, kept for backward compatibility)
+	if strings.HasPrefix(text, "// +govalid:") {
+		return strings.TrimPrefix(text, "// +"), true
+	}
+
+	return "", false
 }
 
 // extractMarker extracts the identifier and expressions from a marker content string.
