@@ -15,11 +15,8 @@ var rootCmd = &cobra.Command{
 	Short:   "govalid generates type-safe validation code for Go structs",
 	Version: govalid_pkg.Version,
 	Args:    cobra.ArbitraryArgs,
-	Run: func(_ *cobra.Command, _ []string) {
-		if err := runGenerator(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
+	RunE: func(_ *cobra.Command, _ []string) error {
+		return runGenerator()
 	},
 }
 
@@ -29,6 +26,7 @@ func init() {
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprint(os.Stderr, err)
 		os.Exit(1)
 	}
 }

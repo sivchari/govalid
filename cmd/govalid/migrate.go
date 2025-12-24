@@ -113,7 +113,8 @@ func migrateFile(path string, dryRun bool) (int, error) {
 		return 0, fmt.Errorf("failed to read file: %w", err)
 	}
 
-	lines := strings.Split(string(content), "\n")
+	original := string(content)
+	lines := strings.Split(original, "\n")
 	modified := false
 	count := 0
 
@@ -121,30 +122,63 @@ func migrateFile(path string, dryRun bool) (int, error) {
 		trimmed := strings.TrimLeft(line, " \t")
 		if strings.HasPrefix(trimmed, oldMarkerPrefix) {
 			indent := line[:len(line)-len(trimmed)]
-			newLine := indent + newMarkerPrefix + strings.TrimPrefix(trimmed, oldMarkerPrefix)
-
-			if dryRun {
-				fmt.Printf("%s:%d\n", path, i+1)
-				fmt.Printf("  - %s\n", line)
-				fmt.Printf("  + %s\n", newLine)
-			}
-
-			lines[i] = newLine
+			lines[i] = indent + newMarkerPrefix + strings.TrimPrefix(trimmed, oldMarkerPrefix)
 			modified = true
 			count++
 		}
 	}
 
-	if modified && !dryRun {
-		newContent := strings.Join(lines, "\n")
-
-		//#nosec G306 -- file permissions match original file
-		if err := os.WriteFile(cleanPath, []byte(newContent), 0o644); err != nil {
-			return 0, fmt.Errorf("failed to write file: %w", err)
-		}
-
-		fmt.Printf("%s: migrated %d marker(s)\n", path, count)
+	if !modified {
+		return 0, nil
 	}
 
+	newContent := strings.Join(lines, "\n")
+
+	if dryRun {
+		printUnifiedDiff(path, original, newContent)
+
+		return count, nil
+	}
+
+	//#nosec G306 -- file permissions match original file
+	if err := os.WriteFile(cleanPath, []byte(newContent), 0o644); err != nil {
+		return 0, fmt.Errorf("failed to write file: %w", err)
+	}
+
+	displayPath := relativePath(path)
+	fmt.Printf("%s: migrated %d marker(s)\n", displayPath, count)
+
 	return count, nil
+}
+
+func printUnifiedDiff(path, oldContent, newContent string) {
+	displayPath := relativePath(path)
+	oldLines := strings.Split(oldContent, "\n")
+	newLines := strings.Split(newContent, "\n")
+
+	fmt.Printf("diff %s.orig %s\n", displayPath, displayPath)
+	fmt.Printf("--- %s.orig\n", displayPath)
+	fmt.Printf("+++ %s\n", displayPath)
+
+	for i := range oldLines {
+		if oldLines[i] != newLines[i] {
+			fmt.Printf("@@ -%d +%d @@\n", i+1, i+1)
+			fmt.Printf("-%s\n", oldLines[i])
+			fmt.Printf("+%s\n", newLines[i])
+		}
+	}
+}
+
+func relativePath(path string) string {
+	wd, err := os.Getwd()
+	if err != nil {
+		return path
+	}
+
+	rel, err := filepath.Rel(wd, path)
+	if err != nil {
+		return path
+	}
+
+	return rel
 }
