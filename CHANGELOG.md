@@ -1,5 +1,16 @@
 # Changelog
 
+## [v1.8.0](https://github.com/sivchari/govalid/compare/v1.7.4...v1.8.0) - 2025-12-24
+- feat: add coverage reporting and refactor UUID validator by @sivchari in https://github.com/sivchari/govalid/pull/198
+- fix codecov by @sivchari in https://github.com/sivchari/govalid/pull/200
+- re-fix token by @sivchari in https://github.com/sivchari/govalid/pull/201
+- feat: use .golden.go extension for golden test files by @sivchari in https://github.com/sivchari/govalid/pull/202
+- feat: use go doc directive syntax for markers by @sivchari in https://github.com/sivchari/govalid/pull/204
+- fix: change DO NOT EDIT to scaffold message for validator template by @sivchari in https://github.com/sivchari/govalid/pull/203
+- feat: add deprecation warning for old marker format by @sivchari in https://github.com/sivchari/govalid/pull/205
+- feat: add govalid migrate command by @sivchari in https://github.com/sivchari/govalid/pull/206
+- cut v1.8.0 by @sivchari in https://github.com/sivchari/govalid/pull/207
+
 ## [v1.7.4](https://github.com/sivchari/govalid/compare/v1.7.3...v1.7.4) - 2025-12-22
 - update vulncheck by @sivchari in https://github.com/sivchari/govalid/pull/196
 - deps(deps): bump golang.org/x/tools from 0.39.0 to 0.40.0 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/194
