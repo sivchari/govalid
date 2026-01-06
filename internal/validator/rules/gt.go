@@ -38,7 +38,9 @@ func (m *gtValidator) Validate() string {
 	}
 
 	fieldType := m.pass.TypesInfo.TypeOf(m.field.Type)
+
 	var validateExpr string
+
 	if isIterable(fieldType) {
 		validateExpr = fmt.Sprintf(
 			"func() bool { for _, v := range t.%s { if !(v > %s) { return true } }; return false }()",
@@ -112,6 +114,7 @@ func (m *gtValidator) Imports() []string {
 func ValidateGT(input registry.ValidatorInput) validator.Validator {
 	isNumeric := func(t types.Type) bool {
 		basic, ok := t.Underlying().(*types.Basic)
+
 		return ok && (basic.Info()&types.IsNumeric) != 0
 	}
 
@@ -127,6 +130,7 @@ func ValidateGT(input registry.ValidatorInput) validator.Validator {
 	}
 
 	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
+
 	validType := isNumeric(typ) || isNumericIterable(typ)
 	if !validType {
 		return nil
