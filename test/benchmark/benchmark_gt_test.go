@@ -12,7 +12,8 @@ import (
 
 func BenchmarkGoValidGT(b *testing.B) {
 	instance := test.GT{
-		Age: 150,
+		Age:    150,
+		Scores: []int{120, 150},
 	}
 	for b.Loop() {
 		err := test.ValidateGT(&instance)
@@ -25,7 +26,8 @@ func BenchmarkGoValidGT(b *testing.B) {
 func BenchmarkGoPlaygroundGT(b *testing.B) {
 	validate := validator.New()
 	instance := test.GT{
-		Age: 150,
+		Age:    150,
+		Scores: []int{120, 150},
 	}
 	for b.Loop() {
 		err := validate.Struct(&instance)
@@ -38,6 +40,7 @@ func BenchmarkGoPlaygroundGT(b *testing.B) {
 func BenchmarkGoValidatorGT(b *testing.B) {
 	testValue := 150
 	testString := strconv.Itoa(testValue)
+	scores := []int{120, 150}
 	for b.Loop() {
 		// Check if numeric and > 100
 		if !govalidator.IsNumeric(testString) {
@@ -45,6 +48,12 @@ func BenchmarkGoValidatorGT(b *testing.B) {
 		}
 		if testValue <= 100 {
 			b.Fatal("validation failed - not greater than 100")
+			// Check each value is > 100
+			for _, v := range scores {
+				if v <= 100 {
+					b.Fatal("validation failed - not greater than 100")
+				}
+			}
 		}
 	}
 }
