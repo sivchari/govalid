@@ -55,4 +55,10 @@ type GT struct {
 		//govalid:gt=1
 		Int int
 	}
+
+	//govalid:gt=1
+	Slice []int
+
+	//govalid:gt=1
+	Array [1]int
 }
