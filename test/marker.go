@@ -21,6 +21,9 @@ type LT struct {
 type GT struct {
 	//govalid:gt=100
 	Age int `validate:"gt=100" json:"age"`
+
+	//govalid:gt=100
+	Scores []int `validate:"dive,gt=100" json:"scores"`
 }
 
 type MaxLength struct {

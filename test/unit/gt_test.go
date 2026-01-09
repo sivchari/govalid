@@ -36,6 +36,31 @@ func TestGTValidation(t *testing.T) {
 			data:        test.GT{Age: 101},
 			expectError: false,
 		},
+		{
+			name:        "all elements valid",
+			data:        test.GT{Age: 150, Scores: []int{120, 150}},
+			expectError: false,
+		},
+		{
+			name:        "one element is limit minus one",
+			data:        test.GT{Age: 150, Scores: []int{99, 120}},
+			expectError: true,
+		},
+		{
+			name:        "one element equal to limit",
+			data:        test.GT{Age: 150, Scores: []int{100, 120}},
+			expectError: true,
+		},
+		{
+			name:        "one element is limit plus one",
+			data:        test.GT{Age: 150, Scores: []int{101, 120}},
+			expectError: false,
+		},
+		{
+			name:        "empty slice",
+			data:        test.GT{Age: 150, Scores: []int{}},
+			expectError: false,
+		},
 	}
 
 	for _, tt := range tests {

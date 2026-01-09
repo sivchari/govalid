@@ -28,7 +28,30 @@ var _ validator.Validator = (*gtValidator)(nil)
 const gtKey = "%s-gt"
 
 func (m *gtValidator) Validate() string {
-	return fmt.Sprintf("!(t.%s > %s)", m.FieldName(), m.gtValue)
+	isIterable := func(t types.Type) bool {
+		switch t.Underlying().(type) {
+		case *types.Slice, *types.Array:
+			return true
+		default:
+			return false
+		}
+	}
+
+	fieldType := m.pass.TypesInfo.TypeOf(m.field.Type)
+
+	var validateExpr string
+
+	if isIterable(fieldType) {
+		validateExpr = fmt.Sprintf(
+			"func() bool { for _, v := range t.%s { if !(v > %s) { return true } }; return false }()",
+			m.FieldName(),
+			m.gtValue,
+		)
+	} else {
+		validateExpr = fmt.Sprintf("!(t.%s > %s)", m.FieldName(), m.gtValue)
+	}
+
+	return validateExpr
 }
 
 func (m *gtValidator) FieldName() string {
@@ -87,12 +110,29 @@ func (m *gtValidator) Imports() []string {
 	return []string{}
 }
 
-// ValidateGT creates a new gtValidator if the field type is numeric and the max marker is present.
+// ValidateGT creates a new gtValidator if the field type is numeric or numeric iterable and the max marker is present.
 func ValidateGT(input registry.ValidatorInput) validator.Validator {
-	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
-	basic, ok := typ.Underlying().(*types.Basic)
+	isNumeric := func(t types.Type) bool {
+		basic, ok := t.Underlying().(*types.Basic)
 
-	if !ok || (basic.Info()&types.IsNumeric) == 0 {
+		return ok && (basic.Info()&types.IsNumeric) != 0
+	}
+
+	isNumericIterable := func(t types.Type) bool {
+		switch tp := t.Underlying().(type) {
+		case *types.Slice:
+			return isNumeric(tp.Elem())
+		case *types.Array:
+			return isNumeric(tp.Elem())
+		default:
+			return false
+		}
+	}
+
+	typ := input.Pass.TypesInfo.TypeOf(input.Field.Type)
+
+	validType := isNumeric(typ) || isNumericIterable(typ)
+	if !validType {
 		return nil
 	}
 

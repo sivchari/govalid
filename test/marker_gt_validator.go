@@ -14,6 +14,9 @@ var (
 
 	// ErrGTAgeGTValidation is the error returned when the value of the field is less than the 100.
 	ErrGTAgeGTValidation = govaliderrors.ValidationError{Reason: "field Age must be greater than 100", Path: "GT.Age", Type: "gt"}
+
+	// ErrGTScoresGTValidation is the error returned when the value of the field is less than the 100.
+	ErrGTScoresGTValidation = govaliderrors.ValidationError{Reason: "field Scores must be greater than 100", Path: "GT.Scores", Type: "gt"}
 )
 
 func ValidateGT(t *GT) error {
@@ -26,6 +29,19 @@ func ValidateGT(t *GT) error {
 	if !(t.Age > 100) {
 		err := ErrGTAgeGTValidation
 		err.Value = t.Age
+		errs = append(errs, err)
+	}
+
+	if func() bool {
+		for _, v := range t.Scores {
+			if !(v > 100) {
+				return true
+			}
+		}
+		return false
+	}() {
+		err := ErrGTScoresGTValidation
+		err.Value = t.Scores
 		errs = append(errs, err)
 	}
 

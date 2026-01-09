@@ -64,6 +64,12 @@ var (
 
 	// ErrGTStructIntGTValidation is the error returned when the value of the field is less than the 1.
 	ErrGTStructIntGTValidation = govaliderrors.ValidationError{Reason: "field Int must be greater than 1", Path: "GT.Struct.Int", Type: "gt"}
+
+	// ErrGTSliceGTValidation is the error returned when the value of the field is less than the 1.
+	ErrGTSliceGTValidation = govaliderrors.ValidationError{Reason: "field Slice must be greater than 1", Path: "GT.Slice", Type: "gt"}
+
+	// ErrGTArrayGTValidation is the error returned when the value of the field is less than the 1.
+	ErrGTArrayGTValidation = govaliderrors.ValidationError{Reason: "field Array must be greater than 1", Path: "GT.Array", Type: "gt"}
 )
 
 func ValidateGT(t *GT) error {
@@ -172,6 +178,32 @@ func ValidateGT(t *GT) error {
 			errs = append(errs, err)
 		}
 
+	}
+
+	if func() bool {
+		for _, v := range t.Slice {
+			if !(v > 1) {
+				return true
+			}
+		}
+		return false
+	}() {
+		err := ErrGTSliceGTValidation
+		err.Value = t.Slice
+		errs = append(errs, err)
+	}
+
+	if func() bool {
+		for _, v := range t.Array {
+			if !(v > 1) {
+				return true
+			}
+		}
+		return false
+	}() {
+		err := ErrGTArrayGTValidation
+		err.Value = t.Array
+		errs = append(errs, err)
 	}
 
 	if len(errs) > 0 {
