@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.8.1](https://github.com/sivchari/govalid/compare/v1.8.0...v1.8.1) - 2026-01-09
+- ci(deps): bump actions/github-script from 7 to 8 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/208
+
 ## [v1.8.0](https://github.com/sivchari/govalid/compare/v1.7.4...v1.8.0) - 2025-12-24
 - feat: add coverage reporting and refactor UUID validator by @sivchari in https://github.com/sivchari/govalid/pull/198
 - fix codecov by @sivchari in https://github.com/sivchari/govalid/pull/200
