@@ -52,6 +52,46 @@ func TestCELValidation(t *testing.T) {
 			},
 			expectError: false,
 		},
+		{
+			name: "age below minimum",
+			data: test.CEL{
+				Age:      17,
+				Name:     "John",
+				Score:    50.0,
+				IsActive: true,
+			},
+			expectError: true,
+		},
+		{
+			name: "age at minimum boundary",
+			data: test.CEL{
+				Age:      18,
+				Name:     "John",
+				Score:    50.0,
+				IsActive: true,
+			},
+			expectError: false,
+		},
+		{
+			name: "empty name",
+			data: test.CEL{
+				Age:      25,
+				Name:     "",
+				Score:    50.0,
+				IsActive: true,
+			},
+			expectError: true,
+		},
+		{
+			name: "is_active false",
+			data: test.CEL{
+				Age:      25,
+				Name:     "John",
+				Score:    50.0,
+				IsActive: false,
+			},
+			expectError: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -72,6 +112,17 @@ func TestCELValidation(t *testing.T) {
 				t.Logf("CEL validation passed for score: %f", tt.data.Score)
 			}
 		})
+	}
+}
+
+func TestCELValidationNil(t *testing.T) {
+	// Test with nil pointer
+	err := test.ValidateCEL(nil)
+	if err == nil {
+		t.Error("expected error for nil CEL, got nil")
+	}
+	if err.Error() != "input CEL is nil" {
+		t.Errorf("expected 'input CEL is nil', got %v", err.Error())
 	}
 }
 
