@@ -1,4 +1,4 @@
-module github.com/sivchari/govalid/example/basic
+module github.com/sivchari/govalid/example/basic-usage
 
 go 1.24.0
 

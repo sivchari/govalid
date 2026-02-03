@@ -2,6 +2,20 @@
 
 This directory contains working examples demonstrating how to use govalid.
 
+## Directory Structure
+
+```
+example/
+├── go.work          # Go workspace configuration
+├── basic/           # Struct definitions with validation markers
+│   ├── go.mod
+│   ├── user.go
+│   └── user_user_validator.go (generated)
+└── basic-usage/     # Example usage code
+    ├── go.mod
+    └── main.go
+```
+
 ## Prerequisites
 
 Install govalid:
@@ -10,28 +24,23 @@ Install govalid:
 go install github.com/sivchari/govalid/cmd/govalid@latest
 ```
 
-## Basic Example
-
-The `basic/` directory shows fundamental usage of govalid:
-
-- Defining structs with validation markers
-- Running the code generator
-- Using generated validation functions
-- Iterating through validation errors
-
-### Running the Example
+## Running the Example
 
 ```bash
-cd basic
-
-# Generate validation code
-go generate ./...
-
-# Run the example
-go run .
+cd example
+go run ./basic-usage/
 ```
 
-### What the Example Demonstrates
+## Regenerating Validation Code
+
+If you modify `basic/user.go`, regenerate the validation code:
+
+```bash
+cd example/basic
+go generate ./...
+```
+
+## What the Example Demonstrates
 
 1. **Valid User Validation** - Shows successful validation
 2. **Invalid User Validation** - Shows multiple validation errors
@@ -39,12 +48,12 @@ go run .
 4. **Check Specific Error Type** - Shows how to filter errors by type
 5. **Using Validate() Method** - Shows the `govalid.Validator` interface
 
-### Error Handling
+## Error Handling
 
 govalid returns `ValidationErrors` which is a slice of `ValidationError`. You can iterate over them:
 
 ```go
-err := ValidateUser(user)
+err := basic.ValidateUser(user)
 if errs, ok := err.(govaliderrors.ValidationErrors); ok {
     for _, e := range errs {
         fmt.Printf("Field: %s, Type: %s, Reason: %s\n",

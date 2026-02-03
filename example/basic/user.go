@@ -1,7 +1,7 @@
-// Package main provides a basic example of using govalid for struct validation.
-package main
+// Package basic provides a basic example of using govalid for struct validation.
+package basic
 
-//go:generate go run github.com/sivchari/govalid/cmd/govalid .
+//go:generate govalid .
 
 // User represents a user with validation rules.
 type User struct {
