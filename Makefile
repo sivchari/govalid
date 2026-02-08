@@ -36,6 +36,11 @@ install-golangci-lint:
 install-lefthook:
 	${LEFTHOOK} install
 
+# Manual lefthook run
+.PHONY: run-lefthook
+run-lefthook:
+	${LEFTHOOK} run pre-commit
+
 # Documentation targets
 .PHONY: docs-dev
 docs-dev: ## Start Hugo development server
