@@ -1,3 +1,6 @@
+lefthook: | 
+  go tool -modfile tools/go.mod github.com/evilmartians/lefthook
+
 pre-commit:
   parallel: true
   commands:
