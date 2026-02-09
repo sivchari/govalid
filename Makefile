@@ -26,11 +26,6 @@ fmt: ## Format code with golangci-lint
 fmt-diff: ## Show code formatting differences
 	${GOLANGCI_LINT} fmt --diff ./...
 
-# Install golangci-lint 
-.PHONY: install-golangci-lint
-install-golangci-lint:
-	${GOLANGCI_LINT} install
-
 # Install lefthook
 .PHONY: install-lefthook
 install-lefthook:
