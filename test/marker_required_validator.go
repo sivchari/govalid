@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Required)(nil)
+
 	// ErrNilRequired is returned when the Required is nil.
 	ErrNilRequired = errors.New("input Required is nil")
 
@@ -22,12 +25,16 @@ var (
 	ErrRequiredItemsRequiredValidation = govaliderrors.ValidationError{Reason: "field Items is required", Path: "Required.Items", Type: "required"}
 )
 
-func ValidateRequired(t *Required) error {
+func ValidateRequiredContext(ctx context.Context, t *Required) error {
 	if t == nil {
 		return ErrNilRequired
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if t.Name == "" {
 		err := ErrRequiredNameRequiredValidation
@@ -35,10 +42,18 @@ func ValidateRequired(t *Required) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.Age == 0 {
 		err := ErrRequiredAgeRequiredValidation
 		err.Value = t.Age
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Items == nil {
@@ -53,8 +68,14 @@ func ValidateRequired(t *Required) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Required)(nil)
+func ValidateRequired(t *Required) error {
+	return ValidateRequiredContext(context.Background(), t)
+}
 
 func (t *Required) Validate() error {
 	return ValidateRequired(t)
+}
+
+func (t *Required) ValidateContext(ctx context.Context) error {
+	return ValidateRequiredContext(ctx, t)
 }

@@ -2,6 +2,7 @@
 package alpha
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Alpha)(nil)
+
 	// ErrNilAlpha is returned when the Alpha is nil.
 	ErrNilAlpha = errors.New("input Alpha is nil")
 
@@ -23,12 +26,16 @@ var (
 	ErrAlphaCountryCodeAlphaValidation = govaliderrors.ValidationError{Reason: "field CountryCode must be alphabetic", Path: "Alpha.CountryCode", Type: "alpha"}
 )
 
-func ValidateAlpha(t *Alpha) error {
+func ValidateAlphaContext(ctx context.Context, t *Alpha) error {
 	if t == nil {
 		return ErrNilAlpha
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !validationhelper.IsValidAlpha(t.FirstName) {
 		err := ErrAlphaFirstNameAlphaValidation
@@ -36,10 +43,18 @@ func ValidateAlpha(t *Alpha) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !validationhelper.IsValidAlpha(t.LastName) {
 		err := ErrAlphaLastNameAlphaValidation
 		err.Value = t.LastName
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !validationhelper.IsValidAlpha(t.CountryCode) {
@@ -54,8 +69,14 @@ func ValidateAlpha(t *Alpha) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Alpha)(nil)
+func ValidateAlpha(t *Alpha) error {
+	return ValidateAlphaContext(context.Background(), t)
+}
 
 func (t *Alpha) Validate() error {
 	return ValidateAlpha(t)
+}
+
+func (t *Alpha) ValidateContext(ctx context.Context) error {
+	return ValidateAlphaContext(ctx, t)
 }

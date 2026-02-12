@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*URL)(nil)
+
 	// ErrNilURL is returned when the URL is nil.
 	ErrNilURL = errors.New("input URL is nil")
 
@@ -17,12 +20,16 @@ var (
 	ErrURLURLURLValidation = govaliderrors.ValidationError{Reason: "field URL must be a valid URL", Path: "URL.URL", Type: "url"}
 )
 
-func ValidateURL(t *URL) error {
+func ValidateURLContext(ctx context.Context, t *URL) error {
 	if t == nil {
 		return ErrNilURL
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !validationhelper.IsValidURL(t.URL) {
 		err := ErrURLURLURLValidation
@@ -36,8 +43,14 @@ func ValidateURL(t *URL) error {
 	return nil
 }
 
-var _ govalid.Validator = (*URL)(nil)
+func ValidateURL(t *URL) error {
+	return ValidateURLContext(context.Background(), t)
+}
 
 func (t *URL) Validate() error {
 	return ValidateURL(t)
+}
+
+func (t *URL) ValidateContext(ctx context.Context) error {
+	return ValidateURLContext(ctx, t)
 }

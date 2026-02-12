@@ -2,6 +2,7 @@
 package gt
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*GT)(nil)
+
 	// ErrNilGT is returned when the GT is nil.
 	ErrNilGT = errors.New("input GT is nil")
 
@@ -66,17 +69,25 @@ var (
 	ErrGTStructIntGTValidation = govaliderrors.ValidationError{Reason: "field Int must be greater than 1", Path: "GT.Struct.Int", Type: "gt"}
 )
 
-func ValidateGT(t *GT) error {
+func ValidateGTContext(ctx context.Context, t *GT) error {
 	if t == nil {
 		return ErrNilGT
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Int > 1) {
 		err := ErrGTIntGTValidation
 		err.Value = t.Int
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Int8 > 1) {
@@ -85,10 +96,18 @@ func ValidateGT(t *GT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Int16 > 1) {
 		err := ErrGTInt16GTValidation
 		err.Value = t.Int16
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Int32 > 1) {
@@ -97,10 +116,18 @@ func ValidateGT(t *GT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Int64 > 1) {
 		err := ErrGTInt64GTValidation
 		err.Value = t.Int64
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Float32 > 1) {
@@ -109,10 +136,18 @@ func ValidateGT(t *GT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Float64 > 1) {
 		err := ErrGTFloat64GTValidation
 		err.Value = t.Float64
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Uint > 1) {
@@ -121,10 +156,18 @@ func ValidateGT(t *GT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Uint8 > 1) {
 		err := ErrGTUint8GTValidation
 		err.Value = t.Uint8
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Uint16 > 1) {
@@ -133,10 +176,18 @@ func ValidateGT(t *GT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Uint32 > 1) {
 		err := ErrGTUint32GTValidation
 		err.Value = t.Uint32
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Uint64 > 1) {
@@ -145,16 +196,28 @@ func ValidateGT(t *GT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Uintptr > 1) {
 		err := ErrGTUintptrGTValidation
 		err.Value = t.Uintptr
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Complex64 > 1) {
 		err := ErrGTComplex64GTValidation
 		err.Value = t.Complex64
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Complex128 > 1) {
@@ -165,6 +228,9 @@ func ValidateGT(t *GT) error {
 
 	{
 		t := t.Struct
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 
 		if !(t.Int > 1) {
 			err := ErrGTStructIntGTValidation
@@ -180,8 +246,14 @@ func ValidateGT(t *GT) error {
 	return nil
 }
 
-var _ govalid.Validator = (*GT)(nil)
+func ValidateGT(t *GT) error {
+	return ValidateGTContext(context.Background(), t)
+}
 
 func (t *GT) Validate() error {
 	return ValidateGT(t)
+}
+
+func (t *GT) ValidateContext(ctx context.Context) error {
+	return ValidateGTContext(ctx, t)
 }

@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 	"net"
 
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*IPV6)(nil)
+
 	// ErrNilIPV6 is returned when the IPV6 is nil.
 	ErrNilIPV6 = errors.New("input IPV6 is nil")
 
@@ -17,12 +20,16 @@ var (
 	ErrIPV6IPIpv6Validation = govaliderrors.ValidationError{Reason: "field IP failed ipv6 validation", Path: "IPV6.IP", Type: "ipv6"}
 )
 
-func ValidateIPV6(t *IPV6) error {
+func ValidateIPV6Context(ctx context.Context, t *IPV6) error {
 	if t == nil {
 		return ErrNilIPV6
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if ip := net.ParseIP(t.IP); ip == nil || ip.To4() != nil {
 		err := ErrIPV6IPIpv6Validation
@@ -36,8 +43,14 @@ func ValidateIPV6(t *IPV6) error {
 	return nil
 }
 
-var _ govalid.Validator = (*IPV6)(nil)
+func ValidateIPV6(t *IPV6) error {
+	return ValidateIPV6Context(context.Background(), t)
+}
 
 func (t *IPV6) Validate() error {
 	return ValidateIPV6(t)
+}
+
+func (t *IPV6) ValidateContext(ctx context.Context) error {
+	return ValidateIPV6Context(ctx, t)
 }

@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*CEL)(nil)
+
 	// ErrNilCEL is returned when the CEL is nil.
 	ErrNilCEL = errors.New("input CEL is nil")
 
@@ -25,17 +28,25 @@ var (
 	ErrCELIsActiveCELValidation = govaliderrors.ValidationError{Reason: "field IsActive failed CEL validation: value == true", Path: "CEL.IsActive", Type: "cel"}
 )
 
-func ValidateCEL(t *CEL) error {
+func ValidateCELContext(ctx context.Context, t *CEL) error {
 	if t == nil {
 		return ErrNilCEL
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Age >= 18) {
 		err := ErrCELAgeCELValidation
 		err.Value = t.Age
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(len(t.Name) > 0) {
@@ -44,10 +55,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Score > 0) {
 		err := ErrCELScoreCELValidation
 		err.Value = t.Score
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.IsActive == true) {
@@ -62,8 +81,14 @@ func ValidateCEL(t *CEL) error {
 	return nil
 }
 
-var _ govalid.Validator = (*CEL)(nil)
+func ValidateCEL(t *CEL) error {
+	return ValidateCELContext(context.Background(), t)
+}
 
 func (t *CEL) Validate() error {
 	return ValidateCEL(t)
+}
+
+func (t *CEL) ValidateContext(ctx context.Context) error {
+	return ValidateCELContext(ctx, t)
 }

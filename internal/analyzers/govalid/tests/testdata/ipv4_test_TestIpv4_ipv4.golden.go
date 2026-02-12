@@ -2,7 +2,9 @@
 package ipv4
 
 import (
+	"context"
 	"errors"
+
 	"net"
 
 	"github.com/sivchari/govalid"
@@ -10,6 +12,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*IPv4)(nil)
+
 	// ErrNilIPv4 is returned when the IPv4 is nil.
 	ErrNilIPv4 = errors.New("input IPv4 is nil")
 
@@ -17,12 +21,16 @@ var (
 	ErrIPv4ValueIpv4Validation = govaliderrors.ValidationError{Reason: "field Value failed ipv4 validation", Path: "IPv4.Value", Type: "ipv4"}
 )
 
-func ValidateIPv4(t *IPv4) error {
+func ValidateIPv4Context(ctx context.Context, t *IPv4) error {
 	if t == nil {
 		return ErrNilIPv4
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if ip := net.ParseIP(t.Value); ip == nil || ip.To4() == nil {
 		err := ErrIPv4ValueIpv4Validation
@@ -32,6 +40,9 @@ func ValidateIPv4(t *IPv4) error {
 
 	{
 		t := t.Struct
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 
 		if ip := net.ParseIP(t.Value); ip == nil || ip.To4() == nil {
 			err := ErrIPv4ValueIpv4Validation
@@ -47,8 +58,14 @@ func ValidateIPv4(t *IPv4) error {
 	return nil
 }
 
-var _ govalid.Validator = (*IPv4)(nil)
+func ValidateIPv4(t *IPv4) error {
+	return ValidateIPv4Context(context.Background(), t)
+}
 
 func (t *IPv4) Validate() error {
 	return ValidateIPv4(t)
+}
+
+func (t *IPv4) ValidateContext(ctx context.Context) error {
+	return ValidateIPv4Context(ctx, t)
 }

@@ -2,6 +2,7 @@
 package lt
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*LT)(nil)
+
 	// ErrNilLT is returned when the LT is nil.
 	ErrNilLT = errors.New("input LT is nil")
 
@@ -66,17 +69,25 @@ var (
 	ErrLTStructIntLTValidation = govaliderrors.ValidationError{Reason: "field Int must be less than 1", Path: "LT.Struct.Int", Type: "lt"}
 )
 
-func ValidateLT(t *LT) error {
+func ValidateLTContext(ctx context.Context, t *LT) error {
 	if t == nil {
 		return ErrNilLT
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Int < 1) {
 		err := ErrLTIntLTValidation
 		err.Value = t.Int
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Int8 < 1) {
@@ -85,10 +96,18 @@ func ValidateLT(t *LT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Int16 < 1) {
 		err := ErrLTInt16LTValidation
 		err.Value = t.Int16
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Int32 < 1) {
@@ -97,10 +116,18 @@ func ValidateLT(t *LT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Int64 < 1) {
 		err := ErrLTInt64LTValidation
 		err.Value = t.Int64
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Float32 < 1) {
@@ -109,10 +136,18 @@ func ValidateLT(t *LT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Float64 < 1) {
 		err := ErrLTFloat64LTValidation
 		err.Value = t.Float64
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Uint < 1) {
@@ -121,10 +156,18 @@ func ValidateLT(t *LT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Uint8 < 1) {
 		err := ErrLTUint8LTValidation
 		err.Value = t.Uint8
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Uint16 < 1) {
@@ -133,10 +176,18 @@ func ValidateLT(t *LT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Uint32 < 1) {
 		err := ErrLTUint32LTValidation
 		err.Value = t.Uint32
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Uint64 < 1) {
@@ -145,16 +196,28 @@ func ValidateLT(t *LT) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Uintptr < 1) {
 		err := ErrLTUintptrLTValidation
 		err.Value = t.Uintptr
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Complex64 < 1) {
 		err := ErrLTComplex64LTValidation
 		err.Value = t.Complex64
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Complex128 < 1) {
@@ -165,6 +228,9 @@ func ValidateLT(t *LT) error {
 
 	{
 		t := t.Struct
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 
 		if !(t.Int < 1) {
 			err := ErrLTStructIntLTValidation
@@ -180,8 +246,14 @@ func ValidateLT(t *LT) error {
 	return nil
 }
 
-var _ govalid.Validator = (*LT)(nil)
+func ValidateLT(t *LT) error {
+	return ValidateLTContext(context.Background(), t)
+}
 
 func (t *LT) Validate() error {
 	return ValidateLT(t)
+}
+
+func (t *LT) ValidateContext(ctx context.Context) error {
+	return ValidateLTContext(ctx, t)
 }

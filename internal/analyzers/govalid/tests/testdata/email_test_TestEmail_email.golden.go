@@ -2,6 +2,7 @@
 package email
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Email)(nil)
+
 	// ErrNilEmail is returned when the Email is nil.
 	ErrNilEmail = errors.New("input Email is nil")
 
@@ -17,12 +20,16 @@ var (
 	ErrEmailEmailEmailValidation = govaliderrors.ValidationError{Reason: "field Email must be a valid email address", Path: "Email.Email", Type: "email"}
 )
 
-func ValidateEmail(t *Email) error {
+func ValidateEmailContext(ctx context.Context, t *Email) error {
 	if t == nil {
 		return ErrNilEmail
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !validationhelper.IsValidEmail(t.Email) {
 		err := ErrEmailEmailEmailValidation
@@ -36,8 +43,14 @@ func ValidateEmail(t *Email) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Email)(nil)
+func ValidateEmail(t *Email) error {
+	return ValidateEmailContext(context.Background(), t)
+}
 
 func (t *Email) Validate() error {
 	return ValidateEmail(t)
+}
+
+func (t *Email) ValidateContext(ctx context.Context) error {
+	return ValidateEmailContext(ctx, t)
 }
