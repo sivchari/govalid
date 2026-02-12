@@ -2,6 +2,7 @@
 package minitems
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*MinItems)(nil)
+
 	// ErrNilMinItems is returned when the MinItems is nil.
 	ErrNilMinItems = errors.New("input MinItems is nil")
 
@@ -33,17 +36,25 @@ var (
 	ErrMinItemsStructItemsMinItemsValidation = govaliderrors.ValidationError{Reason: "field Items must have a minimum of 1 items", Path: "MinItems.Struct.Items", Type: "minitems"}
 )
 
-func ValidateMinItems(t *MinItems) error {
+func ValidateMinItemsContext(ctx context.Context, t *MinItems) error {
 	if t == nil {
 		return ErrNilMinItems
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if len(t.Slice) < 2 {
 		err := ErrMinItemsSliceMinItemsValidation
 		err.Value = t.Slice
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if len(t.Array) < 3 {
@@ -52,10 +63,18 @@ func ValidateMinItems(t *MinItems) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if len(t.MapField) < 1 {
 		err := ErrMinItemsMapFieldMinItemsValidation
 		err.Value = t.MapField
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if len(t.ChanField) < 2 {
@@ -66,6 +85,9 @@ func ValidateMinItems(t *MinItems) error {
 
 	{
 		t := t.Struct
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 
 		if len(t.Items) < 1 {
 			err := ErrMinItemsStructItemsMinItemsValidation
@@ -81,8 +103,14 @@ func ValidateMinItems(t *MinItems) error {
 	return nil
 }
 
-var _ govalid.Validator = (*MinItems)(nil)
+func ValidateMinItems(t *MinItems) error {
+	return ValidateMinItemsContext(context.Background(), t)
+}
 
 func (t *MinItems) Validate() error {
 	return ValidateMinItems(t)
+}
+
+func (t *MinItems) ValidateContext(ctx context.Context) error {
+	return ValidateMinItemsContext(ctx, t)
 }

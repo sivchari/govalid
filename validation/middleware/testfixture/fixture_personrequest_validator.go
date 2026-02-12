@@ -4,26 +4,56 @@
 package testfixture
 
 import (
+	"context"
 	"errors"
+
 	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	"github.com/sivchari/govalid/validation/validationhelper"
 )
 
 var (
+	_ govalid.Validator = (*PersonRequest)(nil)
+
 	// ErrNilPersonRequest is returned when the PersonRequest is nil.
 	ErrNilPersonRequest = errors.New("input PersonRequest is nil")
+
+	// ErrPersonRequestNameRequiredValidation is returned when the Name is required but not provided.
+	ErrPersonRequestNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "PersonRequest.Name", Type: "required"}
+
+	// ErrPersonRequestEmailRequiredValidation is returned when the Email is required but not provided.
+	ErrPersonRequestEmailRequiredValidation = govaliderrors.ValidationError{Reason: "field Email is required", Path: "PersonRequest.Email", Type: "required"}
 
 	// ErrPersonRequestEmailEmailValidation is the error returned when the field is not a valid email address.
 	ErrPersonRequestEmailEmailValidation = govaliderrors.ValidationError{Reason: "field Email must be a valid email address", Path: "PersonRequest.Email", Type: "email"}
 )
 
-func ValidatePersonRequest(t *PersonRequest) error {
+func ValidatePersonRequestContext(ctx context.Context, t *PersonRequest) error {
 	if t == nil {
 		return ErrNilPersonRequest
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
+	if t.Name == "" {
+		err := ErrPersonRequestNameRequiredValidation
+		err.Value = t.Name
+		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
+	if t.Email == "" {
+		err := ErrPersonRequestEmailRequiredValidation
+		err.Value = t.Email
+		errs = append(errs, err)
+	}
 
 	if !validationhelper.IsValidEmail(t.Email) {
 		err := ErrPersonRequestEmailEmailValidation
@@ -37,8 +67,14 @@ func ValidatePersonRequest(t *PersonRequest) error {
 	return nil
 }
 
-var _ govalid.Validator = (*PersonRequest)(nil)
+func ValidatePersonRequest(t *PersonRequest) error {
+	return ValidatePersonRequestContext(context.Background(), t)
+}
 
 func (t *PersonRequest) Validate() error {
 	return ValidatePersonRequest(t)
+}
+
+func (t *PersonRequest) ValidateContext(ctx context.Context) error {
+	return ValidatePersonRequestContext(ctx, t)
 }

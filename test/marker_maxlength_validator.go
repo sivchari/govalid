@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 	"unicode/utf8"
 
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*MaxLength)(nil)
+
 	// ErrNilMaxLength is returned when the MaxLength is nil.
 	ErrNilMaxLength = errors.New("input MaxLength is nil")
 
@@ -17,12 +20,16 @@ var (
 	ErrMaxLengthNameMaxLengthValidation = govaliderrors.ValidationError{Reason: "field Name must have a maximum length of 50", Path: "MaxLength.Name", Type: "maxlength"}
 )
 
-func ValidateMaxLength(t *MaxLength) error {
+func ValidateMaxLengthContext(ctx context.Context, t *MaxLength) error {
 	if t == nil {
 		return ErrNilMaxLength
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if utf8.RuneCountInString(t.Name) > 50 {
 		err := ErrMaxLengthNameMaxLengthValidation
@@ -36,8 +43,14 @@ func ValidateMaxLength(t *MaxLength) error {
 	return nil
 }
 
-var _ govalid.Validator = (*MaxLength)(nil)
+func ValidateMaxLength(t *MaxLength) error {
+	return ValidateMaxLengthContext(context.Background(), t)
+}
 
 func (t *MaxLength) Validate() error {
 	return ValidateMaxLength(t)
+}
+
+func (t *MaxLength) ValidateContext(ctx context.Context) error {
+	return ValidateMaxLengthContext(ctx, t)
 }

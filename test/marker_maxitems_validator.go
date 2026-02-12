@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*MaxItems)(nil)
+
 	// ErrNilMaxItems is returned when the MaxItems is nil.
 	ErrNilMaxItems = errors.New("input MaxItems is nil")
 
@@ -22,12 +25,16 @@ var (
 	ErrMaxItemsChanFieldMaxItemsValidation = govaliderrors.ValidationError{Reason: "field ChanField must have a maximum of 2 items", Path: "MaxItems.ChanField", Type: "maxitems"}
 )
 
-func ValidateMaxItems(t *MaxItems) error {
+func ValidateMaxItemsContext(ctx context.Context, t *MaxItems) error {
 	if t == nil {
 		return ErrNilMaxItems
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if len(t.Items) > 5 {
 		err := ErrMaxItemsItemsMaxItemsValidation
@@ -35,10 +42,18 @@ func ValidateMaxItems(t *MaxItems) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if len(t.Metadata) > 3 {
 		err := ErrMaxItemsMetadataMaxItemsValidation
 		err.Value = t.Metadata
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if len(t.ChanField) > 2 {
@@ -53,8 +68,14 @@ func ValidateMaxItems(t *MaxItems) error {
 	return nil
 }
 
-var _ govalid.Validator = (*MaxItems)(nil)
+func ValidateMaxItems(t *MaxItems) error {
+	return ValidateMaxItemsContext(context.Background(), t)
+}
 
 func (t *MaxItems) Validate() error {
 	return ValidateMaxItems(t)
+}
+
+func (t *MaxItems) ValidateContext(ctx context.Context) error {
+	return ValidateMaxItemsContext(ctx, t)
 }

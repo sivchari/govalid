@@ -2,6 +2,7 @@
 package url
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*URL)(nil)
+
 	// ErrNilURL is returned when the URL is nil.
 	ErrNilURL = errors.New("input URL is nil")
 
@@ -29,17 +32,25 @@ var (
 	ErrURLDownloadURLURLValidation = govaliderrors.ValidationError{Reason: "field DownloadURL must be a valid URL", Path: "URL.DownloadURL", Type: "url"}
 )
 
-func ValidateURL(t *URL) error {
+func ValidateURLContext(ctx context.Context, t *URL) error {
 	if t == nil {
 		return ErrNilURL
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !validationhelper.IsValidURL(t.WebsiteURL) {
 		err := ErrURLWebsiteURLURLValidation
 		err.Value = t.WebsiteURL
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !validationhelper.IsValidURL(t.HomepageURL) {
@@ -48,16 +59,28 @@ func ValidateURL(t *URL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !validationhelper.IsValidURL(t.ApiURL) {
 		err := ErrURLApiURLURLValidation
 		err.Value = t.ApiURL
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !validationhelper.IsValidURL(t.ProfileURL) {
 		err := ErrURLProfileURLURLValidation
 		err.Value = t.ProfileURL
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !validationhelper.IsValidURL(t.DownloadURL) {
@@ -72,8 +95,14 @@ func ValidateURL(t *URL) error {
 	return nil
 }
 
-var _ govalid.Validator = (*URL)(nil)
+func ValidateURL(t *URL) error {
+	return ValidateURLContext(context.Background(), t)
+}
 
 func (t *URL) Validate() error {
 	return ValidateURL(t)
+}
+
+func (t *URL) ValidateContext(ctx context.Context) error {
+	return ValidateURLContext(ctx, t)
 }

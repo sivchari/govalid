@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Enum)(nil)
+
 	// ErrNilEnum is returned when the Enum is nil.
 	ErrNilEnum = errors.New("input Enum is nil")
 
@@ -25,17 +28,25 @@ var (
 	ErrEnumPriorityEnumValidation = govaliderrors.ValidationError{Reason: "field Priority must be one of 10, 20, 30", Path: "Enum.Priority", Type: "enum"}
 )
 
-func ValidateEnum(t *Enum) error {
+func ValidateEnumContext(ctx context.Context, t *Enum) error {
 	if t == nil {
 		return ErrNilEnum
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.Role != "admin" && t.Role != "user" && t.Role != "guest" {
 		err := ErrEnumRoleEnumValidation
 		err.Value = t.Role
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Level != 1 && t.Level != 2 && t.Level != 3 {
@@ -44,10 +55,18 @@ func ValidateEnum(t *Enum) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.UserRole != "manager" && t.UserRole != "developer" && t.UserRole != "tester" {
 		err := ErrEnumUserRoleEnumValidation
 		err.Value = t.UserRole
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Priority != 10 && t.Priority != 20 && t.Priority != 30 {
@@ -62,8 +81,14 @@ func ValidateEnum(t *Enum) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Enum)(nil)
+func ValidateEnum(t *Enum) error {
+	return ValidateEnumContext(context.Background(), t)
+}
 
 func (t *Enum) Validate() error {
 	return ValidateEnum(t)
+}
+
+func (t *Enum) ValidateContext(ctx context.Context) error {
+	return ValidateEnumContext(ctx, t)
 }

@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*LTE)(nil)
+
 	// ErrNilLTE is returned when the LTE is nil.
 	ErrNilLTE = errors.New("input LTE is nil")
 
@@ -16,12 +19,16 @@ var (
 	ErrLTEAgeLTEValidation = govaliderrors.ValidationError{Reason: "field Age must be less than or equal to 100", Path: "LTE.Age", Type: "lte"}
 )
 
-func ValidateLTE(t *LTE) error {
+func ValidateLTEContext(ctx context.Context, t *LTE) error {
 	if t == nil {
 		return ErrNilLTE
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !(t.Age <= 100) {
 		err := ErrLTEAgeLTEValidation
@@ -35,8 +42,14 @@ func ValidateLTE(t *LTE) error {
 	return nil
 }
 
-var _ govalid.Validator = (*LTE)(nil)
+func ValidateLTE(t *LTE) error {
+	return ValidateLTEContext(context.Background(), t)
+}
 
 func (t *LTE) Validate() error {
 	return ValidateLTE(t)
+}
+
+func (t *LTE) ValidateContext(ctx context.Context) error {
+	return ValidateLTEContext(ctx, t)
 }

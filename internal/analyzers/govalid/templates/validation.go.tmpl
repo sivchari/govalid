@@ -3,7 +3,9 @@ package {{.PackageName}}
 
 import (
 	{{if .Metadata }}
+	"context"
 	"errors"
+
 	"github.com/sivchari/govalid"
 	govaliderrors "github.com/sivchari/govalid/validation/errors"
 	{{- range $pkg, $_ := .ImportPackages }}
@@ -13,6 +15,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*{{.TypeName}})(nil)
+
 	// ErrNil{{.TypeName}} is returned when the {{.TypeName}} is nil.
 	ErrNil{{.TypeName}} = errors.New("input {{.TypeName}} is nil")
 {{- range .Metadata -}}
@@ -24,7 +28,7 @@ var (
 {{ end -}}
 )
 
-func Validate{{.TypeName}}(t *{{.TypeName}}) error {
+func Validate{{.TypeName}}Context(ctx context.Context, t *{{.TypeName}}) error {
 	if t == nil {
 	    return ErrNil{{.TypeName}}
 	}
@@ -42,6 +46,10 @@ func Validate{{.TypeName}}(t *{{.TypeName}}) error {
 	    	{
   			t := t.{{ $parentVariable }}
 		{{ end -}}
+
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 
 		{{ range .Validators }}
 			{{ if ne .Validate "" }}
@@ -66,8 +74,14 @@ func Validate{{.TypeName}}(t *{{.TypeName}}) error {
   return nil
 }
 
-var _ govalid.Validator = (*{{.TypeName}})(nil)
+func Validate{{.TypeName}}(t *{{.TypeName}}) error {
+	return Validate{{.TypeName}}Context(context.Background(), t)
+}
 
 func (t *{{.TypeName}}) Validate() error {
 	return Validate{{.TypeName}}(t)
+}
+
+func (t *{{.TypeName}}) ValidateContext(ctx context.Context) error {
+	return Validate{{.TypeName}}Context(ctx, t)
 }

@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 	"unicode/utf8"
 
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*MultipleErrors)(nil)
+
 	// ErrNilMultipleErrors is returned when the MultipleErrors is nil.
 	ErrNilMultipleErrors = errors.New("input MultipleErrors is nil")
 
@@ -20,17 +23,25 @@ var (
 	ErrMultipleErrorsTooLongMaxLengthValidation = govaliderrors.ValidationError{Reason: "field TooLong must have a maximum length of 1", Path: "MultipleErrors.TooLong", Type: "maxlength"}
 )
 
-func ValidateMultipleErrors(t *MultipleErrors) error {
+func ValidateMultipleErrorsContext(ctx context.Context, t *MultipleErrors) error {
 	if t == nil {
 		return ErrNilMultipleErrors
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.URL == "" {
 		err := ErrMultipleErrorsURLRequiredValidation
 		err.Value = t.URL
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if utf8.RuneCountInString(t.TooLong) > 1 {
@@ -45,8 +56,14 @@ func ValidateMultipleErrors(t *MultipleErrors) error {
 	return nil
 }
 
-var _ govalid.Validator = (*MultipleErrors)(nil)
+func ValidateMultipleErrors(t *MultipleErrors) error {
+	return ValidateMultipleErrorsContext(context.Background(), t)
+}
 
 func (t *MultipleErrors) Validate() error {
 	return ValidateMultipleErrors(t)
+}
+
+func (t *MultipleErrors) ValidateContext(ctx context.Context) error {
+	return ValidateMultipleErrorsContext(ctx, t)
 }

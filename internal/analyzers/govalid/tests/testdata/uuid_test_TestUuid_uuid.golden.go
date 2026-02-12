@@ -2,6 +2,7 @@
 package uuid
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*UUID)(nil)
+
 	// ErrNilUUID is returned when the UUID is nil.
 	ErrNilUUID = errors.New("input UUID is nil")
 
@@ -17,12 +20,16 @@ var (
 	ErrUUIDUUIDUUIDValidation = govaliderrors.ValidationError{Reason: "field UUID must be a valid UUID", Path: "UUID.UUID", Type: "uuid"}
 )
 
-func ValidateUUID(t *UUID) error {
+func ValidateUUIDContext(ctx context.Context, t *UUID) error {
 	if t == nil {
 		return ErrNilUUID
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !validationhelper.IsValidUUID(t.UUID) {
 		err := ErrUUIDUUIDUUIDValidation
@@ -36,8 +43,14 @@ func ValidateUUID(t *UUID) error {
 	return nil
 }
 
-var _ govalid.Validator = (*UUID)(nil)
+func ValidateUUID(t *UUID) error {
+	return ValidateUUIDContext(context.Background(), t)
+}
 
 func (t *UUID) Validate() error {
 	return ValidateUUID(t)
+}
+
+func (t *UUID) ValidateContext(ctx context.Context) error {
+	return ValidateUUIDContext(ctx, t)
 }

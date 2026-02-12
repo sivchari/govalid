@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 	"unicode/utf8"
 
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*MinLength)(nil)
+
 	// ErrNilMinLength is returned when the MinLength is nil.
 	ErrNilMinLength = errors.New("input MinLength is nil")
 
@@ -17,12 +20,16 @@ var (
 	ErrMinLengthNameMinLengthValidation = govaliderrors.ValidationError{Reason: "field Name must have a minimum length of 3", Path: "MinLength.Name", Type: "minlength"}
 )
 
-func ValidateMinLength(t *MinLength) error {
+func ValidateMinLengthContext(ctx context.Context, t *MinLength) error {
 	if t == nil {
 		return ErrNilMinLength
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if utf8.RuneCountInString(t.Name) < 3 {
 		err := ErrMinLengthNameMinLengthValidation
@@ -36,8 +43,14 @@ func ValidateMinLength(t *MinLength) error {
 	return nil
 }
 
-var _ govalid.Validator = (*MinLength)(nil)
+func ValidateMinLength(t *MinLength) error {
+	return ValidateMinLengthContext(context.Background(), t)
+}
 
 func (t *MinLength) Validate() error {
 	return ValidateMinLength(t)
+}
+
+func (t *MinLength) ValidateContext(ctx context.Context) error {
+	return ValidateMinLengthContext(ctx, t)
 }

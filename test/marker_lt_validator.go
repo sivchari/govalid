@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*LT)(nil)
+
 	// ErrNilLT is returned when the LT is nil.
 	ErrNilLT = errors.New("input LT is nil")
 
@@ -16,12 +19,16 @@ var (
 	ErrLTAgeLTValidation = govaliderrors.ValidationError{Reason: "field Age must be less than 10", Path: "LT.Age", Type: "lt"}
 )
 
-func ValidateLT(t *LT) error {
+func ValidateLTContext(ctx context.Context, t *LT) error {
 	if t == nil {
 		return ErrNilLT
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !(t.Age < 10) {
 		err := ErrLTAgeLTValidation
@@ -35,8 +42,14 @@ func ValidateLT(t *LT) error {
 	return nil
 }
 
-var _ govalid.Validator = (*LT)(nil)
+func ValidateLT(t *LT) error {
+	return ValidateLTContext(context.Background(), t)
+}
 
 func (t *LT) Validate() error {
 	return ValidateLT(t)
+}
+
+func (t *LT) ValidateContext(ctx context.Context) error {
+	return ValidateLTContext(ctx, t)
 }

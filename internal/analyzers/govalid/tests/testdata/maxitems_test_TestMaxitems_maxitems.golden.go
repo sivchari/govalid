@@ -2,6 +2,7 @@
 package maxitems
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*MaxItems)(nil)
+
 	// ErrNilMaxItems is returned when the MaxItems is nil.
 	ErrNilMaxItems = errors.New("input MaxItems is nil")
 
@@ -33,17 +36,25 @@ var (
 	ErrMaxItemsStructItemsMaxItemsValidation = govaliderrors.ValidationError{Reason: "field Items must have a maximum of 2 items", Path: "MaxItems.Struct.Items", Type: "maxitems"}
 )
 
-func ValidateMaxItems(t *MaxItems) error {
+func ValidateMaxItemsContext(ctx context.Context, t *MaxItems) error {
 	if t == nil {
 		return ErrNilMaxItems
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if len(t.Slice) > 5 {
 		err := ErrMaxItemsSliceMaxItemsValidation
 		err.Value = t.Slice
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if len(t.Array) > 3 {
@@ -52,10 +63,18 @@ func ValidateMaxItems(t *MaxItems) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if len(t.MapField) > 4 {
 		err := ErrMaxItemsMapFieldMaxItemsValidation
 		err.Value = t.MapField
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if len(t.ChanField) > 2 {
@@ -66,6 +85,9 @@ func ValidateMaxItems(t *MaxItems) error {
 
 	{
 		t := t.Struct
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 
 		if len(t.Items) > 2 {
 			err := ErrMaxItemsStructItemsMaxItemsValidation
@@ -81,8 +103,14 @@ func ValidateMaxItems(t *MaxItems) error {
 	return nil
 }
 
-var _ govalid.Validator = (*MaxItems)(nil)
+func ValidateMaxItems(t *MaxItems) error {
+	return ValidateMaxItemsContext(context.Background(), t)
+}
 
 func (t *MaxItems) Validate() error {
 	return ValidateMaxItems(t)
+}
+
+func (t *MaxItems) ValidateContext(ctx context.Context) error {
+	return ValidateMaxItemsContext(ctx, t)
 }

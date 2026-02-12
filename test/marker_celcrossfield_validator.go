@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*CELCrossField)(nil)
+
 	// ErrNilCELCrossField is returned when the CELCrossField is nil.
 	ErrNilCELCrossField = errors.New("input CELCrossField is nil")
 
@@ -19,17 +22,25 @@ var (
 	ErrCELCrossFieldQuantityCELValidation = govaliderrors.ValidationError{Reason: "field Quantity failed CEL validation: value * this.Price <= this.Budget", Path: "CELCrossField.Quantity", Type: "cel"}
 )
 
-func ValidateCELCrossField(t *CELCrossField) error {
+func ValidateCELCrossFieldContext(ctx context.Context, t *CELCrossField) error {
 	if t == nil {
 		return ErrNilCELCrossField
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Price < t.MaxPrice) {
 		err := ErrCELCrossFieldPriceCELValidation
 		err.Value = t.Price
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Quantity*t.Price <= t.Budget) {
@@ -44,8 +55,14 @@ func ValidateCELCrossField(t *CELCrossField) error {
 	return nil
 }
 
-var _ govalid.Validator = (*CELCrossField)(nil)
+func ValidateCELCrossField(t *CELCrossField) error {
+	return ValidateCELCrossFieldContext(context.Background(), t)
+}
 
 func (t *CELCrossField) Validate() error {
 	return ValidateCELCrossField(t)
+}
+
+func (t *CELCrossField) ValidateContext(ctx context.Context) error {
+	return ValidateCELCrossFieldContext(ctx, t)
 }
