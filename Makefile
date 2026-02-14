@@ -63,10 +63,6 @@ test: ## Run all tests
 	go test -C test ./... -shuffle on -v -race
 	go test ./... -shuffle on -v -race -tags=test
 
-.PHONY: regenerate-golden-tests
-regenerate-golden-tests: ## Regenerate golden test files
-	go test ./internal/analyzers/govalid/... -update
-
 .PHONY: test-coverage
 test-coverage: ## Run tests with coverage report
 	@echo "Running tests with coverage..."
@@ -148,8 +144,6 @@ sync-benchmarks: ## Synchronize benchmark results across all documentation files
 	@echo "Synchronizing benchmark results..."
 	./scripts/sync-benchmarks.sh
 
-
-
 .PHONY: help
 help: ## Show this help message
 	@echo 'Usage: make [target] [FUZZ_TIME=duration]'
@@ -162,7 +156,6 @@ help: ## Show this help message
 	@echo '  make fuzz-email         # Run email fuzz test (30s default)'
 	@echo '  make fuzz FUZZ_TIME=2m  # Run all fuzz tests for 2 minutes each'
 	@echo '  make test               # Run all tests'
-	@echo '  make regenerate-golden-tests # Regenerate golden test files'
 	@echo '  make test-coverage      # Run tests with coverage'
 	@echo '  make coverage           # Show detailed coverage report'
 	@echo '  make coverage-html      # Generate HTML coverage report'
