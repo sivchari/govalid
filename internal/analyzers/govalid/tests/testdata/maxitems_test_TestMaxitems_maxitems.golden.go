@@ -84,10 +84,11 @@ func ValidateMaxItemsContext(ctx context.Context, t *MaxItems) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if len(t.Items) > 2 {
 			err := ErrMaxItemsStructItemsMaxItemsValidation

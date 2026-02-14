@@ -47,10 +47,11 @@ func ValidateMinLengthContext(ctx context.Context, t *MinLength) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if utf8.RuneCountInString(t.Name) < 3 {
 			err := ErrMinLengthStructNameMinLengthValidation

@@ -58,10 +58,11 @@ func ValidateLTEContext(ctx context.Context, t *LTE) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if !(t.Value <= 50) {
 			err := ErrLTEStructValueLTEValidation

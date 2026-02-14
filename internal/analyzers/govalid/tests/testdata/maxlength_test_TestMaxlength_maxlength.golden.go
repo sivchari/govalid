@@ -47,10 +47,11 @@ func ValidateMaxLengthContext(ctx context.Context, t *MaxLength) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if utf8.RuneCountInString(t.Name) > 20 {
 			err := ErrMaxLengthStructNameMaxLengthValidation

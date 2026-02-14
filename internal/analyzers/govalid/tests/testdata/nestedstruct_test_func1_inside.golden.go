@@ -32,10 +32,11 @@ func ValidateInsideContext(ctx context.Context, t *Inside) error {
 	var errs govaliderrors.ValidationErrors
 
 	{
-		t := t.A
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.A
 
 		if t.X == "" {
 			err := ErrInsideAXRequiredValidation
