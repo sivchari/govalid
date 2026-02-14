@@ -58,10 +58,11 @@ func ValidateGTEContext(ctx context.Context, t *GTE) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if !(t.Value >= 100) {
 			err := ErrGTEStructValueGTEValidation

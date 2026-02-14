@@ -39,10 +39,11 @@ func ValidateIPv6Context(ctx context.Context, t *IPv6) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if ip := net.ParseIP(t.Value); ip == nil || ip.To4() != nil {
 			err := ErrIPv6ValueIpv6Validation

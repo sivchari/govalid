@@ -227,10 +227,11 @@ func ValidateLTContext(ctx context.Context, t *LT) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if !(t.Int < 1) {
 			err := ErrLTStructIntLTValidation

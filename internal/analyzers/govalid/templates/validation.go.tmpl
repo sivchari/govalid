@@ -44,12 +44,18 @@ func Validate{{.TypeName}}Context(ctx context.Context, t *{{.TypeName}}) error {
 
 		{{ if and (ne $parentVariable "") ( .Validators ) -}}
 	    	{
-  			t := t.{{ $parentVariable }}
+				if ctx.Err() != nil {
+					return ctx.Err()
+				}
+
+				t := t.{{ $parentVariable }}
 		{{ end -}}
 
-		if ctx.Err() != nil {
-			return ctx.Err()
-		}
+		{{ if and (eq $parentVariable "") ( .Validators ) -}}
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+		{{ end -}}
 
 		{{ range .Validators }}
 			{{ if ne .Validate "" }}

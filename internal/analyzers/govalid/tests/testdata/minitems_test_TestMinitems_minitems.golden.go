@@ -84,10 +84,11 @@ func ValidateMinItemsContext(ctx context.Context, t *MinItems) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if len(t.Items) < 1 {
 			err := ErrMinItemsStructItemsMinItemsValidation

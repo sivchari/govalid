@@ -164,10 +164,11 @@ func ValidateRequiredContext(ctx context.Context, t *Required) error {
 	}
 
 	{
-		t := t.EntireRequiredStruct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.EntireRequiredStruct
 
 		if t.EntireRequiredStructName == "" {
 			err := ErrRequiredEntireRequiredStructNameRequiredValidation
@@ -178,10 +179,11 @@ func ValidateRequiredContext(ctx context.Context, t *Required) error {
 	}
 
 	{
-		t := t.PartialStruct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.PartialStruct
 
 		if t.PartialStructString == "" {
 			err := ErrRequiredPartialStructPartialStructStringRequiredValidation
@@ -192,10 +194,11 @@ func ValidateRequiredContext(ctx context.Context, t *Required) error {
 	}
 
 	{
-		t := t.NestedStruct.Nested2
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.NestedStruct.Nested2
 
 		if t.Nested2String == "" {
 			err := ErrRequiredNestedStructNested2StringRequiredValidation
@@ -206,10 +209,11 @@ func ValidateRequiredContext(ctx context.Context, t *Required) error {
 	}
 
 	{
-		t := t.OtherNestedStruct.Nested2
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.OtherNestedStruct.Nested2
 
 		if t.Nested2String == "" {
 			err := ErrRequiredOtherNestedStructNested2StringRequiredValidation

@@ -227,10 +227,11 @@ func ValidateGTContext(ctx context.Context, t *GT) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if !(t.Int > 1) {
 			err := ErrGTStructIntGTValidation

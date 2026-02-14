@@ -47,10 +47,11 @@ func ValidateLengthContext(ctx context.Context, t *Length) error {
 	}
 
 	{
-		t := t.Struct
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
+
+		t := t.Struct
 
 		if utf8.RuneCountInString(t.Name) != 10 {
 			err := ErrLengthStructNameLengthValidation
