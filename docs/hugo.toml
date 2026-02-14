@@ -22,6 +22,10 @@ staticDir = "static"
     url = "/validators/"
     weight = 20
   [[menu.main]]
+    name = "Context-Aware Validation"
+    url = "/context-validation/"
+    weight = 25
+  [[menu.main]]
     name = "Benchmarks"
     url = "https://github.com/sivchari/govalid/blob/main/test/benchmark/README.md"
     weight = 30
