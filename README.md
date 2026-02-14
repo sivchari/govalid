@@ -176,6 +176,40 @@ func main() {
 }
 ```
 
+## Context-Aware Validation
+
+govalid supports context-aware validation for request cancellation and timeout handling:
+
+```go
+// Standard validation (no context)
+if err := p.Validate(); err != nil {
+    log.Printf("Validation failed: %v", err)
+}
+
+// Context-aware validation with timeout
+ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+defer cancel()
+
+if err := p.ValidateContext(ctx); err != nil {
+    switch err {
+    case context.DeadlineExceeded:
+        log.Println("Validation timed out")
+    case context.Canceled:
+        log.Println("Validation cancelled")
+    default:
+        log.Printf("Validation failed: %v", err)
+    }
+}
+```
+
+Context-aware validation is particularly useful for:
+
+- **HTTP handlers** - Respect client request cancellation
+- **Timeouts** - Prevent runaway validation processes
+- **High-concurrency servers** - Handle many concurrent requests efficiently
+
+See [Context Validation Documentation](docs/content/context-validation.md) for complete details and examples.
+
 ## Performance
 
 govalid outperforms reflection-based validators by **5x to 44x** with **zero allocations**.
