@@ -2,6 +2,7 @@
 package numeric
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Numeric)(nil)
+
 	// ErrNilNumeric is returned when the Numeric is nil.
 	ErrNilNumeric = errors.New("input Numeric is nil")
 
@@ -17,12 +20,16 @@ var (
 	ErrNumericNumberNumericValidation = govaliderrors.ValidationError{Reason: "field Number must be numeric", Path: "Numeric.Number", Type: "numeric"}
 )
 
-func ValidateNumeric(t *Numeric) error {
+func ValidateNumericContext(ctx context.Context, t *Numeric) error {
 	if t == nil {
 		return ErrNilNumeric
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !validationhelper.IsNumeric(t.Number) {
 		err := ErrNumericNumberNumericValidation
@@ -36,8 +43,14 @@ func ValidateNumeric(t *Numeric) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Numeric)(nil)
+func ValidateNumeric(t *Numeric) error {
+	return ValidateNumericContext(context.Background(), t)
+}
 
 func (t *Numeric) Validate() error {
 	return ValidateNumeric(t)
+}
+
+func (t *Numeric) ValidateContext(ctx context.Context) error {
+	return ValidateNumericContext(ctx, t)
 }

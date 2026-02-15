@@ -31,6 +31,11 @@ fmt-diff: ## Show code formatting differences
 install-lefthook:
 	${LEFTHOOK} install
 
+# Manual lefthook run
+.PHONY: run-lefthook
+run-lefthook:
+	${LEFTHOOK} run pre-commit
+
 # Documentation targets
 .PHONY: docs-dev
 docs-dev: ## Start Hugo development server
@@ -138,8 +143,6 @@ docs-install: ## Install Hugo (macOS only)
 sync-benchmarks: ## Synchronize benchmark results across all documentation files
 	@echo "Synchronizing benchmark results..."
 	./scripts/sync-benchmarks.sh
-
-
 
 .PHONY: help
 help: ## Show this help message

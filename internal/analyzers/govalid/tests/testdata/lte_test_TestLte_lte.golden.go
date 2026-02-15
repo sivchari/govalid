@@ -2,6 +2,7 @@
 package lte
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*LTE)(nil)
+
 	// ErrNilLTE is returned when the LTE is nil.
 	ErrNilLTE = errors.New("input LTE is nil")
 
@@ -27,17 +30,25 @@ var (
 	ErrLTEStructValueLTEValidation = govaliderrors.ValidationError{Reason: "field Value must be less than or equal to 50", Path: "LTE.Struct.Value", Type: "lte"}
 )
 
-func ValidateLTE(t *LTE) error {
+func ValidateLTEContext(ctx context.Context, t *LTE) error {
 	if t == nil {
 		return ErrNilLTE
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Age <= 100) {
 		err := ErrLTEAgeLTEValidation
 		err.Value = t.Age
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Score <= 10.5) {
@@ -47,6 +58,10 @@ func ValidateLTE(t *LTE) error {
 	}
 
 	{
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+
 		t := t.Struct
 
 		if !(t.Value <= 50) {
@@ -63,8 +78,14 @@ func ValidateLTE(t *LTE) error {
 	return nil
 }
 
-var _ govalid.Validator = (*LTE)(nil)
+func ValidateLTE(t *LTE) error {
+	return ValidateLTEContext(context.Background(), t)
+}
 
 func (t *LTE) Validate() error {
 	return ValidateLTE(t)
+}
+
+func (t *LTE) ValidateContext(ctx context.Context) error {
+	return ValidateLTEContext(ctx, t)
 }

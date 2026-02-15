@@ -2,7 +2,9 @@
 package test
 
 import (
+	"context"
 	"errors"
+
 	"unicode/utf8"
 
 	"github.com/sivchari/govalid"
@@ -10,6 +12,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Length)(nil)
+
 	// ErrNilLength is returned when the Length is nil.
 	ErrNilLength = errors.New("input Length is nil")
 
@@ -17,12 +21,16 @@ var (
 	ErrLengthNameLengthValidation = govaliderrors.ValidationError{Reason: "field Name length must be exactly 7", Path: "Length.Name", Type: "length"}
 )
 
-func ValidateLength(t *Length) error {
+func ValidateLengthContext(ctx context.Context, t *Length) error {
 	if t == nil {
 		return ErrNilLength
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if utf8.RuneCountInString(t.Name) != 7 {
 		err := ErrLengthNameLengthValidation
@@ -36,8 +44,14 @@ func ValidateLength(t *Length) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Length)(nil)
+func ValidateLength(t *Length) error {
+	return ValidateLengthContext(context.Background(), t)
+}
 
 func (t *Length) Validate() error {
 	return ValidateLength(t)
+}
+
+func (t *Length) ValidateContext(ctx context.Context) error {
+	return ValidateLengthContext(ctx, t)
 }

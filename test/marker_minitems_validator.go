@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*MinItems)(nil)
+
 	// ErrNilMinItems is returned when the MinItems is nil.
 	ErrNilMinItems = errors.New("input MinItems is nil")
 
@@ -22,12 +25,16 @@ var (
 	ErrMinItemsChanFieldMinItemsValidation = govaliderrors.ValidationError{Reason: "field ChanField must have a minimum of 1 items", Path: "MinItems.ChanField", Type: "minitems"}
 )
 
-func ValidateMinItems(t *MinItems) error {
+func ValidateMinItemsContext(ctx context.Context, t *MinItems) error {
 	if t == nil {
 		return ErrNilMinItems
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if len(t.Items) < 2 {
 		err := ErrMinItemsItemsMinItemsValidation
@@ -35,10 +42,18 @@ func ValidateMinItems(t *MinItems) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if len(t.Metadata) < 1 {
 		err := ErrMinItemsMetadataMinItemsValidation
 		err.Value = t.Metadata
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if len(t.ChanField) < 1 {
@@ -53,8 +68,14 @@ func ValidateMinItems(t *MinItems) error {
 	return nil
 }
 
-var _ govalid.Validator = (*MinItems)(nil)
+func ValidateMinItems(t *MinItems) error {
+	return ValidateMinItemsContext(context.Background(), t)
+}
 
 func (t *MinItems) Validate() error {
 	return ValidateMinItems(t)
+}
+
+func (t *MinItems) ValidateContext(ctx context.Context) error {
+	return ValidateMinItemsContext(ctx, t)
 }

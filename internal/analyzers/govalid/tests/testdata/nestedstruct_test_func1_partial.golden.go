@@ -2,6 +2,7 @@
 package partial
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Partial)(nil)
+
 	// ErrNilPartial is returned when the Partial is nil.
 	ErrNilPartial = errors.New("input Partial is nil")
 
@@ -16,12 +19,16 @@ var (
 	ErrPartialNameRequiredValidation = govaliderrors.ValidationError{Reason: "field Name is required", Path: "Partial.Name", Type: "required"}
 )
 
-func ValidatePartial(t *Partial) error {
+func ValidatePartialContext(ctx context.Context, t *Partial) error {
 	if t == nil {
 		return ErrNilPartial
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if t.Name == "" {
 		err := ErrPartialNameRequiredValidation
@@ -35,8 +42,14 @@ func ValidatePartial(t *Partial) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Partial)(nil)
+func ValidatePartial(t *Partial) error {
+	return ValidatePartialContext(context.Background(), t)
+}
 
 func (t *Partial) Validate() error {
 	return ValidatePartial(t)
+}
+
+func (t *Partial) ValidateContext(ctx context.Context) error {
+	return ValidatePartialContext(ctx, t)
 }

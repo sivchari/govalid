@@ -2,7 +2,9 @@
 package cel
 
 import (
+	"context"
 	"errors"
+
 	"fmt"
 	"regexp"
 	"slices"
@@ -15,6 +17,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*CEL)(nil)
+
 	// ErrNilCEL is returned when the CEL is nil.
 	ErrNilCEL = errors.New("input CEL is nil")
 
@@ -139,17 +143,25 @@ var (
 	ErrCELMappedSizesCELValidation = govaliderrors.ValidationError{Reason: "field MappedSizes failed CEL validation: size(value.map(item, size(item))) == size(value)", Path: "CEL.MappedSizes", Type: "cel"}
 )
 
-func ValidateCEL(t *CEL) error {
+func ValidateCELContext(ctx context.Context, t *CEL) error {
 	if t == nil {
 		return ErrNilCEL
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Age >= 18) {
 		err := ErrCELAgeCELValidation
 		err.Value = t.Age
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Score > 0) {
@@ -158,10 +170,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.MaxScore <= 100) {
 		err := ErrCELMaxScoreCELValidation
 		err.Value = t.MaxScore
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.Limit < 1000) {
@@ -170,10 +190,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.Answer == 42) {
 		err := ErrCELAnswerCELValidation
 		err.Value = t.Answer
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.NonZero != 0) {
@@ -182,10 +210,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(len(t.Name) > 0) {
 		err := ErrCELNameCELValidation
 		err.Value = t.Name
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !((len(t.Username) >= 3) && (len(t.Username) <= 50)) {
@@ -194,10 +230,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(strings.HasPrefix(t.PrefixedName, "prefix_")) {
 		err := ErrCELPrefixedNameCELValidation
 		err.Value = t.PrefixedName
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(strings.HasSuffix(t.Email, ".com")) {
@@ -206,10 +250,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(strings.Contains(t.EmailAddress, "@")) {
 		err := ErrCELEmailAddressCELValidation
 		err.Value = t.EmailAddress
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.IsActive == true) {
@@ -218,10 +270,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.MustBeTrue != false) {
 		err := ErrCELMustBeTrueCELValidation
 		err.Value = t.MustBeTrue
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !((t.ValidAge >= 0) && (t.ValidAge <= 120)) {
@@ -230,10 +290,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !((t.Percentage > 0) && (t.Percentage <= 100)) {
 		err := ErrCELPercentageCELValidation
 		err.Value = t.Percentage
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !((len(t.Password) >= 8) && (len(t.Password) <= 256)) {
@@ -242,10 +310,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.MinAge >= t.Age) {
 		err := ErrCELMinAgeCELValidation
 		err.Value = t.MinAge
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.CurrentScore <= t.MaxScore) {
@@ -254,10 +330,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(len(t.LongName) >= len(t.Name)) {
 		err := ErrCELLongNameCELValidation
 		err.Value = t.LongName
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !((t.MiddleValue > t.Age) && (t.MiddleValue < t.Limit)) {
@@ -266,10 +350,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.DoubleAge >= t.Age*2) {
 		err := ErrCELDoubleAgeCELValidation
 		err.Value = t.DoubleAge
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.HalfScore <= t.MaxScore/2) {
@@ -278,10 +370,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.SumValue == t.Age+t.NonZero) {
 		err := ErrCELSumValueCELValidation
 		err.Value = t.SumValue
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(((t.SpecialAge >= 18) && (t.SpecialAge <= 65)) || (t.SpecialAge == 100)) {
@@ -290,10 +390,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !((t.ConditionalValue > 0) || ((t.ConditionalValue == 0) && (t.IsActive))) {
 		err := ErrCELConditionalValueCELValidation
 		err.Value = t.ConditionalValue
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(regexp.MustCompile("^[A-Z][a-z]+$").MatchString(t.ProperName)) {
@@ -302,10 +410,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !((len(t.Items) >= 1) && (len(t.Items) <= 10)) {
 		err := ErrCELItemsCELValidation
 		err.Value = t.Items
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(len(t.NonEmptySlice) > 0) {
@@ -314,16 +430,28 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(t.PositiveValue > 0) {
 		err := ErrCELPositiveValueCELValidation
 		err.Value = t.PositiveValue
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(slices.Contains(t.HasAdminRole, "admin")) {
 		err := ErrCELHasAdminRoleCELValidation
 		err.Value = t.HasAdminRole
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(func() int {
@@ -338,10 +466,18 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(slices.Contains([]string{"active", "inactive", "pending"}, fmt.Sprintf("%v", t.StatusCode))) {
 		err := ErrCELStatusCodeCELValidation
 		err.Value = t.StatusCode
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(t.ProcessingTime > func() time.Duration {
@@ -354,6 +490,10 @@ func ValidateCEL(t *CEL) error {
 		err := ErrCELProcessingTimeCELValidation
 		err.Value = t.ProcessingTime
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(func() bool {
@@ -369,6 +509,10 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(func() bool {
 		for _, item := range t.HasTarget {
 			if item == "target" {
@@ -380,6 +524,10 @@ func ValidateCEL(t *CEL) error {
 		err := ErrCELHasTargetCELValidation
 		err.Value = t.HasTarget
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(func() bool {
@@ -399,6 +547,10 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(func() bool {
 		for _, item := range t.AllPrefixed {
 			if !(strings.HasPrefix(item, "prefix")) {
@@ -410,6 +562,10 @@ func ValidateCEL(t *CEL) error {
 		err := ErrCELAllPrefixedCELValidation
 		err.Value = t.AllPrefixed
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(func() bool {
@@ -425,6 +581,10 @@ func ValidateCEL(t *CEL) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if !(len(func() []interface{} {
 		var result []interface{}
 		for _, item := range t.FilteredItems {
@@ -437,6 +597,10 @@ func ValidateCEL(t *CEL) error {
 		err := ErrCELFilteredItemsCELValidation
 		err.Value = t.FilteredItems
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if !(len(func() []interface{} {
@@ -457,8 +621,14 @@ func ValidateCEL(t *CEL) error {
 	return nil
 }
 
-var _ govalid.Validator = (*CEL)(nil)
+func ValidateCEL(t *CEL) error {
+	return ValidateCELContext(context.Background(), t)
+}
 
 func (t *CEL) Validate() error {
 	return ValidateCEL(t)
+}
+
+func (t *CEL) ValidateContext(ctx context.Context) error {
+	return ValidateCELContext(ctx, t)
 }

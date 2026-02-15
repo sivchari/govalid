@@ -2,6 +2,7 @@
 package inside
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Inside)(nil)
+
 	// ErrNilInside is returned when the Inside is nil.
 	ErrNilInside = errors.New("input Inside is nil")
 
@@ -21,7 +24,7 @@ var (
 	ErrInsideAXRequiredValidation = govaliderrors.ValidationError{Reason: "field X is required", Path: "Inside.A.X", Type: "required"}
 )
 
-func ValidateInside(t *Inside) error {
+func ValidateInsideContext(ctx context.Context, t *Inside) error {
 	if t == nil {
 		return ErrNilInside
 	}
@@ -29,6 +32,10 @@ func ValidateInside(t *Inside) error {
 	var errs govaliderrors.ValidationErrors
 
 	{
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+
 		t := t.A
 
 		if t.X == "" {
@@ -45,8 +52,14 @@ func ValidateInside(t *Inside) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Inside)(nil)
+func ValidateInside(t *Inside) error {
+	return ValidateInsideContext(context.Background(), t)
+}
 
 func (t *Inside) Validate() error {
 	return ValidateInside(t)
+}
+
+func (t *Inside) ValidateContext(ctx context.Context) error {
+	return ValidateInsideContext(ctx, t)
 }

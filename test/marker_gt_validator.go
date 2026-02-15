@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*GT)(nil)
+
 	// ErrNilGT is returned when the GT is nil.
 	ErrNilGT = errors.New("input GT is nil")
 
@@ -16,12 +19,16 @@ var (
 	ErrGTAgeGTValidation = govaliderrors.ValidationError{Reason: "field Age must be greater than 100", Path: "GT.Age", Type: "gt"}
 )
 
-func ValidateGT(t *GT) error {
+func ValidateGTContext(ctx context.Context, t *GT) error {
 	if t == nil {
 		return ErrNilGT
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !(t.Age > 100) {
 		err := ErrGTAgeGTValidation
@@ -35,8 +42,14 @@ func ValidateGT(t *GT) error {
 	return nil
 }
 
-var _ govalid.Validator = (*GT)(nil)
+func ValidateGT(t *GT) error {
+	return ValidateGTContext(context.Background(), t)
+}
 
 func (t *GT) Validate() error {
 	return ValidateGT(t)
+}
+
+func (t *GT) ValidateContext(ctx context.Context) error {
+	return ValidateGTContext(ctx, t)
 }

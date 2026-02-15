@@ -2,6 +2,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*GTE)(nil)
+
 	// ErrNilGTE is returned when the GTE is nil.
 	ErrNilGTE = errors.New("input GTE is nil")
 
@@ -16,12 +19,16 @@ var (
 	ErrGTEAgeGTEValidation = govaliderrors.ValidationError{Reason: "field Age must be greater than or equal to 18", Path: "GTE.Age", Type: "gte"}
 )
 
-func ValidateGTE(t *GTE) error {
+func ValidateGTEContext(ctx context.Context, t *GTE) error {
 	if t == nil {
 		return ErrNilGTE
 	}
 
 	var errs govaliderrors.ValidationErrors
+
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 
 	if !(t.Age >= 18) {
 		err := ErrGTEAgeGTEValidation
@@ -35,8 +42,14 @@ func ValidateGTE(t *GTE) error {
 	return nil
 }
 
-var _ govalid.Validator = (*GTE)(nil)
+func ValidateGTE(t *GTE) error {
+	return ValidateGTEContext(context.Background(), t)
+}
 
 func (t *GTE) Validate() error {
 	return ValidateGTE(t)
+}
+
+func (t *GTE) ValidateContext(ctx context.Context) error {
+	return ValidateGTEContext(ctx, t)
 }

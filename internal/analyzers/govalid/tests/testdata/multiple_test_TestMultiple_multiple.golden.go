@@ -2,6 +2,7 @@
 package multiple
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -10,6 +11,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Multiple)(nil)
+
 	// ErrNilMultiple is returned when the Multiple is nil.
 	ErrNilMultiple = errors.New("input Multiple is nil")
 
@@ -29,17 +32,25 @@ var (
 	ErrMultipleAgeGTEValidation = govaliderrors.ValidationError{Reason: "field Age must be greater than or equal to 18", Path: "Multiple.Age", Type: "gte"}
 )
 
-func ValidateMultiple(t *Multiple) error {
+func ValidateMultipleContext(ctx context.Context, t *Multiple) error {
 	if t == nil {
 		return ErrNilMultiple
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.Name == "" {
 		err := ErrMultipleNameRequiredValidation
 		err.Value = t.Name
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Email == "" {
@@ -52,6 +63,10 @@ func ValidateMultiple(t *Multiple) error {
 		err := ErrMultipleEmailEmailValidation
 		err.Value = t.Email
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Age == 0 {
@@ -72,8 +87,14 @@ func ValidateMultiple(t *Multiple) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Multiple)(nil)
+func ValidateMultiple(t *Multiple) error {
+	return ValidateMultipleContext(context.Background(), t)
+}
 
 func (t *Multiple) Validate() error {
 	return ValidateMultiple(t)
+}
+
+func (t *Multiple) ValidateContext(ctx context.Context) error {
+	return ValidateMultipleContext(ctx, t)
 }

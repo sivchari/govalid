@@ -2,6 +2,7 @@
 package required
 
 import (
+	"context"
 	"errors"
 
 	"github.com/sivchari/govalid"
@@ -9,6 +10,8 @@ import (
 )
 
 var (
+	_ govalid.Validator = (*Required)(nil)
+
 	// ErrNilRequired is returned when the Required is nil.
 	ErrNilRequired = errors.New("input Required is nil")
 
@@ -73,17 +76,25 @@ var (
 	ErrRequiredNamedRequiredValidation = govaliderrors.ValidationError{Reason: "field Named is required", Path: "Required.Named", Type: "required"}
 )
 
-func ValidateRequired(t *Required) error {
+func ValidateRequiredContext(ctx context.Context, t *Required) error {
 	if t == nil {
 		return ErrNilRequired
 	}
 
 	var errs govaliderrors.ValidationErrors
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.String == "" {
 		err := ErrRequiredStringRequiredValidation
 		err.Value = t.String
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Int == 0 {
@@ -92,10 +103,18 @@ func ValidateRequired(t *Required) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if len(t.Array) == 0 {
 		err := ErrRequiredArrayRequiredValidation
 		err.Value = t.Array
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Slice == nil {
@@ -104,10 +123,18 @@ func ValidateRequired(t *Required) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.Map == nil {
 		err := ErrRequiredMapRequiredValidation
 		err.Value = t.Map
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Interface == nil {
@@ -116,10 +143,18 @@ func ValidateRequired(t *Required) error {
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.Any == nil {
 		err := ErrRequiredAnyRequiredValidation
 		err.Value = t.Any
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Pointer == nil {
@@ -129,6 +164,10 @@ func ValidateRequired(t *Required) error {
 	}
 
 	{
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+
 		t := t.EntireRequiredStruct
 
 		if t.EntireRequiredStructName == "" {
@@ -140,6 +179,10 @@ func ValidateRequired(t *Required) error {
 	}
 
 	{
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+
 		t := t.PartialStruct
 
 		if t.PartialStructString == "" {
@@ -151,6 +194,10 @@ func ValidateRequired(t *Required) error {
 	}
 
 	{
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+
 		t := t.NestedStruct.Nested2
 
 		if t.Nested2String == "" {
@@ -162,6 +209,10 @@ func ValidateRequired(t *Required) error {
 	}
 
 	{
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+
 		t := t.OtherNestedStruct.Nested2
 
 		if t.Nested2String == "" {
@@ -172,16 +223,28 @@ func ValidateRequired(t *Required) error {
 
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.Channel == nil {
 		err := ErrRequiredChannelRequiredValidation
 		err.Value = t.Channel
 		errs = append(errs, err)
 	}
 
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+
 	if t.Func == nil {
 		err := ErrRequiredFuncRequiredValidation
 		err.Value = t.Func
 		errs = append(errs, err)
+	}
+
+	if ctx.Err() != nil {
+		return ctx.Err()
 	}
 
 	if t.Named == "" {
@@ -196,8 +259,14 @@ func ValidateRequired(t *Required) error {
 	return nil
 }
 
-var _ govalid.Validator = (*Required)(nil)
+func ValidateRequired(t *Required) error {
+	return ValidateRequiredContext(context.Background(), t)
+}
 
 func (t *Required) Validate() error {
 	return ValidateRequired(t)
+}
+
+func (t *Required) ValidateContext(ctx context.Context) error {
+	return ValidateRequiredContext(ctx, t)
 }
