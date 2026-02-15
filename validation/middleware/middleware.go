@@ -2,7 +2,9 @@
 package middleware
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/sivchari/govalid"
@@ -31,7 +33,7 @@ func ValidateRequest[T govalid.Validator](next http.HandlerFunc) http.HandlerFun
 
 // ValidateRequestContext returns a middleware that validates the request body using the provided Validator ValidateContext method
 // Honors *http.Request provided context.
-// If validation fails, it responds with a 400 Bad Request.
+// Returns 408 for context errors (timeout or cancellation), and 400 for validation errors.
 func ValidateRequestContext[T govalid.Validator](next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var body T
@@ -42,7 +44,12 @@ func ValidateRequestContext[T govalid.Validator](next http.HandlerFunc) http.Han
 		}
 
 		if err := body.ValidateContext(r.Context()); err != nil {
-			http.Error(w, "Validation error: "+err.Error(), http.StatusBadRequest)
+			statusCode := http.StatusBadRequest
+			if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
+				statusCode = http.StatusRequestTimeout
+			}
+
+			http.Error(w, "Validation error: "+err.Error(), statusCode)
 
 			return
 		}

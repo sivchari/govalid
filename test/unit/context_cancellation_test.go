@@ -267,7 +267,16 @@ func TestValidateRequestContext(t *testing.T) {
 				cancel()
 				return ctx, cancel
 			},
-			want: http.StatusBadRequest,
+			want: http.StatusRequestTimeout,
+		},
+		"timed out context": {
+			requestBody: testfixture.PersonRequest{Name: "John", Email: "john@example.com"},
+			contextFn: func() (context.Context, context.CancelFunc) {
+				ctx, cancel := context.WithTimeout(t.Context(), 1*time.Nanosecond)
+				time.Sleep(10 * time.Millisecond)
+				return ctx, cancel
+			},
+			want: http.StatusRequestTimeout,
 		},
 	}
 
