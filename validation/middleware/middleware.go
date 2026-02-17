@@ -31,10 +31,10 @@ func ValidateRequest[T govalid.Validator](next http.HandlerFunc) http.HandlerFun
 	}
 }
 
-// ValidateRequestContext returns a middleware that validates the request body using the provided Validator ValidateContext method
+// ValidateRequestContext returns a middleware that validates the request body using the provided ContextValidator ValidateContext method
 // Honors *http.Request provided context.
 // Returns 408 for context errors (timeout or cancellation), and 400 for validation errors.
-func ValidateRequestContext[T govalid.Validator](next http.HandlerFunc) http.HandlerFunc {
+func ValidateRequestContext[T govalid.ContextValidator](next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var body T
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
