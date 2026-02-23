@@ -1,6 +1,7 @@
 package unit
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/sivchari/govalid/test"
@@ -121,7 +122,7 @@ func TestCELValidationNil(t *testing.T) {
 	if err == nil {
 		t.Error("expected error for nil CEL, got nil")
 	}
-	if err.Error() != "input CEL is nil" {
+	if !errors.Is(err, test.ErrNilCEL) {
 		t.Errorf("expected 'input CEL is nil', got %v", err.Error())
 	}
 }
