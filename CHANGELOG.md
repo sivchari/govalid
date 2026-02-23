@@ -1,5 +1,14 @@
 # Changelog
 
+## [v1.8.1](https://github.com/sivchari/govalid/compare/v1.8.0...v1.8.1) - 2026-02-23
+- ci(deps): bump actions/github-script from 7 to 8 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/208
+- docs: improve README readability by @sivchari in https://github.com/sivchari/govalid/pull/210
+- deps(deps): bump golang.org/x/tools from 0.40.0 to 0.41.0 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/213
+- docs: add working example directory by @sivchari in https://github.com/sivchari/govalid/pull/217
+- ci: migrate from Dependabot to Renovate by @sivchari in https://github.com/sivchari/govalid/pull/221
+- Implement context aware validation functions by @egor-denysenko in https://github.com/sivchari/govalid/pull/218
+- test: improve CEL validator coverage by @wafuwafu13 in https://github.com/sivchari/govalid/pull/214
+
 ## [v1.8.0](https://github.com/sivchari/govalid/compare/v1.7.4...v1.8.0) - 2025-12-24
 - feat: add coverage reporting and refactor UUID validator by @sivchari in https://github.com/sivchari/govalid/pull/198
 - fix codecov by @sivchari in https://github.com/sivchari/govalid/pull/200
