@@ -47,32 +47,17 @@ func (u *urlValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	const deprecationNoticeTemplate = `
-		// Deprecated: Use [@ERRVARIABLE]
-		//
-		// [@LEGACYERRVAR] is deprecated and is kept for compatibility purpose.
-		[@LEGACYERRVAR] = [@ERRVARIABLE]
-	`
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the field is not a valid URL.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid URL",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
-	legacyErrVarName := fmt.Sprintf("Err%s%sURLValidation", u.structName, u.FieldName())
-	currentErrVarName := u.ErrVariable()
-
 	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", currentErrVarName,
-		"[@LEGACYERRVAR]", legacyErrVarName,
+		"[@ERRVARIABLE]", u.ErrVariable(),
 		"[@FIELD]", u.FieldName(),
 		"[@PATH]", u.FieldPath().String(),
 		"[@TYPE]", u.ruleName,
 	)
-
-	if currentErrVarName != legacyErrVarName {
-		return replacer.Replace(deprecationNoticeTemplate + errTemplate)
-	}
 
 	return replacer.Replace(errTemplate)
 }

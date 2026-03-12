@@ -46,32 +46,17 @@ func (v *alphaValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	const deprecationNoticeTemplate = `
-		// Deprecated: Use [@ERRVARIABLE]
-		//
-		// [@LEGACYERRVAR] is deprecated and is kept for compatibility purpose.
-		[@LEGACYERRVAR] = [@ERRVARIABLE]
-	`
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when field [@FIELD] is not alphabetic.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be alphabetic",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
-	legacyErrVarName := fmt.Sprintf("Err%s%sAlphaValidation", v.structName, v.FieldName())
-	currentErrVarName := v.ErrVariable()
-
 	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", currentErrVarName,
-		"[@LEGACYERRVAR]", legacyErrVarName,
+		"[@ERRVARIABLE]", v.ErrVariable(),
 		"[@FIELD]", v.FieldName(),
 		"[@PATH]", v.FieldPath().String(),
 		"[@TYPE]", v.ruleName,
 	)
-
-	if currentErrVarName != legacyErrVarName {
-		return replacer.Replace(deprecationNoticeTemplate + errTemplate)
-	}
 
 	return replacer.Replace(errTemplate)
 }

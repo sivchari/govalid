@@ -48,33 +48,18 @@ func (m *gtValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	const deprecationNoticeTemplate = `
-		// Deprecated: Use [@ERRVARIABLE]
-		//
-		// [@LEGACYERRVAR] is deprecated and is kept for compatibility purpose.
-		[@LEGACYERRVAR] = [@ERRVARIABLE]
-	`
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the value of the field is less than the [@VALUE].
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be greater than [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
-	legacyErrVarName := fmt.Sprintf("Err%s%sGTValidation", m.structName, m.FieldName())
-	currentErrVarName := m.ErrVariable()
-
 	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", currentErrVarName,
-		"[@LEGACYERRVAR]", legacyErrVarName,
+		"[@ERRVARIABLE]", m.ErrVariable(),
 		"[@FIELD]", m.FieldName(),
 		"[@PATH]", m.FieldPath().String(),
 		"[@VALUE]", m.gtValue,
 		"[@TYPE]", m.ruleName,
 	)
-
-	if currentErrVarName != legacyErrVarName {
-		return replacer.Replace(deprecationNoticeTemplate + errTemplate)
-	}
 
 	return replacer.Replace(errTemplate)
 }

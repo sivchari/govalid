@@ -15,11 +15,6 @@ var (
 	// ErrNilInside is returned when the Inside is nil.
 	ErrNilInside = errors.New("input Inside is nil")
 
-	// Deprecated: Use ErrInsideAXRequiredValidation
-	//
-	// ErrInsideXRequiredValidation is deprecated and is kept for compatibility purpose.
-	ErrInsideXRequiredValidation = ErrInsideAXRequiredValidation
-
 	// ErrInsideAXRequiredValidation is returned when the X is required but not provided.
 	ErrInsideAXRequiredValidation = govaliderrors.ValidationError{Reason: "field X is required", Path: "Inside.A.X", Type: "required"}
 )

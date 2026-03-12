@@ -21,11 +21,6 @@ var (
 	// ErrLTEScoreLTEValidation is the error returned when the value of the field is greater than 10.5.
 	ErrLTEScoreLTEValidation = govaliderrors.ValidationError{Reason: "field Score must be less than or equal to 10.5", Path: "LTE.Score", Type: "lte"}
 
-	// Deprecated: Use ErrLTEStructValueLTEValidation
-	//
-	// ErrLTEValueLTEValidation is deprecated and is kept for compatibility purpose.
-	ErrLTEValueLTEValidation = ErrLTEStructValueLTEValidation
-
 	// ErrLTEStructValueLTEValidation is the error returned when the value of the field is greater than 50.
 	ErrLTEStructValueLTEValidation = govaliderrors.ValidationError{Reason: "field Value must be less than or equal to 50", Path: "LTE.Struct.Value", Type: "lte"}
 )

@@ -20,11 +20,6 @@ var (
 	// ErrMinLengthStringMinLengthValidation is the error returned when the length of the field is less than the minimum of 5.
 	ErrMinLengthStringMinLengthValidation = govaliderrors.ValidationError{Reason: "field String must have a minimum length of 5", Path: "MinLength.String", Type: "minlength"}
 
-	// Deprecated: Use ErrMinLengthStructNameMinLengthValidation
-	//
-	// ErrMinLengthNameMinLengthValidation is deprecated and is kept for compatibility purpose.
-	ErrMinLengthNameMinLengthValidation = ErrMinLengthStructNameMinLengthValidation
-
 	// ErrMinLengthStructNameMinLengthValidation is the error returned when the length of the field is less than the minimum of 3.
 	ErrMinLengthStructNameMinLengthValidation = govaliderrors.ValidationError{Reason: "field Name must have a minimum length of 3", Path: "MinLength.Struct.Name", Type: "minlength"}
 )

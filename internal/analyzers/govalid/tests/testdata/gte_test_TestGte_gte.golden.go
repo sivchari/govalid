@@ -21,11 +21,6 @@ var (
 	// ErrGTEScoreGTEValidation is the error returned when the value of the field is less than 0.
 	ErrGTEScoreGTEValidation = govaliderrors.ValidationError{Reason: "field Score must be greater than or equal to 0", Path: "GTE.Score", Type: "gte"}
 
-	// Deprecated: Use ErrGTEStructValueGTEValidation
-	//
-	// ErrGTEValueGTEValidation is deprecated and is kept for compatibility purpose.
-	ErrGTEValueGTEValidation = ErrGTEStructValueGTEValidation
-
 	// ErrGTEStructValueGTEValidation is the error returned when the value of the field is less than 100.
 	ErrGTEStructValueGTEValidation = govaliderrors.ValidationError{Reason: "field Value must be greater than or equal to 100", Path: "GTE.Struct.Value", Type: "gte"}
 )

@@ -27,11 +27,6 @@ var (
 	// ErrMinItemsChanFieldMinItemsValidation is the error returned when the length of the field is less than the minimum of 2.
 	ErrMinItemsChanFieldMinItemsValidation = govaliderrors.ValidationError{Reason: "field ChanField must have a minimum of 2 items", Path: "MinItems.ChanField", Type: "minitems"}
 
-	// Deprecated: Use ErrMinItemsStructItemsMinItemsValidation
-	//
-	// ErrMinItemsItemsMinItemsValidation is deprecated and is kept for compatibility purpose.
-	ErrMinItemsItemsMinItemsValidation = ErrMinItemsStructItemsMinItemsValidation
-
 	// ErrMinItemsStructItemsMinItemsValidation is the error returned when the length of the field is less than the minimum of 1.
 	ErrMinItemsStructItemsMinItemsValidation = govaliderrors.ValidationError{Reason: "field Items must have a minimum of 1 items", Path: "MinItems.Struct.Items", Type: "minitems"}
 )

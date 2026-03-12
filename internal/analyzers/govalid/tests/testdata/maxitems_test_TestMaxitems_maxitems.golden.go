@@ -27,11 +27,6 @@ var (
 	// ErrMaxItemsChanFieldMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 2.
 	ErrMaxItemsChanFieldMaxItemsValidation = govaliderrors.ValidationError{Reason: "field ChanField must have a maximum of 2 items", Path: "MaxItems.ChanField", Type: "maxitems"}
 
-	// Deprecated: Use ErrMaxItemsStructItemsMaxItemsValidation
-	//
-	// ErrMaxItemsItemsMaxItemsValidation is deprecated and is kept for compatibility purpose.
-	ErrMaxItemsItemsMaxItemsValidation = ErrMaxItemsStructItemsMaxItemsValidation
-
 	// ErrMaxItemsStructItemsMaxItemsValidation is the error returned when the length of the field exceeds the maximum of 2.
 	ErrMaxItemsStructItemsMaxItemsValidation = govaliderrors.ValidationError{Reason: "field Items must have a maximum of 2 items", Path: "MaxItems.Struct.Items", Type: "maxitems"}
 )

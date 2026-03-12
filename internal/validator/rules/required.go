@@ -66,32 +66,17 @@ func (r *requiredValidator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	const deprecationNoticeTemplate = `
-		// Deprecated: Use [@ERRVARIABLE]
-		//
-		// [@LEGACYERRVAR] is deprecated and is kept for compatibility purpose.
-		[@LEGACYERRVAR] = [@ERRVARIABLE]
-	`
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is returned when the [@FIELD] is required but not provided.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] is required",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
-	legacyErrVarName := fmt.Sprintf("Err%s%sRequiredValidation", r.structName, r.FieldName())
-	currentErrVarName := r.ErrVariable()
-
 	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", currentErrVarName,
-		"[@LEGACYERRVAR]", legacyErrVarName,
+		"[@ERRVARIABLE]", r.ErrVariable(),
 		"[@FIELD]", r.FieldName(),
 		"[@PATH]", r.FieldPath().String(),
 		"[@TYPE]", r.ruleName,
 	)
-
-	if currentErrVarName != legacyErrVarName {
-		return replacer.Replace(deprecationNoticeTemplate + errTemplate)
-	}
 
 	return replacer.Replace(errTemplate)
 }

@@ -48,32 +48,17 @@ func (v *ipv4Validator) Err() string {
 
 	validator.GeneratorMemory[key] = true
 
-	const deprecationNoticeTemplate = `
-		// Deprecated: Use [@ERRVARIABLE]
-		//
-		// [@LEGACYERRVAR] is deprecated and is kept for compatibility purpose.
-		[@LEGACYERRVAR] = [@ERRVARIABLE]
-  `
-
 	const errTemplate = `
 	  // [@ERRVARIABLE] is returned when the [@FIELD] fails ipv4 validation.
 	  [@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] failed ipv4 validation",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
-	legacyErrVarName := fmt.Sprintf("Err%s%sIpv4Validation", v.structName, v.FieldName())
-	currentErrVarName := v.ErrVariable()
-
 	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", currentErrVarName,
-		"[@LEGACYERRVAR]", legacyErrVarName,
+		"[@ERRVARIABLE]", v.ErrVariable(),
 		"[@FIELD]", v.FieldName(),
 		"[@PATH]", v.FieldPath().String(),
 		"[@TYPE]", v.ruleName,
 	)
-
-	if currentErrVarName != legacyErrVarName {
-		return replacer.Replace(deprecationNoticeTemplate + errTemplate)
-	}
 
 	return replacer.Replace(errTemplate)
 }

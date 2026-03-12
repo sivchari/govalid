@@ -60,11 +60,6 @@ var (
 	// ErrGTComplex128GTValidation is the error returned when the value of the field is less than the 1.
 	ErrGTComplex128GTValidation = govaliderrors.ValidationError{Reason: "field Complex128 must be greater than 1", Path: "GT.Complex128", Type: "gt"}
 
-	// Deprecated: Use ErrGTStructIntGTValidation
-	//
-	// ErrGTIntGTValidation is deprecated and is kept for compatibility purpose.
-	ErrGTIntGTValidation = ErrGTStructIntGTValidation
-
 	// ErrGTStructIntGTValidation is the error returned when the value of the field is less than the 1.
 	ErrGTStructIntGTValidation = govaliderrors.ValidationError{Reason: "field Int must be greater than 1", Path: "GT.Struct.Int", Type: "gt"}
 )
