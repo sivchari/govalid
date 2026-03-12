@@ -32,6 +32,6 @@ docs/resources/
 
 # Code coverage HTML report
 root-coverage.html
-test/test-coverage.html
+test/*coverage.html
 
 /govalid
