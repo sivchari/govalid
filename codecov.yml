@@ -11,7 +11,7 @@ coverage:
 ignore:
   - "cmd/**"
   - "internal/**"
-  - "validation/**"
+  - "validation/validationhelper/cel.go"
 
 comment:
   layout: "reach,diff,flags,files"
