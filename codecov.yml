@@ -2,7 +2,7 @@ coverage:
   status:
     project:
       default:
-        target: 60%
+        target: 80%
         threshold: 3%
     patch:
       default:
@@ -10,7 +10,6 @@ coverage:
 
 ignore:
   - "cmd/**"
-  - "internal/**"
 
 comment:
   layout: "reach,diff,flags,files"
