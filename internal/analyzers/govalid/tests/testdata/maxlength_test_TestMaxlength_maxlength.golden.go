@@ -20,11 +20,6 @@ var (
 	// ErrMaxLengthStringMaxLengthValidation is the error returned when the length of the field exceeds the maximum of 10.
 	ErrMaxLengthStringMaxLengthValidation = govaliderrors.ValidationError{Reason: "field String must have a maximum length of 10", Path: "MaxLength.String", Type: "maxlength"}
 
-	// Deprecated: Use ErrMaxLengthStructNameMaxLengthValidation
-	//
-	// ErrMaxLengthNameMaxLengthValidation is deprecated and is kept for compatibility purpose.
-	ErrMaxLengthNameMaxLengthValidation = ErrMaxLengthStructNameMaxLengthValidation
-
 	// ErrMaxLengthStructNameMaxLengthValidation is the error returned when the length of the field exceeds the maximum of 20.
 	ErrMaxLengthStructNameMaxLengthValidation = govaliderrors.ValidationError{Reason: "field Name must have a maximum length of 20", Path: "MaxLength.Struct.Name", Type: "maxlength"}
 )

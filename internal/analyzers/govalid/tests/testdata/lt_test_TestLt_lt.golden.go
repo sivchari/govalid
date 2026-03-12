@@ -60,11 +60,6 @@ var (
 	// ErrLTComplex128LTValidation is the error returned when the value of the field is greater than the 1.
 	ErrLTComplex128LTValidation = govaliderrors.ValidationError{Reason: "field Complex128 must be less than 1", Path: "LT.Complex128", Type: "lt"}
 
-	// Deprecated: Use ErrLTStructIntLTValidation
-	//
-	// ErrLTIntLTValidation is deprecated and is kept for compatibility purpose.
-	ErrLTIntLTValidation = ErrLTStructIntLTValidation
-
 	// ErrLTStructIntLTValidation is the error returned when the value of the field is greater than the 1.
 	ErrLTStructIntLTValidation = govaliderrors.ValidationError{Reason: "field Int must be less than 1", Path: "LT.Struct.Int", Type: "lt"}
 )

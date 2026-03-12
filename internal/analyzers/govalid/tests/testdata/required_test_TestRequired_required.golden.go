@@ -42,26 +42,11 @@ var (
 	// ErrRequiredEntireRequiredStructNameRequiredValidation is returned when the EntireRequiredStructName is required but not provided.
 	ErrRequiredEntireRequiredStructNameRequiredValidation = govaliderrors.ValidationError{Reason: "field EntireRequiredStructName is required", Path: "Required.EntireRequiredStructName", Type: "required"}
 
-	// Deprecated: Use ErrRequiredPartialStructPartialStructStringRequiredValidation
-	//
-	// ErrRequiredPartialStructStringRequiredValidation is deprecated and is kept for compatibility purpose.
-	ErrRequiredPartialStructStringRequiredValidation = ErrRequiredPartialStructPartialStructStringRequiredValidation
-
 	// ErrRequiredPartialStructPartialStructStringRequiredValidation is returned when the PartialStructString is required but not provided.
 	ErrRequiredPartialStructPartialStructStringRequiredValidation = govaliderrors.ValidationError{Reason: "field PartialStructString is required", Path: "Required.PartialStruct.PartialStructString", Type: "required"}
 
-	// Deprecated: Use ErrRequiredNestedStructNested2StringRequiredValidation
-	//
-	// ErrRequiredNested2StringRequiredValidation is deprecated and is kept for compatibility purpose.
-	ErrRequiredNested2StringRequiredValidation = ErrRequiredNestedStructNested2StringRequiredValidation
-
 	// ErrRequiredNestedStructNested2StringRequiredValidation is returned when the Nested2String is required but not provided.
 	ErrRequiredNestedStructNested2StringRequiredValidation = govaliderrors.ValidationError{Reason: "field Nested2String is required", Path: "Required.NestedStruct.Nested2String", Type: "required"}
-
-	// Deprecated: Use ErrRequiredOtherNestedStructNested2StringRequiredValidation
-	//
-	// ErrRequiredNested2StringRequiredValidation is deprecated and is kept for compatibility purpose.
-	ErrRequiredNested2StringRequiredValidation = ErrRequiredOtherNestedStructNested2StringRequiredValidation
 
 	// ErrRequiredOtherNestedStructNested2StringRequiredValidation is returned when the Nested2String is required but not provided.
 	ErrRequiredOtherNestedStructNested2StringRequiredValidation = govaliderrors.ValidationError{Reason: "field Nested2String is required", Path: "Required.OtherNestedStruct.Nested2String", Type: "required"}

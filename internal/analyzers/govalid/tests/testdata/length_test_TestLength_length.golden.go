@@ -20,11 +20,6 @@ var (
 	// ErrLengthStringLengthValidation is the error returned when the length of the field is not exactly 7.
 	ErrLengthStringLengthValidation = govaliderrors.ValidationError{Reason: "field String length must be exactly 7", Path: "Length.String", Type: "length"}
 
-	// Deprecated: Use ErrLengthStructNameLengthValidation
-	//
-	// ErrLengthNameLengthValidation is deprecated and is kept for compatibility purpose.
-	ErrLengthNameLengthValidation = ErrLengthStructNameLengthValidation
-
 	// ErrLengthStructNameLengthValidation is the error returned when the length of the field is not exactly 10.
 	ErrLengthStructNameLengthValidation = govaliderrors.ValidationError{Reason: "field Name length must be exactly 10", Path: "Length.Struct.Name", Type: "length"}
 )

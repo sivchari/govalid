@@ -67,33 +67,18 @@ func (e *enumValidator) Err() string {
 
 	enumList := strings.Join(e.enumValues, ", ")
 
-	const deprecationNoticeTemplate = `
-		// Deprecated: Use [@ERRVARIABLE]
-		//
-		// [@LEGACYERRVAR] is deprecated and is kept for compatibility purpose.
-		[@LEGACYERRVAR] = [@ERRVARIABLE]
-	`
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the value is not in the allowed enum values [@ENUM_LIST].
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be one of [@ENUM_LIST]",Path:"[@PATH]",Type:"[@TYPE]"}
 	`
 
-	legacyErrVarName := fmt.Sprintf("Err%s%sEnumValidation", e.structName, e.FieldName())
-	currentErrVarName := e.ErrVariable()
-
 	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", currentErrVarName,
-		"[@LEGACYERRVAR]", legacyErrVarName,
+		"[@ERRVARIABLE]", e.ErrVariable(),
 		"[@FIELD]", e.FieldName(),
 		"[@PATH]", e.FieldPath().String(),
 		"[@ENUM_LIST]", enumList,
 		"[@TYPE]", e.ruleName,
 	)
-
-	if currentErrVarName != legacyErrVarName {
-		return replacer.Replace(deprecationNoticeTemplate + errTemplate)
-	}
 
 	return replacer.Replace(errTemplate)
 }
