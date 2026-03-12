@@ -65,16 +65,17 @@ test: ## Run all tests
 
 .PHONY: test-coverage
 test-coverage: ## Run tests with coverage report
-	@echo "Running tests with coverage..."
-	cd test && go test -race -covermode=atomic -coverprofile=coverage.out -coverpkg=github.com/sivchari/govalid/... ./unit/...
+	@echo "Running root module tests with coverage..."
+	go test -race -coverprofile=root-coverage.out -covermode=atomic ./...
 	@echo ""
-	@echo "Coverage summary:"
-	@cd test && go tool cover -func=coverage.out | tail -1
+	@echo "Running test module tests with coverage..."
+	cd test && go test -race -coverprofile=test-coverage.out -covermode=atomic -coverpkg=github.com/sivchari/govalid/... ./unit/...
 
 .PHONY: coverage-html
 coverage-html: test-coverage ## Generate HTML coverage report
-	cd test && go tool cover -html=coverage.out -o coverage.html
-	@echo "Coverage report generated: test/coverage.html"
+	go tool cover -html=root-coverage.out -o root-coverage.html
+	cd test && go tool cover -html=test-coverage.out -o test-coverage.html
+	@echo "Coverage reports generated: root-coverage.html, test/test-coverage.html"
 
 # Fuzz test targets
 .PHONY: fuzz

@@ -1,9 +1,7 @@
 name: Coverage
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
 
 jobs:
   coverage:
@@ -26,5 +24,5 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
-          files: ./test/coverage.out
+          files: root-coverage.out,test/test-coverage.out
           token: ${{ secrets.CODECOV_TOKEN }}
