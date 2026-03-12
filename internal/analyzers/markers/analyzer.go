@@ -1,9 +1,8 @@
 package markers
 
 import (
-	"fmt"
 	"go/ast"
-	"os"
+	"go/token"
 	"reflect"
 	"strings"
 
@@ -99,8 +98,7 @@ func collectTypeMarkers(pass *analysis.Pass, genDecl *ast.GenDecl, results *mark
 	}
 
 	for _, doc := range genDecl.Doc.List {
-		pos := pass.Fset.Position(doc.Pos())
-		markerContent, ok := parseMarkerComment(doc.Text, pos.Filename, pos.Line)
+		markerContent, ok := parseMarkerComment(pass, doc.Text, doc.Pos())
 
 		if !ok {
 			continue
@@ -152,8 +150,7 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 	}
 
 	for _, doc := range field.Doc.List {
-		pos := pass.Fset.Position(doc.Pos())
-		markerContent, ok := parseMarkerComment(doc.Text, pos.Filename, pos.Line)
+		markerContent, ok := parseMarkerComment(pass, doc.Text, doc.Pos())
 
 		if !ok {
 			continue
@@ -177,17 +174,18 @@ func fieldMarkers(pass *analysis.Pass, field *ast.Field, results *markers) {
 
 // parseMarkerComment parses a comment and extracts the marker content.
 // It supports both old format "// +govalid:" and new format "//govalid:".
+// Old format reports a diagnostic error and is skipped.
 // Returns the marker content (e.g., "govalid:required") and true if valid, or empty string and false if not a marker.
-func parseMarkerComment(text, filename string, line int) (string, bool) {
+func parseMarkerComment(pass *analysis.Pass, text string, pos token.Pos) (string, bool) {
 	// New format: //govalid:xxx (recommended, go doc directive style)
 	if strings.HasPrefix(text, "//govalid:") {
 		return strings.TrimPrefix(text, "//"), true
 	}
-	// Old format: // +govalid:xxx (deprecated, kept for backward compatibility)
+	// Old format: // +govalid:xxx (deprecated, report error and skip)
 	if strings.HasPrefix(text, "// +govalid:") {
-		fmt.Fprintf(os.Stderr, "\033[33mWARNING\033[0m: %s:%d: "+`deprecated marker format "// +govalid:"; use "//govalid:" instead (run 'govalid migrate' to fix)`+"\n", filename, line)
+		pass.Reportf(pos, `deprecated marker format "// +govalid:"; use "//govalid:" instead (run 'govalid migrate' to fix)`)
 
-		return strings.TrimPrefix(text, "// +"), true
+		return "", false
 	}
 
 	return "", false

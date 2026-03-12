@@ -1,26 +1,26 @@
 package b
 
-// Test backward compatibility with old format (// +govalid:)
+// Test that old format (// +govalid:) reports an error diagnostic and is skipped.
 
 type OldFormatMarkers struct {
-	// +govalid:required
-	Required string // want Required:`Identifier: "govalid:required", Expressions: {no expressions}`
+	// +govalid:required // want `deprecated marker format`
+	Required string
 
-	// +govalid:lt=10
-	Min int // want Min:`Identifier: "govalid:lt", Expressions: {govalid:lt: 10}`
+	// +govalid:lt=10 // want `deprecated marker format`
+	Min int
 
-	// +govalid:required
-	// +govalid:lt=10
-	RequiredAndMin string // want RequiredAndMin:`Identifier: "govalid:required", Expressions: {no expressions}` // want RequiredAndMin:`Identifier: "govalid:lt", Expressions: {govalid:lt: 10}`
+	// +govalid:required // want `deprecated marker format`
+	// +govalid:lt=10 // want `deprecated marker format`
+	RequiredAndMin string
 }
 
-// +govalid:required
-type TypeLevelOldFormat struct { // want TypeLevelOldFormat:`Identifier: "govalid:required", Expressions: {no expressions}`
+// +govalid:required // want `deprecated marker format`
+type TypeLevelOldFormat struct {
 	String string
 
-	// +govalid:required
-	RequiredString int // want RequiredString:`Identifier: "govalid:required", Expressions: {no expressions}`
+	// +govalid:required // want `deprecated marker format`
+	RequiredString int
 
-	// +govalid:email
-	Email string // want Email:`Identifier: "govalid:email", Expressions: {no expressions}`
+	// +govalid:email // want `deprecated marker format`
+	Email string
 }
