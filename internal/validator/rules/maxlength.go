@@ -25,8 +25,6 @@ type maxLengthValidator struct {
 
 var _ validator.Validator = (*maxLengthValidator)(nil)
 
-const maxLengthKey = "%s-maxlength"
-
 func (m *maxLengthValidator) Validate() string {
 	return fmt.Sprintf("utf8.RuneCountInString(t.%s) > %s", m.FieldName(), m.maxLengthValue)
 }
@@ -40,14 +38,6 @@ func (m *maxLengthValidator) FieldPath() validator.FieldPath {
 }
 
 func (m *maxLengthValidator) Err() string {
-	key := fmt.Sprintf(maxLengthKey, m.structName+m.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the length of the field exceeds the maximum of [@VALUE].
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a maximum length of [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}

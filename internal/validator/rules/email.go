@@ -23,8 +23,6 @@ type emailValidator struct {
 
 var _ validator.Validator = (*emailValidator)(nil)
 
-const emailKey = "%s-email"
-
 func (e *emailValidator) Validate() string {
 	fieldName := e.FieldName()
 	// Use external helper function for better maintainability
@@ -40,14 +38,6 @@ func (e *emailValidator) FieldPath() validator.FieldPath {
 }
 
 func (e *emailValidator) Err() string {
-	// No need to generate inline function - using external helper
-	key := fmt.Sprintf(emailKey, e.FieldPath().CleanedPath())
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the field is not a valid email address.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid email address",Path:"[@PATH]",Type:"[@TYPE]"}

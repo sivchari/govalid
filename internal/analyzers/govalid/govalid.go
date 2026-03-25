@@ -56,10 +56,11 @@ func newGenerator() (*codegen.Generator, error) {
 
 // TemplateData holds the data for the template used to generate validation code.
 type TemplateData struct {
-	PackageName    string
-	TypeName       string
-	Metadata       []*AnalyzedMetadata
-	ImportPackages map[string]struct{}
+	PackageName     string
+	TypeName        string
+	Metadata        []*AnalyzedMetadata
+	ImportPackages  map[string]struct{}
+	ErrDeclarations []string
 }
 
 // run is the main function that runs the govalid analyzer.
@@ -105,10 +106,11 @@ func (g *generator) run(pass *codegen.Pass) error {
 			}
 
 			tmplData := TemplateData{
-				PackageName:    pass.Pkg.Name(),
-				TypeName:       ts.Name.Name,
-				Metadata:       metadata,
-				ImportPackages: collectImportPackages(metadata),
+				PackageName:     pass.Pkg.Name(),
+				TypeName:        ts.Name.Name,
+				Metadata:        metadata,
+				ImportPackages:  collectImportPackages(metadata),
+				ErrDeclarations: collectErrDeclarations(metadata),
 			}
 
 			data, ok := tmplList[ts.Name.Name]
@@ -116,7 +118,7 @@ func (g *generator) run(pass *codegen.Pass) error {
 				data.Metadata = append(data.Metadata, tmplData.Metadata...)
 			}
 
-			if err := writeFile(pass, ts, tmplData); err != nil {
+			if err := writeFile(pass, ts, &tmplData); err != nil {
 				panic(fmt.Sprintf("failed to write file for %s: %v", ts.Name.Name, err))
 			}
 		}
@@ -278,7 +280,36 @@ func collectImportPackages(metadata []*AnalyzedMetadata) map[string]struct{} {
 	return packages
 }
 
-func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) error {
+// collectErrDeclarations deduplicates error declarations from all validators.
+func collectErrDeclarations(metadata []*AnalyzedMetadata) []string {
+	seen := make(map[string]struct{})
+
+	var declarations []string
+
+	for _, meta := range metadata {
+		for _, v := range meta.Validators {
+			if v.Validate() == "" {
+				continue
+			}
+
+			errVar := v.ErrVariable()
+			if _, ok := seen[errVar]; ok {
+				continue
+			}
+
+			seen[errVar] = struct{}{}
+
+			errDecl := v.Err()
+			if errDecl != "" {
+				declarations = append(declarations, errDecl)
+			}
+		}
+	}
+
+	return declarations
+}
+
+func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData *TemplateData) error {
 	t, err := template.New("validator").Funcs(template.FuncMap{
 		"trimDots": func(s string) string {
 			return strings.ReplaceAll(s, ".", "")

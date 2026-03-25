@@ -28,8 +28,6 @@ type enumValidator struct {
 
 var _ validator.Validator = (*enumValidator)(nil)
 
-const enumKey = "%s-enum"
-
 func (e *enumValidator) Validate() string {
 	fieldName := e.FieldName()
 
@@ -57,14 +55,6 @@ func (e *enumValidator) FieldPath() validator.FieldPath {
 }
 
 func (e *enumValidator) Err() string {
-	key := fmt.Sprintf(enumKey, e.structName+e.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	enumList := strings.Join(e.enumValues, ", ")
 
 	const errTemplate = `

@@ -25,8 +25,6 @@ type ipv6Validator struct {
 
 var _ validator.Validator = (*ipv6Validator)(nil)
 
-const ipv6Key = "%s-ipv6"
-
 func (v *ipv6Validator) Validate() string {
 	return fmt.Sprintf("ip := net.ParseIP(t.%s); ip == nil || ip.To4() != nil", v.FieldName())
 }
@@ -40,14 +38,6 @@ func (v *ipv6Validator) FieldPath() validator.FieldPath {
 }
 
 func (v *ipv6Validator) Err() string {
-	key := fmt.Sprintf(ipv6Key, v.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 	  // [@ERRVARIABLE] is returned when the [@FIELD] fails ipv6 validation.
 	  [@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] failed ipv6 validation",Path:"[@PATH]",Type:"[@TYPE]"}

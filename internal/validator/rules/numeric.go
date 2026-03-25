@@ -23,8 +23,6 @@ type numericValidator struct {
 
 var _ validator.Validator = (*numericValidator)(nil)
 
-const numericKey = "%s-numeric"
-
 func (m *numericValidator) Validate() string {
 	return fmt.Sprintf("!validationhelper.IsNumeric(t.%s)", m.FieldName())
 }
@@ -38,13 +36,6 @@ func (m *numericValidator) FieldPath() validator.FieldPath {
 }
 
 func (m *numericValidator) Err() string {
-	key := fmt.Sprintf(numericKey, m.structName+m.FieldPath().CleanedPath())
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the field [@FIELD] is not numeric.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be numeric",Path:"[@PATH]",Type:"[@TYPE]"}

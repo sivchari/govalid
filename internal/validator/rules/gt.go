@@ -25,8 +25,6 @@ type gtValidator struct {
 
 var _ validator.Validator = (*gtValidator)(nil)
 
-const gtKey = "%s-gt"
-
 func (m *gtValidator) Validate() string {
 	return fmt.Sprintf("!(t.%s > %s)", m.FieldName(), m.gtValue)
 }
@@ -40,14 +38,6 @@ func (m *gtValidator) FieldPath() validator.FieldPath {
 }
 
 func (m *gtValidator) Err() string {
-	key := fmt.Sprintf(gtKey, m.structName+m.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the value of the field is less than the [@VALUE].
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be greater than [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}

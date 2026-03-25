@@ -25,8 +25,6 @@ type ipv4Validator struct {
 
 var _ validator.Validator = (*ipv4Validator)(nil)
 
-const ipv4Key = "%s-ipv4"
-
 func (v *ipv4Validator) Validate() string {
 	return fmt.Sprintf("ip := net.ParseIP(t.%s); ip == nil || ip.To4() == nil", v.FieldName())
 }
@@ -40,14 +38,6 @@ func (v *ipv4Validator) FieldPath() validator.FieldPath {
 }
 
 func (v *ipv4Validator) Err() string {
-	key := fmt.Sprintf(ipv4Key, v.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 	  // [@ERRVARIABLE] is returned when the [@FIELD] fails ipv4 validation.
 	  [@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] failed ipv4 validation",Path:"[@PATH]",Type:"[@TYPE]"}

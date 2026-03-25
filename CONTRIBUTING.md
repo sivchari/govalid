@@ -74,8 +74,6 @@ type phonenumberValidator struct {
 
 var _ validator.Validator = (*phonenumberValidator)(nil)
 
-const phonenumberKey = "%s-phonenumber"
-
 func (v *phonenumberValidator) Validate() string {
     // Implement your validation logic
     // Return a Go expression that evaluates to true when validation FAILS
@@ -87,13 +85,6 @@ func (v *phonenumberValidator) FieldName() string {
 }
 
 func (v *phonenumberValidator) Err() string {
-    key := fmt.Sprintf(phonenumberKey, v.structName+v.FieldName())
-    if validator.GeneratorMemory[key] {
-        return ""
-    }
-
-    validator.GeneratorMemory[key] = true
-
 	  const errTemplate = `
 	  	// [@ERRVARIABLE] is returned when the [@FIELD] fails phonenumber validation.
 	  	[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@PATH] must be a valid phone number",Path:"[@PATH]"}
@@ -127,8 +118,6 @@ func ValidatePhonenumber(pass *codegen.Pass, field *ast.Field, expressions map[s
     if !ok || basic.Kind() != types.String {
         return nil
     }
-
-    validator.GeneratorMemory[fmt.Sprintf(phonenumberKey, structName+field.Names[0].Name)] = false
 
     // Parse pattern from expressions, default to international format
     pattern := `^\+?[1-9]\d{1,14}$`

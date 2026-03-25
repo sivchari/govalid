@@ -23,8 +23,6 @@ type uuidValidator struct {
 
 var _ validator.Validator = (*uuidValidator)(nil)
 
-const uuidKey = "%s-uuid"
-
 func (u *uuidValidator) Validate() string {
 	fieldName := u.FieldName()
 	// Use validationhelper.IsValidUUID for centralized UUID validation
@@ -40,13 +38,6 @@ func (u *uuidValidator) FieldPath() validator.FieldPath {
 }
 
 func (u *uuidValidator) Err() string {
-	key := fmt.Sprintf(uuidKey, u.structName+u.FieldPath().CleanedPath())
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the field is not a valid UUID.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid UUID",Path:"[@PATH]",Type:"[@TYPE]"}

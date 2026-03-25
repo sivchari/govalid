@@ -22,8 +22,6 @@ type urlValidator struct {
 
 var _ validator.Validator = (*urlValidator)(nil)
 
-const urlKey = "%s-url"
-
 func (u *urlValidator) Validate() string {
 	fieldName := u.FieldName()
 	// Use external helper function for better maintainability
@@ -39,14 +37,6 @@ func (u *urlValidator) FieldPath() validator.FieldPath {
 }
 
 func (u *urlValidator) Err() string {
-	// No need to generate inline function - using external helper
-	key := fmt.Sprintf(urlKey, u.structName+u.FieldPath().CleanedPath())
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the field is not a valid URL.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid URL",Path:"[@PATH]",Type:"[@TYPE]"}
