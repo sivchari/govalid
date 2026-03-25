@@ -24,8 +24,6 @@ type requiredValidator struct {
 
 var _ validator.Validator = (*requiredValidator)(nil)
 
-const requiredKey = "%s-required"
-
 func (r *requiredValidator) Validate() string {
 	typ := r.pass.TypesInfo.TypeOf(r.field.Type)
 
@@ -58,14 +56,6 @@ func (r *requiredValidator) FieldPath() validator.FieldPath {
 }
 
 func (r *requiredValidator) Err() string {
-	key := fmt.Sprintf(requiredKey, r.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is returned when the [@FIELD] is required but not provided.
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] is required",Path:"[@PATH]",Type:"[@TYPE]"}
@@ -91,10 +81,6 @@ func (r *requiredValidator) Imports() []string {
 
 // ValidateRequired creates a new required validator for the given field.
 func ValidateRequired(input registry.ValidatorInput) validator.Validator {
-	fieldName := input.Field.Names[0].Name
-	fieldPath := validator.NewFieldPath(input.StructName, input.ParentPath, fieldName)
-	validator.GeneratorMemory[fmt.Sprintf(requiredKey, fieldPath.CleanedPath())] = false
-
 	return &requiredValidator{
 		pass:       input.Pass,
 		field:      input.Field,

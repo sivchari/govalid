@@ -25,8 +25,6 @@ type maxItemsValidator struct {
 
 var _ validator.Validator = (*maxItemsValidator)(nil)
 
-const maxItemsKey = "%s-maxitems"
-
 func (m *maxItemsValidator) Validate() string {
 	return fmt.Sprintf("len(t.%s) > %s", m.FieldName(), m.maxItemsValue)
 }
@@ -40,14 +38,6 @@ func (m *maxItemsValidator) FieldPath() validator.FieldPath {
 }
 
 func (m *maxItemsValidator) Err() string {
-	key := fmt.Sprintf(maxItemsKey, m.structName+m.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the length of the field exceeds the maximum of [@VALUE].
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a maximum of [@VALUE] items",Path:"[@PATH]",Type:"[@TYPE]"}

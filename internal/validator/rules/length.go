@@ -24,8 +24,6 @@ type lengthValidator struct {
 
 var _ validator.Validator = (*lengthValidator)(nil)
 
-const lengthKey = "%s-length"
-
 func (l *lengthValidator) Validate() string {
 	return fmt.Sprintf("utf8.RuneCountInString(t.%s) != %s", l.FieldName(), l.lengthValue)
 }
@@ -39,14 +37,6 @@ func (l *lengthValidator) FieldPath() validator.FieldPath {
 }
 
 func (l *lengthValidator) Err() string {
-	key := fmt.Sprintf(lengthKey, l.structName+l.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the length of the field is not exactly [@VALUE].
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] length must be exactly [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}

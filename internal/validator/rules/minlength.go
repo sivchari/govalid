@@ -25,8 +25,6 @@ type minLengthValidator struct {
 
 var _ validator.Validator = (*minLengthValidator)(nil)
 
-const minLengthKey = "%s-minlength"
-
 func (m *minLengthValidator) Validate() string {
 	return fmt.Sprintf("utf8.RuneCountInString(t.%s) < %s", m.FieldName(), m.minLengthValue)
 }
@@ -40,14 +38,6 @@ func (m *minLengthValidator) FieldPath() validator.FieldPath {
 }
 
 func (m *minLengthValidator) Err() string {
-	key := fmt.Sprintf(minLengthKey, m.structName+m.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the length of the field is less than the minimum of [@VALUE].
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a minimum length of [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}

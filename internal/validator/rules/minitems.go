@@ -25,8 +25,6 @@ type minItemsValidator struct {
 
 var _ validator.Validator = (*minItemsValidator)(nil)
 
-const minItemsKey = "%s-minitems"
-
 func (m *minItemsValidator) Validate() string {
 	return fmt.Sprintf("len(t.%s) < %s", m.FieldName(), m.minItemsValue)
 }
@@ -40,14 +38,6 @@ func (m *minItemsValidator) FieldPath() validator.FieldPath {
 }
 
 func (m *minItemsValidator) Err() string {
-	key := fmt.Sprintf(minItemsKey, m.structName+m.FieldPath().CleanedPath())
-
-	if validator.GeneratorMemory[key] {
-		return ""
-	}
-
-	validator.GeneratorMemory[key] = true
-
 	const errTemplate = `
 		// [@ERRVARIABLE] is the error returned when the length of the field is less than the minimum of [@VALUE].
 		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a minimum of [@VALUE] items",Path:"[@PATH]",Type:"[@TYPE]"}
