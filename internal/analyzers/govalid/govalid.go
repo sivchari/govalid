@@ -119,7 +119,7 @@ func (g *generator) run(pass *codegen.Pass) error {
 				data.Metadata = append(data.Metadata, tmplData.Metadata...)
 			}
 
-			if err := writeFile(pass, ts, tmplData); err != nil {
+			if err := writeFile(pass, ts, &tmplData); err != nil {
 				panic(fmt.Sprintf("failed to write file for %s: %v", ts.Name.Name, err))
 			}
 		}
@@ -341,7 +341,7 @@ func templateFuncMap() template.FuncMap {
 	}
 }
 
-func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) error {
+func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData *TemplateData) error {
 	t, err := template.New("validator").Funcs(templateFuncMap()).Parse(ValidationTemplate)
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %w", err)

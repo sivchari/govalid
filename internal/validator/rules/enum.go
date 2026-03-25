@@ -42,6 +42,7 @@ func (e *enumValidator) Condition() *validator.Condition {
 
 		conditions = append(conditions, expr.NEq(expr.Field("t", e.FieldName()), lit))
 	}
+
 	return &validator.Condition{
 		Expr: expr.AndAll(conditions...),
 	}
@@ -57,6 +58,7 @@ func (e *enumValidator) FieldPath() validator.FieldPath {
 
 func (e *enumValidator) ErrDecl() validator.ErrDecl {
 	enumList := strings.Join(e.enumValues, ", ")
+
 	return validator.ErrDecl{
 		VarName: "Err" + e.FieldPath().CleanedPath() + "EnumValidation",
 		Comment: fmt.Sprintf("is the error returned when the value is not in the allowed enum values %s.", enumList),

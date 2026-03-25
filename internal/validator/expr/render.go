@@ -13,6 +13,7 @@ import (
 // This is used at the template boundary to embed AST expressions into generated code.
 func Render(e ast.Expr) string {
 	var buf bytes.Buffer
+
 	fset := token.NewFileSet()
 
 	if err := format.Node(&buf, fset, e); err != nil {
@@ -25,6 +26,7 @@ func Render(e ast.Expr) string {
 // RenderStmt converts an ast.Stmt to its Go source code string representation.
 func RenderStmt(s ast.Stmt) string {
 	var buf bytes.Buffer
+
 	fset := token.NewFileSet()
 
 	if err := format.Node(&buf, fset, s); err != nil {

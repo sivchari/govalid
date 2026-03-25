@@ -44,6 +44,7 @@ func (r *requiredValidator) Condition() *validator.Condition {
 	}
 
 	zeroExpr, _ := expr.Parse(zero)
+
 	return &validator.Condition{Expr: expr.Eq(field, zeroExpr)}
 }
 
