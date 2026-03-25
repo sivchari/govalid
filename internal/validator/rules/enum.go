@@ -31,6 +31,7 @@ var _ validator.Validator = (*enumValidator)(nil)
 
 func (e *enumValidator) Condition() *validator.Condition {
 	conditions := make([]ast.Expr, 0, len(e.enumValues))
+
 	for _, value := range e.enumValues {
 		var lit ast.Expr
 		if e.isString || e.isCustom {
@@ -38,6 +39,7 @@ func (e *enumValidator) Condition() *validator.Condition {
 		} else if e.isNumeric {
 			lit = expr.IntLit(value)
 		}
+
 		conditions = append(conditions, expr.NEq(expr.Field("t", e.FieldName()), lit))
 	}
 	return &validator.Condition{

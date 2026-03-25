@@ -276,6 +276,7 @@ func collectImportPackages(metadata []*AnalyzedMetadata) map[string]struct{} {
 			if cond == nil {
 				continue
 			}
+
 			for _, pkg := range cond.Imports {
 				packages[pkg] = struct{}{}
 			}
@@ -288,6 +289,7 @@ func collectImportPackages(metadata []*AnalyzedMetadata) map[string]struct{} {
 // collectErrDeclarations collects deduplicated error declarations from all validators.
 func collectErrDeclarations(metadata []*AnalyzedMetadata) []validator.ErrDecl {
 	seen := make(map[string]struct{})
+
 	var decls []validator.ErrDecl
 
 	for _, meta := range metadata {
@@ -296,11 +298,15 @@ func collectErrDeclarations(metadata []*AnalyzedMetadata) []validator.ErrDecl {
 			if cond == nil {
 				continue
 			}
+
 			errDecl := v.ErrDecl()
+
 			if _, ok := seen[errDecl.VarName]; ok {
 				continue
 			}
+
 			seen[errDecl.VarName] = struct{}{}
+
 			decls = append(decls, errDecl)
 		}
 	}
@@ -308,8 +314,9 @@ func collectErrDeclarations(metadata []*AnalyzedMetadata) []validator.ErrDecl {
 	return decls
 }
 
-func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) error {
-	t, err := template.New("validator").Funcs(template.FuncMap{
+// templateFuncMap returns the template.FuncMap used for generating validation code.
+func templateFuncMap() template.FuncMap {
+	return template.FuncMap{
 		"trimDots": func(s string) string {
 			return strings.ReplaceAll(s, ".", "")
 		},
@@ -321,15 +328,21 @@ func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) erro
 			if cond == nil {
 				return ""
 			}
+
 			if cond.IfInitStmt != nil {
 				return expr.RenderStmt(cond.IfInitStmt) + "; " + expr.Render(cond.Expr)
 			}
+
 			return expr.Render(cond.Expr)
 		},
 		"errVarName": func(v validator.Validator) string {
 			return v.ErrDecl().VarName
 		},
-	}).Parse(ValidationTemplate)
+	}
+}
+
+func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) error {
+	t, err := template.New("validator").Funcs(templateFuncMap()).Parse(ValidationTemplate)
 	if err != nil {
 		return fmt.Errorf("failed to parse template: %w", err)
 	}

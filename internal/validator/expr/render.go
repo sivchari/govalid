@@ -2,6 +2,7 @@ package expr
 
 import (
 	"bytes"
+	"fmt"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -37,5 +38,10 @@ func RenderStmt(s ast.Stmt) string {
 // This is primarily used by the CEL validator to convert its string output to AST,
 // and by the required validator for zero-value expressions.
 func Parse(goExpr string) (ast.Expr, error) {
-	return parser.ParseExpr(goExpr)
+	parsed, err := parser.ParseExpr(goExpr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse Go expression %q: %w", goExpr, err)
+	}
+
+	return parsed, nil
 }

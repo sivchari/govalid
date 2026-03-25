@@ -30,7 +30,6 @@ var _ validator.Validator = (*celValidator)(nil)
 
 const (
 	trueFallback      = "true"
-	placeholderList   = "[]interface{}{}"
 	placeholderStruct = "struct{}{}"
 	ternaryOperator   = "_?_:_"
 )
@@ -39,13 +38,17 @@ func (c *celValidator) Condition() *validator.Condition {
 	goExpr, err := c.convertCELToGo(c.expression, c.FieldName())
 	if err != nil {
 		parsed, _ := expr.Parse(fmt.Sprintf("true /* CEL conversion failed: %v */", err))
+
 		return &validator.Condition{Expr: parsed}
 	}
+
 	parsed, err := expr.Parse(fmt.Sprintf("!(%s)", goExpr))
 	if err != nil {
 		parsed, _ = expr.Parse("true")
+
 		return &validator.Condition{Expr: parsed}
 	}
+
 	return &validator.Condition{
 		Expr:    parsed,
 		Imports: c.collectImports(),
