@@ -2,14 +2,13 @@
 package rules
 
 import (
-	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -23,10 +22,11 @@ type uuidValidator struct {
 
 var _ validator.Validator = (*uuidValidator)(nil)
 
-func (u *uuidValidator) Validate() string {
-	fieldName := u.FieldName()
-	// Use validationhelper.IsValidUUID for centralized UUID validation
-	return fmt.Sprintf("!validationhelper.IsValidUUID(t.%s)", fieldName)
+func (u *uuidValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr:    expr.Not(expr.Call("validationhelper", "IsValidUUID", expr.Field("t", u.FieldName()))),
+		Imports: []string{"github.com/sivchari/govalid/validation/validationhelper"},
+	}
 }
 
 func (u *uuidValidator) FieldName() string {
@@ -37,28 +37,14 @@ func (u *uuidValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(u.structName, u.parentPath, u.FieldName())
 }
 
-func (u *uuidValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the field is not a valid UUID.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid UUID",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", u.ErrVariable(),
-		"[@FIELD]", u.FieldName(),
-		"[@PATH]", u.FieldPath().String(),
-		"[@TYPE]", u.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (u *uuidValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]UUIDValidation", "[@PATH]", u.FieldPath().CleanedPath())
-}
-
-func (u *uuidValidator) Imports() []string {
-	return []string{"github.com/sivchari/govalid/validation/validationhelper"}
+func (u *uuidValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + u.FieldPath().CleanedPath() + "UUIDValidation",
+		Comment: "is the error returned when the field is not a valid UUID.",
+		Reason:  "field " + u.FieldName() + " must be a valid UUID",
+		Path:    u.FieldPath().String(),
+		Type:    u.ruleName,
+	}
 }
 
 // ValidateUUID creates a new uuidValidator for string types.

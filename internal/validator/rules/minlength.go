@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -25,8 +25,14 @@ type minLengthValidator struct {
 
 var _ validator.Validator = (*minLengthValidator)(nil)
 
-func (m *minLengthValidator) Validate() string {
-	return fmt.Sprintf("utf8.RuneCountInString(t.%s) < %s", m.FieldName(), m.minLengthValue)
+func (m *minLengthValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr: expr.LT(
+			expr.Call("utf8", "RuneCountInString", expr.Field("t", m.FieldName())),
+			expr.IntLit(m.minLengthValue),
+		),
+		Imports: []string{"unicode/utf8"},
+	}
 }
 
 func (m *minLengthValidator) FieldName() string {
@@ -37,29 +43,14 @@ func (m *minLengthValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
 }
 
-func (m *minLengthValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the length of the field is less than the minimum of [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a minimum length of [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", m.ErrVariable(),
-		"[@FIELD]", m.FieldName(),
-		"[@PATH]", m.FieldPath().String(),
-		"[@VALUE]", m.minLengthValue,
-		"[@TYPE]", m.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (m *minLengthValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]MinLengthValidation", "[@PATH]", m.FieldPath().CleanedPath())
-}
-
-func (m *minLengthValidator) Imports() []string {
-	return []string{"unicode/utf8"}
+func (m *minLengthValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + m.FieldPath().CleanedPath() + "MinLengthValidation",
+		Comment: fmt.Sprintf("is the error returned when the length of the field is less than the minimum of %s.", m.minLengthValue),
+		Reason:  fmt.Sprintf("field %s must have a minimum length of %s", m.FieldName(), m.minLengthValue),
+		Path:    m.FieldPath().String(),
+		Type:    m.ruleName,
+	}
 }
 
 // ValidateMinLength creates a new minLengthValidator if the field type is string and the minlength marker is present.

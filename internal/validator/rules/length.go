@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -24,8 +24,14 @@ type lengthValidator struct {
 
 var _ validator.Validator = (*lengthValidator)(nil)
 
-func (l *lengthValidator) Validate() string {
-	return fmt.Sprintf("utf8.RuneCountInString(t.%s) != %s", l.FieldName(), l.lengthValue)
+func (l *lengthValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr: expr.NEq(
+			expr.Call("utf8", "RuneCountInString", expr.Field("t", l.FieldName())),
+			expr.IntLit(l.lengthValue),
+		),
+		Imports: []string{"unicode/utf8"},
+	}
 }
 
 func (l *lengthValidator) FieldName() string {
@@ -36,29 +42,14 @@ func (l *lengthValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(l.structName, l.parentPath, l.FieldName())
 }
 
-func (l *lengthValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the length of the field is not exactly [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] length must be exactly [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", l.ErrVariable(),
-		"[@FIELD]", l.FieldName(),
-		"[@PATH]", l.FieldPath().String(),
-		"[@VALUE]", l.lengthValue,
-		"[@TYPE]", l.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (l *lengthValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]LengthValidation", "[@PATH]", l.FieldPath().CleanedPath())
-}
-
-func (l *lengthValidator) Imports() []string {
-	return []string{"unicode/utf8"}
+func (l *lengthValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + l.FieldPath().CleanedPath() + "LengthValidation",
+		Comment: fmt.Sprintf("is the error returned when the length of the field is not exactly %s.", l.lengthValue),
+		Reason:  fmt.Sprintf("field %s length must be exactly %s", l.FieldName(), l.lengthValue),
+		Path:    l.FieldPath().String(),
+		Type:    l.ruleName,
+	}
 }
 
 // ValidateLength creates a new lengthValidator if the field type is string and the length marker is present.

@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -25,8 +25,13 @@ type gtValidator struct {
 
 var _ validator.Validator = (*gtValidator)(nil)
 
-func (m *gtValidator) Validate() string {
-	return fmt.Sprintf("!(t.%s > %s)", m.FieldName(), m.gtValue)
+func (m *gtValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr: expr.Not(expr.Paren(expr.GT(
+			expr.Field("t", m.FieldName()),
+			expr.IntLit(m.gtValue),
+		))),
+	}
 }
 
 func (m *gtValidator) FieldName() string {
@@ -37,29 +42,14 @@ func (m *gtValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
 }
 
-func (m *gtValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the value of the field is less than the [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be greater than [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", m.ErrVariable(),
-		"[@FIELD]", m.FieldName(),
-		"[@PATH]", m.FieldPath().String(),
-		"[@VALUE]", m.gtValue,
-		"[@TYPE]", m.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (m *gtValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]GTValidation", "[@PATH]", m.FieldPath().CleanedPath())
-}
-
-func (m *gtValidator) Imports() []string {
-	return []string{}
+func (m *gtValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + m.FieldPath().CleanedPath() + "GTValidation",
+		Comment: fmt.Sprintf("is the error returned when the value of the field is less than the %s.", m.gtValue),
+		Reason:  fmt.Sprintf("field %s must be greater than %s", m.FieldName(), m.gtValue),
+		Path:    m.FieldPath().String(),
+		Type:    m.ruleName,
+	}
 }
 
 // ValidateGT creates a new gtValidator if the field type is numeric and the max marker is present.

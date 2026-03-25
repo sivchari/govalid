@@ -6,11 +6,11 @@ package rules
 
 import (
 	"go/ast"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -24,10 +24,12 @@ type {{.MarkerName}}Validator struct {
 
 var _ validator.Validator = (*{{.MarkerName}}Validator)(nil)
 
-func (v *{{.MarkerName}}Validator) Validate() string {
+func (v *{{.MarkerName}}Validator) Condition() *validator.Condition {
 	// TODO: Implement validation logic
-	// Return a Go expression that evaluates to true when validation fails
-    return ""
+	// Return a Condition whose Expr evaluates to true when validation fails
+	return &validator.Condition{
+		Expr: expr.Not(expr.Field("t", v.FieldName())),
+	}
 }
 
 func (v *{{.MarkerName}}Validator) FieldName() string {
@@ -38,29 +40,14 @@ func (v *{{.MarkerName}}Validator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(v.structName, v.parentPath, v.FieldName())
 }
 
-func (v *{{.MarkerName}}Validator) Err() string {
-	const errTemplate = `
-	  // [@ERRVARIABLE] is returned when the [@FIELD] fails {{.MarkerName}} validation.
-	  [@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field [@FIELD] failed {{.MarkerName}} validation{{end}}",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", v.ErrVariable(),
-		"[@FIELD]", v.FieldName(),
-		"[@PATH]", v.FieldPath().String(),
-		"[@TYPE]", v.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (v *{{.MarkerName}}Validator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]{{.StructName}}Validation", "[@PATH]", v.FieldPath().CleanedPath())
-}
-
-func (v *{{.MarkerName}}Validator) Imports() []string {
-	// TODO: Add any required imports
-	return []string{}
+func (v *{{.MarkerName}}Validator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + v.FieldPath().CleanedPath() + "{{.StructName}}Validation",
+		Comment: "is returned when the " + v.FieldName() + " fails {{.MarkerName}} validation.",
+		Reason:  "{{if .ErrorMessage}}{{.ErrorMessage}}{{else}}field " + v.FieldName() + " failed {{.MarkerName}} validation{{end}}",
+		Path:    v.FieldPath().String(),
+		Type:    v.ruleName,
+	}
 }
 
 // Validate{{.StructName}} creates a new {{.MarkerName}} validator for the given field.

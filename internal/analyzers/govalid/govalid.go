@@ -22,6 +22,7 @@ import (
 	"github.com/sivchari/govalid/internal/analyzers/markers"
 	govaliderrors "github.com/sivchari/govalid/internal/errors"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -60,7 +61,7 @@ type TemplateData struct {
 	TypeName        string
 	Metadata        []*AnalyzedMetadata
 	ImportPackages  map[string]struct{}
-	ErrDeclarations []string
+	ErrDeclarations []validator.ErrDecl
 }
 
 // run is the main function that runs the govalid analyzer.
@@ -118,7 +119,7 @@ func (g *generator) run(pass *codegen.Pass) error {
 				data.Metadata = append(data.Metadata, tmplData.Metadata...)
 			}
 
-			if err := writeFile(pass, ts, &tmplData); err != nil {
+			if err := writeFile(pass, ts, tmplData); err != nil {
 				panic(fmt.Sprintf("failed to write file for %s: %v", ts.Name.Name, err))
 			}
 		}
@@ -270,8 +271,12 @@ func collectImportPackages(metadata []*AnalyzedMetadata) map[string]struct{} {
 	packages := make(map[string]struct{})
 
 	for _, meta := range metadata {
-		for _, validator := range meta.Validators {
-			for _, pkg := range validator.Imports() {
+		for _, v := range meta.Validators {
+			cond := v.Condition()
+			if cond == nil {
+				continue
+			}
+			for _, pkg := range cond.Imports {
 				packages[pkg] = struct{}{}
 			}
 		}
@@ -280,39 +285,49 @@ func collectImportPackages(metadata []*AnalyzedMetadata) map[string]struct{} {
 	return packages
 }
 
-// collectErrDeclarations deduplicates error declarations from all validators.
-func collectErrDeclarations(metadata []*AnalyzedMetadata) []string {
+// collectErrDeclarations collects deduplicated error declarations from all validators.
+func collectErrDeclarations(metadata []*AnalyzedMetadata) []validator.ErrDecl {
 	seen := make(map[string]struct{})
-
-	var declarations []string
+	var decls []validator.ErrDecl
 
 	for _, meta := range metadata {
 		for _, v := range meta.Validators {
-			if v.Validate() == "" {
+			cond := v.Condition()
+			if cond == nil {
 				continue
 			}
-
-			errVar := v.ErrVariable()
-			if _, ok := seen[errVar]; ok {
+			errDecl := v.ErrDecl()
+			if _, ok := seen[errDecl.VarName]; ok {
 				continue
 			}
-
-			seen[errVar] = struct{}{}
-
-			errDecl := v.Err()
-			if errDecl != "" {
-				declarations = append(declarations, errDecl)
-			}
+			seen[errDecl.VarName] = struct{}{}
+			decls = append(decls, errDecl)
 		}
 	}
 
-	return declarations
+	return decls
 }
 
-func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData *TemplateData) error {
+func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData TemplateData) error {
 	t, err := template.New("validator").Funcs(template.FuncMap{
 		"trimDots": func(s string) string {
 			return strings.ReplaceAll(s, ".", "")
+		},
+		"hasCondition": func(v validator.Validator) bool {
+			return v.Condition() != nil
+		},
+		"renderCondition": func(v validator.Validator) string {
+			cond := v.Condition()
+			if cond == nil {
+				return ""
+			}
+			if cond.IfInitStmt != nil {
+				return expr.RenderStmt(cond.IfInitStmt) + "; " + expr.Render(cond.Expr)
+			}
+			return expr.Render(cond.Expr)
+		},
+		"errVarName": func(v validator.Validator) string {
+			return v.ErrDecl().VarName
 		},
 	}).Parse(ValidationTemplate)
 	if err != nil {
