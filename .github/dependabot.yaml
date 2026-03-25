@@ -1,0 +1,37 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Tokyo"
+    groups:
+      all-github-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  - package-ecosystem: "gomod"
+    directories:
+      - "/"
+      - "/test"
+      - "/tools"
+      - "/example/basic"
+      - "/example/basic-usage"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Tokyo"
+    groups:
+      all-go-mod-patch-and-minor:
+        patterns: ["*"]
+        update-types: ["patch", "minor"]
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "go"
