@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -25,8 +25,13 @@ type maxItemsValidator struct {
 
 var _ validator.Validator = (*maxItemsValidator)(nil)
 
-func (m *maxItemsValidator) Validate() string {
-	return fmt.Sprintf("len(t.%s) > %s", m.FieldName(), m.maxItemsValue)
+func (m *maxItemsValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr: expr.GT(
+			expr.Call("", "len", expr.Field("t", m.FieldName())),
+			expr.IntLit(m.maxItemsValue),
+		),
+	}
 }
 
 func (m *maxItemsValidator) FieldName() string {
@@ -37,29 +42,14 @@ func (m *maxItemsValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
 }
 
-func (m *maxItemsValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the length of the field exceeds the maximum of [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a maximum of [@VALUE] items",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", m.ErrVariable(),
-		"[@FIELD]", m.FieldName(),
-		"[@PATH]", m.FieldPath().String(),
-		"[@VALUE]", m.maxItemsValue,
-		"[@TYPE]", m.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (m *maxItemsValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]MaxItemsValidation", "[@PATH]", m.FieldPath().CleanedPath())
-}
-
-func (m *maxItemsValidator) Imports() []string {
-	return []string{}
+func (m *maxItemsValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + m.FieldPath().CleanedPath() + "MaxItemsValidation",
+		Comment: fmt.Sprintf("is the error returned when the length of the field exceeds the maximum of %s.", m.maxItemsValue),
+		Reason:  fmt.Sprintf("field %s must have a maximum of %s items", m.FieldName(), m.maxItemsValue),
+		Path:    m.FieldPath().String(),
+		Type:    m.ruleName,
+	}
 }
 
 // ValidateMaxItems creates a new maxItemsValidator if the field type supports len() and the maxitems marker is present.

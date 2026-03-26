@@ -1,14 +1,13 @@
 package rules
 
 import (
-	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -22,10 +21,11 @@ type urlValidator struct {
 
 var _ validator.Validator = (*urlValidator)(nil)
 
-func (u *urlValidator) Validate() string {
-	fieldName := u.FieldName()
-	// Use external helper function for better maintainability
-	return fmt.Sprintf("!validationhelper.IsValidURL(t.%s)", fieldName)
+func (u *urlValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr:    expr.Not(expr.Call("validationhelper", "IsValidURL", expr.Field("t", u.FieldName()))),
+		Imports: []string{"github.com/sivchari/govalid/validation/validationhelper"},
+	}
 }
 
 func (u *urlValidator) FieldName() string {
@@ -36,28 +36,14 @@ func (u *urlValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(u.structName, u.parentPath, u.FieldName())
 }
 
-func (u *urlValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the field is not a valid URL.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid URL",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", u.ErrVariable(),
-		"[@FIELD]", u.FieldName(),
-		"[@PATH]", u.FieldPath().String(),
-		"[@TYPE]", u.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (u *urlValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]URLValidation", `[@PATH]`, u.FieldPath().CleanedPath())
-}
-
-func (u *urlValidator) Imports() []string {
-	return []string{"github.com/sivchari/govalid/validation/validationhelper"}
+func (u *urlValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + u.FieldPath().CleanedPath() + "URLValidation",
+		Comment: "is the error returned when the field is not a valid URL.",
+		Reason:  "field " + u.FieldName() + " must be a valid URL",
+		Path:    u.FieldPath().String(),
+		Type:    u.ruleName,
+	}
 }
 
 // ValidateURL creates a new urlValidator for string types.

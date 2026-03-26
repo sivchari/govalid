@@ -13,6 +13,7 @@ import (
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -29,21 +30,29 @@ var _ validator.Validator = (*celValidator)(nil)
 
 const (
 	trueFallback      = "true"
-	placeholderList   = "[]interface{}{}"
 	placeholderStruct = "struct{}{}"
 	ternaryOperator   = "_?_:_"
 )
 
-func (c *celValidator) Validate() string {
-	fieldName := c.FieldName()
-	// Convert CEL expression to Go expression at generation time
-	goExpr, err := c.convertCELToGo(c.expression, fieldName)
+func (c *celValidator) Condition() *validator.Condition {
+	goExpr, err := c.convertCELToGo(c.expression, c.FieldName())
 	if err != nil {
-		// Fallback to comment if conversion fails
-		return fmt.Sprintf("true /* CEL conversion failed: %v */", err)
+		parsed, _ := expr.Parse(fmt.Sprintf("true /* CEL conversion failed: %v */", err))
+
+		return &validator.Condition{Expr: parsed}
 	}
-	// Return the converted Go expression wrapped in negation for validation
-	return fmt.Sprintf("!(%s)", goExpr)
+
+	parsed, err := expr.Parse(fmt.Sprintf("!(%s)", goExpr))
+	if err != nil {
+		parsed, _ = expr.Parse("true")
+
+		return &validator.Condition{Expr: parsed}
+	}
+
+	return &validator.Condition{
+		Expr:    parsed,
+		Imports: c.collectImports(),
+	}
 }
 
 func (c *celValidator) FieldName() string {
@@ -54,28 +63,17 @@ func (c *celValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(c.structName, c.parentPath, c.FieldName())
 }
 
-func (c *celValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the CEL expression evaluation fails.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] failed CEL validation: [@EXPRESSION]",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", c.ErrVariable(),
-		"[@FIELD]", c.FieldName(),
-		"[@PATH]", c.FieldPath().String(),
-		"[@EXPRESSION]", c.expression,
-		"[@TYPE]", c.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
+func (c *celValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + c.FieldPath().CleanedPath() + "CELValidation",
+		Comment: "is the error returned when the CEL expression evaluation fails.",
+		Reason:  fmt.Sprintf("field %s failed CEL validation: %s", c.FieldName(), c.expression),
+		Path:    c.FieldPath().String(),
+		Type:    c.ruleName,
+	}
 }
 
-func (c *celValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]CELValidation", "[@PATH]", c.FieldPath().CleanedPath())
-}
-
-func (c *celValidator) Imports() []string {
+func (c *celValidator) collectImports() []string {
 	imports := []string{}
 
 	// Add imports based on the CEL expression content
@@ -183,22 +181,22 @@ func (c *celValidator) convertCELToGo(celExpr, fieldName string) (string, error)
 }
 
 // convertASTToGo recursively converts CEL AST nodes to Go expression strings.
-func (c *celValidator) convertASTToGo(expr *exprpb.Expr, fieldName string) string {
-	switch expr.ExprKind.(type) {
+func (c *celValidator) convertASTToGo(e *exprpb.Expr, fieldName string) string {
+	switch e.ExprKind.(type) {
 	case *exprpb.Expr_IdentExpr:
-		return c.convertIdentExpr(expr.GetIdentExpr(), fieldName)
+		return c.convertIdentExpr(e.GetIdentExpr(), fieldName)
 	case *exprpb.Expr_SelectExpr:
-		return c.convertSelectExpr(expr.GetSelectExpr(), fieldName)
+		return c.convertSelectExpr(e.GetSelectExpr(), fieldName)
 	case *exprpb.Expr_CallExpr:
-		return c.convertCallToGo(expr.GetCallExpr(), fieldName)
+		return c.convertCallToGo(e.GetCallExpr(), fieldName)
 	case *exprpb.Expr_ConstExpr:
-		return c.convertConstToGo(expr.GetConstExpr())
+		return c.convertConstToGo(e.GetConstExpr())
 	case *exprpb.Expr_ListExpr:
-		return c.convertListExpr(expr.GetListExpr(), fieldName)
+		return c.convertListExpr(e.GetListExpr(), fieldName)
 	case *exprpb.Expr_StructExpr:
 		return placeholderStruct // placeholder
 	case *exprpb.Expr_ComprehensionExpr:
-		return c.convertComprehensionExpr(expr.GetComprehensionExpr(), fieldName)
+		return c.convertComprehensionExpr(e.GetComprehensionExpr(), fieldName)
 	default:
 		return trueFallback // fallback
 	}

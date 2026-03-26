@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -25,8 +25,13 @@ type minItemsValidator struct {
 
 var _ validator.Validator = (*minItemsValidator)(nil)
 
-func (m *minItemsValidator) Validate() string {
-	return fmt.Sprintf("len(t.%s) < %s", m.FieldName(), m.minItemsValue)
+func (m *minItemsValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr: expr.LT(
+			expr.Call("", "len", expr.Field("t", m.FieldName())),
+			expr.IntLit(m.minItemsValue),
+		),
+	}
 }
 
 func (m *minItemsValidator) FieldName() string {
@@ -37,29 +42,14 @@ func (m *minItemsValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
 }
 
-func (m *minItemsValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the length of the field is less than the minimum of [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a minimum of [@VALUE] items",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", m.ErrVariable(),
-		"[@FIELD]", m.FieldName(),
-		"[@PATH]", m.FieldPath().String(),
-		"[@VALUE]", m.minItemsValue,
-		"[@TYPE]", m.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (m *minItemsValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]MinItemsValidation", "[@PATH]", m.FieldPath().CleanedPath())
-}
-
-func (m *minItemsValidator) Imports() []string {
-	return []string{}
+func (m *minItemsValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + m.FieldPath().CleanedPath() + "MinItemsValidation",
+		Comment: fmt.Sprintf("is the error returned when the length of the field is less than the minimum of %s.", m.minItemsValue),
+		Reason:  fmt.Sprintf("field %s must have a minimum of %s items", m.FieldName(), m.minItemsValue),
+		Path:    m.FieldPath().String(),
+		Type:    m.ruleName,
+	}
 }
 
 // ValidateMinItems creates a new minItemsValidator if the field type supports len() and the minitems marker is present.

@@ -20,7 +20,9 @@ var (
 	// ErrNil{{.TypeName}} is returned when the {{.TypeName}} is nil.
 	ErrNil{{.TypeName}} = errors.New("input {{.TypeName}} is nil")
 {{- range .ErrDeclarations }}
-		{{ . }}
+
+	// {{ .VarName }} {{ .Comment }}
+	{{ .VarName }} = govaliderrors.ValidationError{Reason:"{{ .Reason }}",Path:"{{ .Path }}",Type:"{{ .Type }}"}
 {{- end }}
 )
 
@@ -54,9 +56,9 @@ func Validate{{.TypeName}}Context(ctx context.Context, t *{{.TypeName}}) error {
 		{{ end -}}
 
 		{{ range .Validators }}
-			{{ if ne .Validate "" }}
-				if {{.Validate}} {
-  			  		err := {{.ErrVariable}}
+			{{ if hasCondition . }}
+				if {{ renderCondition . }} {
+  			  		err := {{ errVarName . }}
   			  		err.Value = t.{{.FieldName}}
   			  		errs = append(errs, err)
 				}

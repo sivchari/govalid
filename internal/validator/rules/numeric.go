@@ -2,14 +2,13 @@
 package rules
 
 import (
-	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -23,8 +22,11 @@ type numericValidator struct {
 
 var _ validator.Validator = (*numericValidator)(nil)
 
-func (m *numericValidator) Validate() string {
-	return fmt.Sprintf("!validationhelper.IsNumeric(t.%s)", m.FieldName())
+func (m *numericValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr:    expr.Not(expr.Call("validationhelper", "IsNumeric", expr.Field("t", m.FieldName()))),
+		Imports: []string{"github.com/sivchari/govalid/validation/validationhelper"},
+	}
 }
 
 func (m *numericValidator) FieldName() string {
@@ -35,29 +37,13 @@ func (m *numericValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
 }
 
-func (m *numericValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the field [@FIELD] is not numeric.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be numeric",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", m.ErrVariable(),
-		"[@FIELD]", m.FieldName(),
-		"[@PATH]", m.FieldPath().String(),
-		"[@TYPE]", m.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (m *numericValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]NumericValidation", "[@PATH]", m.FieldPath().CleanedPath())
-}
-
-func (m *numericValidator) Imports() []string {
-	return []string{
-		"github.com/sivchari/govalid/validation/validationhelper",
+func (m *numericValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + m.FieldPath().CleanedPath() + "NumericValidation",
+		Comment: "is the error returned when the field " + m.FieldName() + " is not numeric.",
+		Reason:  "field " + m.FieldName() + " must be numeric",
+		Path:    m.FieldPath().String(),
+		Type:    m.ruleName,
 	}
 }
 

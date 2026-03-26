@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -25,8 +25,13 @@ type lteValidator struct {
 
 var _ validator.Validator = (*lteValidator)(nil)
 
-func (m *lteValidator) Validate() string {
-	return fmt.Sprintf("!(t.%s <= %s)", m.FieldName(), m.lteValue)
+func (m *lteValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr: expr.Not(expr.Paren(expr.LTE(
+			expr.Field("t", m.FieldName()),
+			expr.IntLit(m.lteValue),
+		))),
+	}
 }
 
 func (m *lteValidator) FieldName() string {
@@ -37,29 +42,14 @@ func (m *lteValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
 }
 
-func (m *lteValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the value of the field is greater than [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be less than or equal to [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", m.ErrVariable(),
-		"[@FIELD]", m.FieldName(),
-		"[@PATH]", m.FieldPath().String(),
-		"[@VALUE]", m.lteValue,
-		"[@TYPE]", m.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (m *lteValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]LTEValidation", "[@PATH]", m.FieldPath().CleanedPath())
-}
-
-func (m *lteValidator) Imports() []string {
-	return []string{}
+func (m *lteValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + m.FieldPath().CleanedPath() + "LTEValidation",
+		Comment: fmt.Sprintf("is the error returned when the value of the field is greater than %s.", m.lteValue),
+		Reason:  fmt.Sprintf("field %s must be less than or equal to %s", m.FieldName(), m.lteValue),
+		Path:    m.FieldPath().String(),
+		Type:    m.ruleName,
+	}
 }
 
 // ValidateLTE creates a new lteValidator if the field type is numeric and the lte marker is present.

@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -25,8 +25,13 @@ type ltValidator struct {
 
 var _ validator.Validator = (*ltValidator)(nil)
 
-func (m *ltValidator) Validate() string {
-	return fmt.Sprintf("!(t.%s < %s)", m.FieldName(), m.ltValue)
+func (m *ltValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr: expr.Not(expr.Paren(expr.LT(
+			expr.Field("t", m.FieldName()),
+			expr.IntLit(m.ltValue),
+		))),
+	}
 }
 
 func (m *ltValidator) FieldName() string {
@@ -37,29 +42,14 @@ func (m *ltValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
 }
 
-func (m *ltValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the value of the field is greater than the [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be less than [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", m.ErrVariable(),
-		"[@FIELD]", m.FieldName(),
-		"[@PATH]", m.FieldPath().String(),
-		"[@VALUE]", m.ltValue,
-		"[@TYPE]", m.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (m *ltValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]LTValidation", "[@PATH]", m.FieldPath().CleanedPath())
-}
-
-func (m *ltValidator) Imports() []string {
-	return []string{}
+func (m *ltValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + m.FieldPath().CleanedPath() + "LTValidation",
+		Comment: fmt.Sprintf("is the error returned when the value of the field is greater than the %s.", m.ltValue),
+		Reason:  fmt.Sprintf("field %s must be less than %s", m.FieldName(), m.ltValue),
+		Path:    m.FieldPath().String(),
+		Type:    m.ruleName,
+	}
 }
 
 // ValidateLT creates a new ltValidator if the field type is numeric and the min marker is present.

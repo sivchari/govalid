@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 	"github.com/sivchari/govalid/internal/validator/validatorhelper"
 )
@@ -24,27 +24,28 @@ type requiredValidator struct {
 
 var _ validator.Validator = (*requiredValidator)(nil)
 
-func (r *requiredValidator) Validate() string {
+func (r *requiredValidator) Condition() *validator.Condition {
 	typ := r.pass.TypesInfo.TypeOf(r.field.Type)
+	field := expr.Field("t", r.FieldName())
 
-	return required(r.FieldName(), typ)
-}
-
-func required(name string, typ types.Type) string {
-	// Handle slices, maps, and channels specifically for required validation
 	switch typ.(type) {
 	case *types.Slice, *types.Map, *types.Chan:
-		return fmt.Sprintf("t.%s == nil", name)
+		return &validator.Condition{Expr: expr.Eq(field, expr.Nil())}
 	case *types.Array:
-		return fmt.Sprintf("len(t.%s) == 0", name)
+		return &validator.Condition{Expr: expr.Eq(
+			expr.Call("", "len", field),
+			expr.IntLit("0"),
+		)}
 	}
 
 	zero := validatorhelper.Zero(typ)
 	if zero == "" {
-		return ""
+		return nil
 	}
 
-	return fmt.Sprintf("t.%s == %s", name, zero)
+	zeroExpr, _ := expr.Parse(zero)
+
+	return &validator.Condition{Expr: expr.Eq(field, zeroExpr)}
 }
 
 func (r *requiredValidator) FieldName() string {
@@ -55,28 +56,14 @@ func (r *requiredValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(r.structName, r.parentPath, r.FieldName())
 }
 
-func (r *requiredValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is returned when the [@FIELD] is required but not provided.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] is required",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", r.ErrVariable(),
-		"[@FIELD]", r.FieldName(),
-		"[@PATH]", r.FieldPath().String(),
-		"[@TYPE]", r.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (r *requiredValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]RequiredValidation", "[@PATH]", r.FieldPath().CleanedPath())
-}
-
-func (r *requiredValidator) Imports() []string {
-	return []string{}
+func (r *requiredValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + r.FieldPath().CleanedPath() + "RequiredValidation",
+		Comment: fmt.Sprintf("is returned when the %s is required but not provided.", r.FieldName()),
+		Reason:  fmt.Sprintf("field %s is required", r.FieldName()),
+		Path:    r.FieldPath().String(),
+		Type:    r.ruleName,
+	}
 }
 
 // ValidateRequired creates a new required validator for the given field.

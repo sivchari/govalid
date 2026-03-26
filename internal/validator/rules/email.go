@@ -2,14 +2,13 @@
 package rules
 
 import (
-	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -23,10 +22,11 @@ type emailValidator struct {
 
 var _ validator.Validator = (*emailValidator)(nil)
 
-func (e *emailValidator) Validate() string {
-	fieldName := e.FieldName()
-	// Use external helper function for better maintainability
-	return fmt.Sprintf("!validationhelper.IsValidEmail(t.%s)", fieldName)
+func (e *emailValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr:    expr.Not(expr.Call("validationhelper", "IsValidEmail", expr.Field("t", e.FieldName()))),
+		Imports: []string{"github.com/sivchari/govalid/validation/validationhelper"},
+	}
 }
 
 func (e *emailValidator) FieldName() string {
@@ -37,28 +37,14 @@ func (e *emailValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(e.structName, e.parentPath, e.FieldName())
 }
 
-func (e *emailValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the field is not a valid email address.
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be a valid email address",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", e.ErrVariable(),
-		"[@FIELD]", e.FieldName(),
-		"[@PATH]", e.FieldPath().String(),
-		"[@TYPE]", e.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (e *emailValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]EmailValidation", `[@PATH]`, e.FieldPath().CleanedPath())
-}
-
-func (e *emailValidator) Imports() []string {
-	return []string{"github.com/sivchari/govalid/validation/validationhelper"}
+func (e *emailValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + e.FieldPath().CleanedPath() + "EmailValidation",
+		Comment: "is the error returned when the field is not a valid email address.",
+		Reason:  "field " + e.FieldName() + " must be a valid email address",
+		Path:    e.FieldPath().String(),
+		Type:    e.ruleName,
+	}
 }
 
 // ValidateEmail creates a new emailValidator for string types.

@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"strings"
 
 	"github.com/gostaticanalysis/codegen"
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -25,8 +25,14 @@ type maxLengthValidator struct {
 
 var _ validator.Validator = (*maxLengthValidator)(nil)
 
-func (m *maxLengthValidator) Validate() string {
-	return fmt.Sprintf("utf8.RuneCountInString(t.%s) > %s", m.FieldName(), m.maxLengthValue)
+func (m *maxLengthValidator) Condition() *validator.Condition {
+	return &validator.Condition{
+		Expr: expr.GT(
+			expr.Call("utf8", "RuneCountInString", expr.Field("t", m.FieldName())),
+			expr.IntLit(m.maxLengthValue),
+		),
+		Imports: []string{"unicode/utf8"},
+	}
 }
 
 func (m *maxLengthValidator) FieldName() string {
@@ -37,29 +43,14 @@ func (m *maxLengthValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(m.structName, m.parentPath, m.FieldName())
 }
 
-func (m *maxLengthValidator) Err() string {
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the length of the field exceeds the maximum of [@VALUE].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must have a maximum length of [@VALUE]",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", m.ErrVariable(),
-		"[@FIELD]", m.FieldName(),
-		"[@PATH]", m.FieldPath().String(),
-		"[@VALUE]", m.maxLengthValue,
-		"[@TYPE]", m.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (m *maxLengthValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]MaxLengthValidation", "[@PATH]", m.FieldPath().CleanedPath())
-}
-
-func (m *maxLengthValidator) Imports() []string {
-	return []string{"unicode/utf8"}
+func (m *maxLengthValidator) ErrDecl() validator.ErrDecl {
+	return validator.ErrDecl{
+		VarName: "Err" + m.FieldPath().CleanedPath() + "MaxLengthValidation",
+		Comment: fmt.Sprintf("is the error returned when the length of the field exceeds the maximum of %s.", m.maxLengthValue),
+		Reason:  fmt.Sprintf("field %s must have a maximum length of %s", m.FieldName(), m.maxLengthValue),
+		Path:    m.FieldPath().String(),
+		Type:    m.ruleName,
+	}
 }
 
 // ValidateMaxLength creates a new maxLengthValidator if the field type is string and the maxlength marker is present.

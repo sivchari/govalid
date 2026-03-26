@@ -11,6 +11,7 @@ import (
 
 	"github.com/sivchari/govalid/internal/markers"
 	"github.com/sivchari/govalid/internal/validator"
+	"github.com/sivchari/govalid/internal/validator/expr"
 	"github.com/sivchari/govalid/internal/validator/registry"
 )
 
@@ -28,22 +29,23 @@ type enumValidator struct {
 
 var _ validator.Validator = (*enumValidator)(nil)
 
-func (e *enumValidator) Validate() string {
-	fieldName := e.FieldName()
-
-	var conditions []string
+func (e *enumValidator) Condition() *validator.Condition {
+	conditions := make([]ast.Expr, 0, len(e.enumValues))
 
 	for _, value := range e.enumValues {
+		var lit ast.Expr
 		if e.isString || e.isCustom {
-			// For string and custom types, use quoted comparison
-			conditions = append(conditions, fmt.Sprintf("t.%s != %q", fieldName, value))
+			lit = expr.StringLit(value)
 		} else if e.isNumeric {
-			// For numeric types, use unquoted comparison
-			conditions = append(conditions, fmt.Sprintf("t.%s != %s", fieldName, value))
+			lit = expr.IntLit(value)
 		}
+
+		conditions = append(conditions, expr.NEq(expr.Field("t", e.FieldName()), lit))
 	}
 
-	return strings.Join(conditions, " && ")
+	return &validator.Condition{
+		Expr: expr.AndAll(conditions...),
+	}
 }
 
 func (e *enumValidator) FieldName() string {
@@ -54,31 +56,16 @@ func (e *enumValidator) FieldPath() validator.FieldPath {
 	return validator.NewFieldPath(e.structName, e.parentPath, e.FieldName())
 }
 
-func (e *enumValidator) Err() string {
+func (e *enumValidator) ErrDecl() validator.ErrDecl {
 	enumList := strings.Join(e.enumValues, ", ")
 
-	const errTemplate = `
-		// [@ERRVARIABLE] is the error returned when the value is not in the allowed enum values [@ENUM_LIST].
-		[@ERRVARIABLE] = govaliderrors.ValidationError{Reason:"field [@FIELD] must be one of [@ENUM_LIST]",Path:"[@PATH]",Type:"[@TYPE]"}
-	`
-
-	replacer := strings.NewReplacer(
-		"[@ERRVARIABLE]", e.ErrVariable(),
-		"[@FIELD]", e.FieldName(),
-		"[@PATH]", e.FieldPath().String(),
-		"[@ENUM_LIST]", enumList,
-		"[@TYPE]", e.ruleName,
-	)
-
-	return replacer.Replace(errTemplate)
-}
-
-func (e *enumValidator) ErrVariable() string {
-	return strings.ReplaceAll("Err[@PATH]EnumValidation", "[@PATH]", e.FieldPath().CleanedPath())
-}
-
-func (e *enumValidator) Imports() []string {
-	return []string{}
+	return validator.ErrDecl{
+		VarName: "Err" + e.FieldPath().CleanedPath() + "EnumValidation",
+		Comment: fmt.Sprintf("is the error returned when the value is not in the allowed enum values %s.", enumList),
+		Reason:  fmt.Sprintf("field %s must be one of %s", e.FieldName(), enumList),
+		Path:    e.FieldPath().String(),
+		Type:    e.ruleName,
+	}
 }
 
 // ValidateEnum creates a new enumValidator for string, numeric, and custom types.
