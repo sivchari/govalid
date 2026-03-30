@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.9.1](https://github.com/sivchari/govalid/compare/v1.9.0...v1.9.1) - 2026-03-30
+- deps: bump golang.org/x/tools from 0.42.0 to 0.43.0 in the all-go-mod-patch-and-minor group across 1 directory by @dependabot[bot] in https://github.com/sivchari/govalid/pull/248
+- run pinact by @sivchari in https://github.com/sivchari/govalid/pull/250
+
 ## [v1.9.0](https://github.com/sivchari/govalid/compare/v1.8.0...v1.9.0) - 2026-03-26
 - ci(deps): bump actions/github-script from 7 to 8 by @dependabot[bot] in https://github.com/sivchari/govalid/pull/208
 - docs: improve README readability by @sivchari in https://github.com/sivchari/govalid/pull/210
