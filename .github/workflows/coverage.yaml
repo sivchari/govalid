@@ -22,7 +22,7 @@ jobs:
       - name: Run tests with coverage
         run: make test-coverage
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: root-coverage.out,test/test-coverage.out
           token: ${{ secrets.CODECOV_TOKEN }}
