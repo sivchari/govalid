@@ -46,7 +46,7 @@ jobs:
           go-version-file: 'go.mod'
           
       - name: Cache Go modules
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: |
             ~/.cache/go-build
@@ -130,7 +130,7 @@ jobs:
           
       - name: Upload fuzz results
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: fuzz-results-${{ matrix.fuzz-target }}
           path: fuzz-results/
@@ -149,7 +149,7 @@ jobs:
           
       - name: Upload failure testdata
         if: env.FUZZ_FAILURE == 'true'
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: fuzz-failures-${{ matrix.fuzz-target }}
           path: fuzz-results/testdata-${{ matrix.fuzz-target }}
@@ -198,7 +198,7 @@ jobs:
           cat fuzz-report.md
           
       - name: Upload combined report
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: fuzz-report
           path: fuzz-report.md
@@ -212,7 +212,7 @@ jobs:
     
     steps:
       - name: Create issue on failure
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const title = `🐛 Fuzz Test Failures Detected - ${new Date().toISOString().split('T')[0]}`;
