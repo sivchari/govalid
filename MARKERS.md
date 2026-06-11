@@ -458,6 +458,30 @@ govalid supports the following markers:
   }
   ```
 
+## `govalid:alphanum`
+- **Description**: Ensures that a string field is alphanumeric, i.e. all its characters are english letters (`a`–`z`, `A`–`Z`) or digits (`0`–`9`). An empty string is considered invalid.
+- **Example**:
+  ```go
+    type Product struct {
+        //govalid:alphanum
+        ProductCode string `json:"product_code"`
+    }
+    ```
+- **Generated Code**:
+  ```go
+  func ValidateProduct(t *Product) error {
+    if t == nil {
+        return ErrNilProduct
+    }
+
+    if !validationhelper.IsValidAlphanum(t.ProductCode) {
+        return ErrProductProductCodeAlphanumValidation
+    }
+
+    return nil
+  }
+  ```
+
 ## `govalid:numeric`
 
 - **Description**: Ensures that a string field contains only digit characters (`0`–`9`). Leading zeros are allowed. Negative signs, decimal points, or scientific notation are **not** accepted.

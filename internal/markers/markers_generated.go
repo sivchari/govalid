@@ -5,6 +5,9 @@ var (
 	// GoValidMarkerAlpha is the marker for alpha validation.
 	GoValidMarkerAlpha = "govalid:alpha"
 
+	// GoValidMarkerAlphanum is the marker for alphanum validation.
+	GoValidMarkerAlphanum = "govalid:alphanum"
+
 	// GoValidMarkerCel is the marker for cel validation.
 	GoValidMarkerCel = "govalid:cel"
 
@@ -64,6 +67,7 @@ var (
 // GoValidMarkers is a map of valid govalid markers.
 var GoValidMarkers = map[string]struct{}{
 	GoValidMarkerAlpha: {},
+	GoValidMarkerAlphanum: {},
 	GoValidMarkerCel: {},
 	GoValidMarkerEmail: {},
 	GoValidMarkerEnum: {},

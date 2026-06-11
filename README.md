@@ -92,6 +92,8 @@ For complete details, see [MARKERS.md](MARKERS.md).
 | `url` | Valid URL |
 | `uuid` | Valid UUID |
 | `numeric` | Numeric string |
+| `alpha` | Alphabetic string (a-z, A-Z) |
+| `alphanum` | Alphanumeric string (a-z, A-Z, 0-9) |
 
 ### Advanced Validators
 

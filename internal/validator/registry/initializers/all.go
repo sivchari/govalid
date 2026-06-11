@@ -9,6 +9,7 @@ import (
 func All() []registry.ValidatorInitializer {
 	return []registry.ValidatorInitializer{
 		AlphaInitializer{},
+		AlphanumInitializer{},
 		CelInitializer{},
 		EmailInitializer{},
 		EnumInitializer{},

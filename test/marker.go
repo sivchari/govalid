@@ -76,6 +76,17 @@ type Alpha struct {
 	CountryCode string `validate:"alpha" json:"country_code"`
 }
 
+type Alphanum struct {
+	//govalid:alphanum
+	ProductCode string `validate:"alphanum" json:"product_code"`
+
+	//govalid:alphanum
+	SerialNumber string `validate:"alphanum" json:"serial_number"`
+
+	//govalid:alphanum
+	Username string `validate:"alphanum" json:"username"`
+}
+
 // Custom types for enum testing
 type UserRole string
 type Priority int
