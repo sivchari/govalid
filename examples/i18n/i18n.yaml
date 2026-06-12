@@ -1,0 +1,10 @@
+# Localized validation message templates, consumed by `govalid -i18n=i18n.yaml`.
+# Keys are rule types; {Field}, {Param} and {Path} are substituted at generation
+# time, while {Value} is substituted at validation time.
+ja:
+  required:  "{Field}は必須です"
+  gt:        "{Field}は{Param}より大きい値にしてください"
+  maxlength: "{Field}は{Param}文字以内にしてください"
+fr:
+  required:  "{Field} est obligatoire"
+  gt:        "{Field} doit être supérieur à {Param}"

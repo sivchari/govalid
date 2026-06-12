@@ -49,6 +49,7 @@ func (m *maxItemsValidator) ErrDecl() validator.ErrDecl {
 		Reason:  fmt.Sprintf("field %s must have a maximum of %s items", m.FieldName(), m.maxItemsValue),
 		Path:    m.FieldPath().String(),
 		Type:    m.ruleName,
+		Param:   m.maxItemsValue,
 	}
 }
 

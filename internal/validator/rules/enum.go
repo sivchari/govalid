@@ -65,6 +65,7 @@ func (e *enumValidator) ErrDecl() validator.ErrDecl {
 		Reason:  fmt.Sprintf("field %s must be one of %s", e.FieldName(), enumList),
 		Path:    e.FieldPath().String(),
 		Type:    e.ruleName,
+		Param:   enumList,
 	}
 }
 

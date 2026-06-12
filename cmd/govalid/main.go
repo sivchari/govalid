@@ -15,6 +15,10 @@ var rootCmd = &cobra.Command{
 	Short:   "govalid generates type-safe validation code for Go structs",
 	Version: govalid_pkg.Version,
 	Args:    cobra.ArbitraryArgs,
+	// Flags such as -i18n are consumed by the underlying analysis driver
+	// (singlegenerator), which re-parses os.Args. Let cobra pass them through
+	// instead of rejecting them as unknown.
+	FParseErrWhitelist: cobra.FParseErrWhitelist{UnknownFlags: true},
 	RunE: func(_ *cobra.Command, _ []string) error {
 		return runGenerator()
 	},

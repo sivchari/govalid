@@ -4,6 +4,8 @@ package errors
 import (
 	"fmt"
 	"strings"
+
+	"golang.org/x/text/language"
 )
 
 // ValidationError represents a single validation error.
@@ -15,11 +17,74 @@ type ValidationError struct {
 	// Value is the actual value that was validated.
 	Value any
 	// Reason is a human-readable message explaining why the validation failed.
+	// It is the default (English) message and is used as the fallback when no
+	// localized message is available for the requested language.
 	Reason string
+	// Messages holds localized messages keyed by language. The {Field}, {Param} and
+	// {Path} placeholders are already substituted at code-generation time; the {Value}
+	// placeholder, if present, is substituted at validation time from Value.
+	// It is only populated when code is generated with the -i18n option.
+	Messages map[language.Tag]string
+}
+
+// Localize returns a copy of the error whose Reason is replaced by the localized
+// message for lang when one is available. If no localized message matches lang,
+// the error is returned unchanged (falling back to the default Reason).
+func (e ValidationError) Localize(lang language.Tag) ValidationError {
+	msg, ok := e.lookup(lang)
+	if !ok {
+		return e
+	}
+
+	if strings.Contains(msg, "{Value}") {
+		msg = strings.ReplaceAll(msg, "{Value}", fmt.Sprint(e.Value))
+	}
+
+	e.Reason = msg
+
+	return e
+}
+
+// lookup finds the best localized message for lang among the registered languages,
+// applying language matching (e.g. "ja-JP" matches "ja"). It returns false when no
+// message is registered or none matches.
+func (e ValidationError) lookup(lang language.Tag) (string, bool) {
+	if len(e.Messages) == 0 {
+		return "", false
+	}
+
+	if msg, ok := e.Messages[lang]; ok {
+		return msg, true
+	}
+
+	tags := make([]language.Tag, 0, len(e.Messages))
+	for tag := range e.Messages {
+		tags = append(tags, tag)
+	}
+
+	matcher := language.NewMatcher(tags)
+
+	_, idx, conf := matcher.Match(lang)
+	if conf == language.No {
+		return "", false
+	}
+
+	return e.Messages[tags[idx]], true
 }
 
 // ValidationErrors is a slice of ValidationError, representing a collection of validation errors.
 type ValidationErrors []ValidationError
+
+// Localize replaces each error's Reason with its localized message for lang where
+// available, mutating and returning the slice. Errors without a matching localized
+// message keep their default Reason.
+func (e ValidationErrors) Localize(lang language.Tag) ValidationErrors {
+	for i := range e {
+		e[i] = e[i].Localize(lang)
+	}
+
+	return e
+}
 
 // Error implements the error interface for ValidationErrors.
 // It returns a string representation of all validation errors, separated by newlines.

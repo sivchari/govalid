@@ -49,6 +49,7 @@ func (m *ltValidator) ErrDecl() validator.ErrDecl {
 		Reason:  fmt.Sprintf("field %s must be less than %s", m.FieldName(), m.ltValue),
 		Path:    m.FieldPath().String(),
 		Type:    m.ruleName,
+		Param:   m.ltValue,
 	}
 }
 

@@ -49,6 +49,7 @@ func (m *gteValidator) ErrDecl() validator.ErrDecl {
 		Reason:  fmt.Sprintf("field %s must be greater than or equal to %s", m.FieldName(), m.gteValue),
 		Path:    m.FieldPath().String(),
 		Type:    m.ruleName,
+		Param:   m.gteValue,
 	}
 }
 

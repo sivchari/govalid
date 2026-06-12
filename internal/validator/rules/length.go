@@ -49,6 +49,7 @@ func (l *lengthValidator) ErrDecl() validator.ErrDecl {
 		Reason:  fmt.Sprintf("field %s length must be exactly %s", l.FieldName(), l.lengthValue),
 		Path:    l.FieldPath().String(),
 		Type:    l.ruleName,
+		Param:   l.lengthValue,
 	}
 }
 

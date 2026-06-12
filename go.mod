@@ -7,6 +7,7 @@ require (
 	github.com/gostaticanalysis/codegen v0.1.0
 	github.com/sivchari/golden v0.3.0
 	github.com/spf13/cobra v1.10.2
+	go.yaml.in/yaml/v3 v3.0.4
 	golang.org/x/text v0.35.0
 	golang.org/x/tools v0.43.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7

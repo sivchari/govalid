@@ -14,6 +14,7 @@ import (
 	"text/template"
 
 	"github.com/gostaticanalysis/codegen"
+	"golang.org/x/text/language"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
@@ -36,10 +37,16 @@ const (
 var (
 	// dryRun indicates whether the generator should run in dry-run mode.
 	dryRun bool
+
+	// i18nPath is the path to the YAML i18n configuration, set by the -i18n flag.
+	i18nPath string
 )
 
 // generator is the main type for the govalid analyzer.
-type generator struct{}
+type generator struct {
+	// i18n holds the loaded i18n configuration, or nil when -i18n is not set.
+	i18n *i18nConfig
+}
 
 // newGenerator creates a new instance of the govalid generator.
 func newGenerator() (*codegen.Generator, error) {
@@ -52,6 +59,8 @@ func newGenerator() (*codegen.Generator, error) {
 		Requires: []*analysis.Analyzer{inspect.Analyzer, markers.Analyzer},
 	}
 
+	generator.Flags.StringVar(&i18nPath, "i18n", "", "path to a YAML file with localized error message templates")
+
 	return generator, nil
 }
 
@@ -62,6 +71,9 @@ type TemplateData struct {
 	Metadata        []*AnalyzedMetadata
 	ImportPackages  map[string]struct{}
 	ErrDeclarations []validator.ErrDecl
+	// I18n is true when at least one error declaration has localized messages,
+	// in which case the generated validator localizes errors via govalid.Localize.
+	I18n bool
 }
 
 // run is the main function that runs the govalid analyzer.
@@ -76,11 +88,13 @@ func (g *generator) run(pass *codegen.Pass) error {
 		return govaliderrors.ErrCouldNotGetInspector
 	}
 
+	if err := g.ensureI18n(); err != nil {
+		return err
+	}
+
 	nodeFilter := []ast.Node{
 		(*ast.GenDecl)(nil),
 	}
-
-	tmplList := map[string]TemplateData{}
 
 	inspector.Preorder(nodeFilter, func(n ast.Node) {
 		genDecl, ok := n.(*ast.GenDecl)
@@ -91,41 +105,45 @@ func (g *generator) run(pass *codegen.Pass) error {
 		for _, spec := range genDecl.Specs {
 			ts, ok := spec.(*ast.TypeSpec)
 			if !ok {
-				return
+				continue
 			}
 
-			typeMarkers := markersInspect.TypeMarkers(ts)
-
-			structType, ok := ts.Type.(*ast.StructType)
-			if !ok {
-				return
-			}
-
-			metadata := analyzeMarker(pass, markersInspect, typeMarkers, structType, "", ts.Name.Name)
-			if len(metadata) == 0 {
-				return
-			}
-
-			tmplData := TemplateData{
-				PackageName:     pass.Pkg.Name(),
-				TypeName:        ts.Name.Name,
-				Metadata:        metadata,
-				ImportPackages:  collectImportPackages(metadata),
-				ErrDeclarations: collectErrDeclarations(metadata),
-			}
-
-			data, ok := tmplList[ts.Name.Name]
-			if ok {
-				data.Metadata = append(data.Metadata, tmplData.Metadata...)
-			}
-
-			if err := writeFile(pass, ts, &tmplData); err != nil {
-				panic(fmt.Sprintf("failed to write file for %s: %v", ts.Name.Name, err))
-			}
+			g.generateType(pass, markersInspect, ts)
 		}
 	})
 
 	return nil
+}
+
+// generateType analyzes a single type spec and writes its validator file, if any
+// markers are present.
+func (g *generator) generateType(pass *codegen.Pass, markersInspect markers.Markers, ts *ast.TypeSpec) {
+	structType, ok := ts.Type.(*ast.StructType)
+	if !ok {
+		return
+	}
+
+	typeMarkers := markersInspect.TypeMarkers(ts)
+
+	metadata := analyzeMarker(pass, markersInspect, typeMarkers, structType, "", ts.Name.Name)
+	if len(metadata) == 0 {
+		return
+	}
+
+	errDecls := collectErrDeclarations(metadata, g.i18n)
+
+	tmplData := TemplateData{
+		PackageName:     pass.Pkg.Name(),
+		TypeName:        ts.Name.Name,
+		Metadata:        metadata,
+		ImportPackages:  collectImportPackages(metadata),
+		ErrDeclarations: errDecls,
+		I18n:            hasLocalizedMessages(errDecls),
+	}
+
+	if err := writeFile(pass, ts, &tmplData); err != nil {
+		panic(fmt.Sprintf("failed to write file for %s: %v", ts.Name.Name, err))
+	}
 }
 
 // AnalyzedMetadata holds the metadata for a field in a struct, including its validators and parent variable name.
@@ -287,7 +305,8 @@ func collectImportPackages(metadata []*AnalyzedMetadata) map[string]struct{} {
 }
 
 // collectErrDeclarations collects deduplicated error declarations from all validators.
-func collectErrDeclarations(metadata []*AnalyzedMetadata) []validator.ErrDecl {
+// When i18n is non-nil, each declaration is populated with localized messages.
+func collectErrDeclarations(metadata []*AnalyzedMetadata, i18n *i18nConfig) []validator.ErrDecl {
 	seen := make(map[string]struct{})
 
 	var decls []validator.ErrDecl
@@ -307,11 +326,26 @@ func collectErrDeclarations(metadata []*AnalyzedMetadata) []validator.ErrDecl {
 
 			seen[errDecl.VarName] = struct{}{}
 
+			if i18n != nil {
+				errDecl.Messages = i18n.build(&errDecl)
+			}
+
 			decls = append(decls, errDecl)
 		}
 	}
 
 	return decls
+}
+
+// hasLocalizedMessages reports whether any declaration has localized messages.
+func hasLocalizedMessages(decls []validator.ErrDecl) bool {
+	for i := range decls {
+		if len(decls[i].Messages) > 0 {
+			return true
+		}
+	}
+
+	return false
 }
 
 // templateFuncMap returns the template.FuncMap used for generating validation code.
@@ -338,7 +372,29 @@ func templateFuncMap() template.FuncMap {
 		"errVarName": func(v validator.Validator) string {
 			return v.ErrDecl().VarName
 		},
+		"sortedMessages": sortedMessages,
 	}
+}
+
+// langMessage is a single localized message rendered by the template.
+type langMessage struct {
+	Lang string
+	Msg  string
+}
+
+// sortedMessages converts a language-keyed message map into a slice sorted by
+// language tag, so generated output is deterministic.
+func sortedMessages(m map[language.Tag]string) []langMessage {
+	out := make([]langMessage, 0, len(m))
+	for tag, msg := range m {
+		out = append(out, langMessage{Lang: tag.String(), Msg: msg})
+	}
+
+	sort.Slice(out, func(i, j int) bool {
+		return out[i].Lang < out[j].Lang
+	})
+
+	return out
 }
 
 func writeFile(pass *codegen.Pass, ts *ast.TypeSpec, tmplData *TemplateData) error {
