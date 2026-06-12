@@ -1,7 +1,7 @@
 name: Vulnerability Check
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
   push:
     branches: [ main ]
