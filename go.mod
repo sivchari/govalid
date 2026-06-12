@@ -2,6 +2,8 @@ module github.com/sivchari/govalid
 
 go 1.25.0
 
+toolchain go1.25.6
+
 require (
 	github.com/google/cel-go v0.27.0
 	github.com/gostaticanalysis/codegen v0.1.0
