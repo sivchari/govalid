@@ -11,4 +11,8 @@ type Alphanum struct {
 
 	//govalid:alphanum
 	Username string `json:"username"`
+
+	// Non-string field: the alphanum rule does not apply and is skipped.
+	//govalid:alphanum
+	Revision int `json:"revision"`
 }

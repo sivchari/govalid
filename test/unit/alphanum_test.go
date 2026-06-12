@@ -1,10 +1,18 @@
 package unit
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/sivchari/govalid/test"
 )
+
+func TestAlphanumValidationNil(t *testing.T) {
+	err := test.ValidateAlphanum(nil)
+	if !errors.Is(err, test.ErrNilAlphanum) {
+		t.Errorf("expected ErrNilAlphanum, got %v", err)
+	}
+}
 
 func TestAlphanumValidation(t *testing.T) {
 	tests := []struct {

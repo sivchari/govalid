@@ -18,6 +18,10 @@ func TestValidator(t *testing.T) {
 		{"Alpha_valid", &test.Alpha{FirstName: "John", LastName: "Doe", CountryCode: "US"}, false},
 		{"Alpha_invalid", &test.Alpha{FirstName: "John1", LastName: "Doe", CountryCode: "US"}, true},
 
+		// Alphanum tests
+		{"Alphanum_valid", &test.Alphanum{ProductCode: "ABC123", SerialNumber: "product2024", Username: "X1"}, false},
+		{"Alphanum_invalid", &test.Alphanum{ProductCode: "ABC-123", SerialNumber: "product2024", Username: "X1"}, true},
+
 		// GT tests
 		{"GT_valid", &test.GT{Age: 101}, false},
 		{"GT_invalid", &test.GT{Age: 50}, true},
@@ -120,6 +124,10 @@ func TestValidatorContext(t *testing.T) {
 		// Alpha tests
 		{"Alpha_valid", &test.Alpha{FirstName: "John", LastName: "Doe", CountryCode: "US"}, false},
 		{"Alpha_invalid", &test.Alpha{FirstName: "John1", LastName: "Doe", CountryCode: "US"}, true},
+
+		// Alphanum tests
+		{"Alphanum_valid", &test.Alphanum{ProductCode: "ABC123", SerialNumber: "product2024", Username: "X1"}, false},
+		{"Alphanum_invalid", &test.Alphanum{ProductCode: "ABC-123", SerialNumber: "product2024", Username: "X1"}, true},
 
 		// GT tests
 		{"GT_valid", &test.GT{Age: 101}, false},
