@@ -13,7 +13,7 @@ import (
 	"github.com/sivchari/govalid/internal/analyzers/registry"
 )
 
-func Test{{ .TitleCaseName }}(t *testing.T) {
+func TestAlphanum(t *testing.T) {
 	registry := registry.NewRegistry(
 		registry.AddAnalyzers(markers.Initializer()),
 		registry.AddGenerators(govalid.Initializer()),
@@ -28,9 +28,9 @@ func Test{{ .TitleCaseName }}(t *testing.T) {
 		t.Fatalf("failed to get govalid generator: %v", err)
 	}
 
-	results := codegentest.Run(t, codegentest.TestData(), govalid, "{{ .Name }}")
+	results := codegentest.Run(t, codegentest.TestData(), govalid, "alphanum")
 	g := golden.New(t, golden.WithUpdate(update))
 	for _, r := range results {
-		g.Assert("{{ .Name }}", r.Output.String())
+		g.Assert("alphanum", r.Output.String())
 	}
 }
