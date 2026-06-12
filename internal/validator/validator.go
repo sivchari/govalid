@@ -1,7 +1,11 @@
 // Package validator implements rules for validating fields.
 package validator
 
-import "go/ast"
+import (
+	"go/ast"
+
+	"golang.org/x/text/language"
+)
 
 // Condition represents a validation condition with an optional if-init statement.
 type Condition struct {
@@ -38,6 +42,17 @@ type ErrDecl struct {
 	// Type is the validation rule name.
 	// Example: "gt"
 	Type string
+
+	// Param is the rule parameter, if any, substituted into localized messages
+	// via the {Param} placeholder. Example: "5" for gt=5. Empty for rules
+	// without a parameter (required, email, ...).
+	Param string
+
+	// Messages holds localized error messages keyed by language, used to populate
+	// the generated ValidationError. It is only set when the -i18n option is used.
+	// The {Field}, {Param} and {Path} placeholders are already substituted; {Value}
+	// is left for substitution at validation time.
+	Messages map[language.Tag]string
 }
 
 // Validator is an interface for validating fields in structs.

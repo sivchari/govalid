@@ -210,6 +210,44 @@ Context-aware validation is particularly useful for:
 
 See [Context Validation Documentation](docs/content/context-validation.md) for complete details and examples.
 
+## Internationalized Error Messages (i18n)
+
+govalid can bake localized error messages into the generated code. Translations are
+provided at generation time via a YAML file passed with the `-i18n` flag, so there is
+no runtime translation framework and the zero-allocation happy path is preserved.
+
+Define a translation file keyed by [BCP-47](https://www.rfc-editor.org/info/bcp47)
+language tag and rule type. The `{Field}`, `{Param}` and `{Path}` placeholders are
+substituted at generation time; `{Value}` is substituted at validation time.
+
+```yaml
+# i18n.yaml
+ja:
+  required:  "{Field}は必須です"
+  gt:        "{Field}は{Param}より大きい値にしてください"
+fr:
+  required:  "{Field} est obligatoire"
+  gt:        "{Field} doit être supérieur à {Param}"
+```
+
+Generate with the `-i18n` flag:
+
+```go
+//go:generate go run github.com/sivchari/govalid/cmd/govalid -i18n=i18n.yaml ./user.go
+```
+
+Select the language at validation time via the context. Rules or languages without a
+translation fall back to the default English message:
+
+```go
+ctx := govalid.WithLanguage(context.Background(), language.Japanese)
+if err := user.ValidateContext(ctx); err != nil {
+    // => "...because Nameは必須です"
+}
+```
+
+See the [runnable example](examples/i18n) for a complete setup.
+
 ## Performance
 
 govalid outperforms reflection-based validators by **5x to 44x** with **zero allocations**.

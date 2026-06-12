@@ -22,7 +22,7 @@ var (
 {{- range .ErrDeclarations }}
 
 	// {{ .VarName }} {{ .Comment }}
-	{{ .VarName }} = govaliderrors.ValidationError{Reason:"{{ .Reason }}",Path:"{{ .Path }}",Type:"{{ .Type }}"}
+	{{ .VarName }} = govaliderrors.ValidationError{Reason:"{{ .Reason }}",Path:"{{ .Path }}",Type:"{{ .Type }}"{{ if .Messages }},Messages:map[language.Tag]string{ {{ range sortedMessages .Messages }}language.Make("{{ .Lang }}"):{{ printf "%q" .Msg }},{{ end }} }{{ end }}}
 {{- end }}
 )
 
@@ -73,7 +73,7 @@ func Validate{{.TypeName}}Context(ctx context.Context, t *{{.TypeName}}) error {
 	{{ end -}}
 
   if len(errs) > 0 {
-  	  return errs
+  	  return {{ if .I18n }}govalid.Localize(ctx, errs){{ else }}errs{{ end }}
   }
   return nil
 }

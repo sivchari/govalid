@@ -49,6 +49,7 @@ func (m *gtValidator) ErrDecl() validator.ErrDecl {
 		Reason:  fmt.Sprintf("field %s must be greater than %s", m.FieldName(), m.gtValue),
 		Path:    m.FieldPath().String(),
 		Type:    m.ruleName,
+		Param:   m.gtValue,
 	}
 }
 

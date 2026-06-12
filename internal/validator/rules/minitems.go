@@ -49,6 +49,7 @@ func (m *minItemsValidator) ErrDecl() validator.ErrDecl {
 		Reason:  fmt.Sprintf("field %s must have a minimum of %s items", m.FieldName(), m.minItemsValue),
 		Path:    m.FieldPath().String(),
 		Type:    m.ruleName,
+		Param:   m.minItemsValue,
 	}
 }
 

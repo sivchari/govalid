@@ -50,6 +50,7 @@ func (m *minLengthValidator) ErrDecl() validator.ErrDecl {
 		Reason:  fmt.Sprintf("field %s must have a minimum length of %s", m.FieldName(), m.minLengthValue),
 		Path:    m.FieldPath().String(),
 		Type:    m.ruleName,
+		Param:   m.minLengthValue,
 	}
 }
 

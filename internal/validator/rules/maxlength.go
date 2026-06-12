@@ -50,6 +50,7 @@ func (m *maxLengthValidator) ErrDecl() validator.ErrDecl {
 		Reason:  fmt.Sprintf("field %s must have a maximum length of %s", m.FieldName(), m.maxLengthValue),
 		Path:    m.FieldPath().String(),
 		Type:    m.ruleName,
+		Param:   m.maxLengthValue,
 	}
 }
 
